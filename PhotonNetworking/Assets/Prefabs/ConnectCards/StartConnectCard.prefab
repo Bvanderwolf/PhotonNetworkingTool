@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8112884244596570046}
   - component: {fileID: 8112884244596570047}
   - component: {fileID: 8112884244596570040}
+  - component: {fileID: 2947864775316234610}
   m_Layer: 5
   m_Name: NicknameInput
   m_TagString: Untagged
@@ -145,6 +146,25 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!95 &2947864775316234610
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8112884244596570042}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9f0dac4a16df0414484a1f66a34735d5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8112884245043844060
 GameObject:
   m_ObjectHideFlags: 0
@@ -588,13 +608,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8112884246145670454}
+  - component: {fileID: 1300379515604742190}
   m_Layer: 5
   m_Name: StartConnectCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8112884246145670454
 RectTransform:
   m_ObjectHideFlags: 0
@@ -617,3 +638,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1300379515604742190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8112884246145670455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1335758f59138c34b8eea1dff1fb74d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MaxNicknameLength: 10
+  m_NickNameInput: {fileID: 8112884244596570040}
+  m_ConnectButton: {fileID: 8112884245043844066}

@@ -36,7 +36,7 @@ public class ConnectionManager : ScriptableObject, IConnectionCallbacks
 
     public void ConnectToMaster()
     {
-
+        
     }
 
     public void OnConnectedToMaster()
