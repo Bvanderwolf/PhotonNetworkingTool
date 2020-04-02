@@ -13,6 +13,9 @@ public class ConnectCardHandler : MonoBehaviour
     [SerializeField]
     private GameObject[] m_cards;
 
+    [SerializeField]
+    private ConnectionManager m_ConnectionManager;
+
     private Dictionary<ConnectCard, GameObject> m_cardsDict = new Dictionary<ConnectCard, GameObject>();
 
     private void Awake()
