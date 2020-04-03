@@ -15,6 +15,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
     private GameObject[] m_cards;
 
     private Dictionary<ConnectCard, GameObject> m_cardsDict = new Dictionary<ConnectCard, GameObject>();
+    private GameObject m_ActiveCard = null;
 
     private void Awake()
     {
@@ -25,19 +26,23 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
             m_cardsDict.Add(key, card);
         }
 
-        EnableConnectCard(ConnectCard.StartConnect);
-
-        ConnectionManager.Instance.AddCallbackTarget(this);
+        EnableConnectCard(ConnectCard.StartConnect);     
 
         if (m_DontDestroyOnLoad)
             DontDestroyOnLoad(this.gameObject);
-    }   
+    }
+
+    private void Start()
+    {
+        ConnectionManager.Instance.AddCallbackTarget(this);
+    }
 
     private void EnableConnectCard(ConnectCard card)
     {
         var cardGameObject = m_cardsDict[card];
         cardGameObject.SetActive(true);
         cardGameObject.GetComponent<ConnectCardAbstract>().m_TaskFinished += OnConnectCardFinishedTask;
+        m_ActiveCard = cardGameObject;
     }
 
     private void DisableConnectCard(ConnectCard card)
@@ -53,12 +58,31 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
         switch (card)
         {
             case ConnectCard.StartConnect:
-                EnableConnectCard(ConnectCard.ConnectStatus);
+                ReplaceCard(ConnectCard.StartConnect, ConnectCard.ConnectStatus);
+                SetupConnectStatusCard(ConnectTarget.MASTER);
                 ConnectionManager.Instance.ConnectToMaster((string)args);
                 break;
             case ConnectCard.ConnectStatus:
+                DisableConnectCard(ConnectCard.ConnectStatus);
                 break;
         }
+    }
+
+    private void SetupConnectStatusCard(ConnectTarget target)
+    {
+        var card = m_ActiveCard.GetComponent<ConnectStatusCardHandler>();
+        if(card == null)
+        {
+            Debug.LogError("Wont setup connect status card :: card is not of right type");
+            return;
+        }
+        card.SetConnectTarget(target);
+    }
+
+    private void ReplaceCard(ConnectCard oldCard, ConnectCard newCard)
+    {
+        EnableConnectCard(newCard);
+        DisableConnectCard(oldCard);
     }
 
     public void OnConnected()

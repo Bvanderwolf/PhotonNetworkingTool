@@ -3,6 +3,8 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 
+public enum ConnectTarget { MASTER, LOBBY, ROOM }
+
 public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 {
     public static ConnectionManager Instance { get; private set; }
@@ -36,7 +38,7 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     public void OnConnected()
     {
-        Debug.Log("connected");
+       //todo: implementation
     }
 
     public void ConnectToMaster(string nickname)
@@ -47,11 +49,12 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     public void OnConnectedToMaster()
     {
-        Debug.Log("connected to master");
+        //todo: implementation
     }
 
     public void OnDisconnected(DisconnectCause cause)
     {
+        //todo: implementation (reset connectCard handler through callback targets)
         Debug.Log($"disconnected with cause {cause}");
     }
 
