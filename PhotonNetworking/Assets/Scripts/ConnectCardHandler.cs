@@ -8,7 +8,7 @@ public enum ConnectCard { StartConnect, ConnectStatus}
 
 public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 {
-    [SerializeField]
+    [SerializeField, Tooltip("Check if you have multiple scenes for your game")]
     private bool m_DontDestroyOnLoad;
 
     [SerializeField]
@@ -42,15 +42,18 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 
     private void DisableConnectCard(ConnectCard card)
     {
-        m_cardsDict[card].SetActive(false);
+        var cardGameObject = m_cardsDict[card];
+        cardGameObject.SetActive(false);
+        cardGameObject.GetComponent<ConnectCardAbstract>().m_TaskFinished -= OnConnectCardFinishedTask;
     }
 
     private void OnConnectCardFinishedTask(GameObject cardGameObject, object args)
-    {
+    {     
         var card = m_cardsDict.Where(pair => pair.Value == cardGameObject).First().Key;
         switch (card)
         {
             case ConnectCard.StartConnect:
+                EnableConnectCard(ConnectCard.ConnectStatus);
                 ConnectionManager.Instance.ConnectToMaster((string)args);
                 break;
             case ConnectCard.ConnectStatus:
