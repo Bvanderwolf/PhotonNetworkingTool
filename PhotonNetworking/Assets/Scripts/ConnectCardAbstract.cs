@@ -3,10 +3,10 @@ using UnityEngine;
 
 public abstract class ConnectCardAbstract : MonoBehaviour
 {
-    public event Action<GameObject> TaskFinished;
+    public event Action<GameObject, object> m_TaskFinished;
 
-    protected virtual void OnTaskFinished()
+    protected virtual void OnTaskFinished(object args)
     {
-        TaskFinished?.Invoke(this.gameObject);
+        m_TaskFinished?.Invoke(this.gameObject, args);
     }
 }

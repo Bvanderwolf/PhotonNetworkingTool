@@ -47,7 +47,7 @@ public class StartConnectCardHandler : ConnectCardAbstract
             GiveFaulthyNicknameWarning();
             return;
         }
-        OnTaskFinished();
+        OnTaskFinished(m_NickNameInput.text);
     }
 
     private void GiveFaulthyNicknameWarning()

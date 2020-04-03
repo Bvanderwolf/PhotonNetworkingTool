@@ -14,9 +14,6 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
     [SerializeField]
     private GameObject[] m_cards;
 
-    [SerializeField]
-    private ConnectionManager m_ConnectionManager;
-
     private Dictionary<ConnectCard, GameObject> m_cardsDict = new Dictionary<ConnectCard, GameObject>();
 
     private void Awake()
@@ -30,7 +27,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 
         EnableConnectCard(ConnectCard.StartConnect);
 
-        m_ConnectionManager.AddCallbackTarget(this);
+        ConnectionManager.Instance.AddCallbackTarget(this);
 
         if (m_DontDestroyOnLoad)
             DontDestroyOnLoad(this.gameObject);
@@ -40,7 +37,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
     {
         var cardGameObject = m_cardsDict[card];
         cardGameObject.SetActive(true);
-        cardGameObject.GetComponent<ConnectCardAbstract>().TaskFinished += OnConnectCardFinishedTask;
+        cardGameObject.GetComponent<ConnectCardAbstract>().m_TaskFinished += OnConnectCardFinishedTask;
     }
 
     private void DisableConnectCard(ConnectCard card)
@@ -48,13 +45,13 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
         m_cardsDict[card].SetActive(false);
     }
 
-    private void OnConnectCardFinishedTask(GameObject cardGameObject)
+    private void OnConnectCardFinishedTask(GameObject cardGameObject, object args)
     {
         var card = m_cardsDict.Where(pair => pair.Value == cardGameObject).First().Key;
         switch (card)
         {
             case ConnectCard.StartConnect:
-                m_ConnectionManager.ConnectToMaster();
+                ConnectionManager.Instance.ConnectToMaster((string)args);
                 break;
             case ConnectCard.ConnectStatus:
                 break;
