@@ -1,5 +1,6 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Text;
 using UnityEngine;
@@ -20,8 +21,13 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     private float m_LoadPerc;
     private bool m_Loading;
 
+    private bool m_Finishing = false;
+
     private const int SERVER_CONNECT_STEPS_DEFAULT = 5;
     private const int SERVER_CONNECT_STEPS_RECONNECT = 3;
+
+    private const float HIGHLIGHT_TIME = 3f;
+    private const float HIGHLIGHT_SPEED = 3f;
 
     /// <summary>
     /// resets values related to loading bar
@@ -64,10 +70,11 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
 
     private void CheckForTaskFinished()
     {
-        if(!m_Loading && m_LoadPerc == 1f)
-        {       
-            //if the loading bar is not loading and at its end, the task is finished
-            OnTaskFinished(null);
+        if(!m_Loading && m_LoadPerc == 1f && !m_Finishing)
+        {
+            //if the loading bar is not loading and at its end, the task is finished (can be false)
+            const bool succes = true;
+            StartCoroutine(ShowTaskFinishedStatus(succes, () => OnTaskFinished(succes)));
         }
     }
 
@@ -138,6 +145,27 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         }
 
         m_Loading = false;
+    }
+
+    private IEnumerator ShowTaskFinishedStatus(bool succesfull, Action endAction)
+    {
+         m_Finishing = true;
+
+        var cardBack = transform.Find("Back").GetComponent<Image>();
+        var startColor = cardBack.color;
+        var targetColor = succesfull ? Color.green : Color.red;
+        var time = 0f;
+
+        while(time < HIGHLIGHT_TIME)
+        {
+            time += Time.deltaTime * HIGHLIGHT_SPEED;
+            cardBack.color = Color.Lerp(startColor, targetColor, Mathf.PingPong(time, 1f));
+            yield return new WaitForFixedUpdate();
+        }
+
+        m_Finishing = false;
+
+        endAction();
     }
 
     private void OnEnable()

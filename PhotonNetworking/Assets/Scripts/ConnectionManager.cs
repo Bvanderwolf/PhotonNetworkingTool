@@ -11,6 +11,8 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     private List<IConnectionCallbacks> m_CallbackTargets = null;
 
+    private bool m_AutomaticallySyncScene;
+
     private void OnEnable()
     {
         PhotonNetwork.AddCallbackTarget(this);
@@ -26,6 +28,11 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
         Instance = this;
 
         DontDestroyOnLoad(this);
+    }
+
+    public void Init(bool autoSyncScene)
+    {
+        m_AutomaticallySyncScene = autoSyncScene;
     }
 
     public void AddCallbackTarget(IConnectionCallbacks target)
@@ -59,7 +66,14 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
     public void ConnectToMaster(string nickname)
     {      
         PhotonNetwork.NickName = nickname;
+        PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;       
         PhotonNetwork.ConnectUsingSettings();           
+    }
+
+    public void ConnectToLobby(string name)
+    {
+        var lobby = new TypedLobby(name, LobbyType.Default);
+        PhotonNetwork.JoinLobby(lobby);      
     }
 
     public void ReconnectToMaster()

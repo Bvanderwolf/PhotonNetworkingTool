@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum ConnectCard { StartConnect, ConnectStatus, Disconnect}
+public enum ConnectCard { StartConnect, ConnectStatus, Disconnect, ConnectToLobby }
 
 public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 {
@@ -86,11 +86,15 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
                 ConnectionManager.Instance.ConnectToMaster((string)args);
                 break;
             case ConnectCard.ConnectStatus:
+                ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
                 break;
             case ConnectCard.Disconnect:
                 ReplaceCard(ConnectCard.Disconnect, ConnectCard.ConnectStatus);
                 SetupConnectStatusCard(ConnectTarget.MasterReconnect);
                 ConnectionManager.Instance.ReconnectToMaster();
+                break;
+            case ConnectCard.ConnectToLobby:
+                ConnectionManager.Instance.ConnectToLobby((string)args);
                 break;
         }
     }
