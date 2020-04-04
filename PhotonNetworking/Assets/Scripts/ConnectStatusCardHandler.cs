@@ -23,6 +23,9 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     private const int SERVER_CONNECT_STEPS_DEFAULT = 5;
     private const int SERVER_CONNECT_STEPS_RECONNECT = 3;
 
+    /// <summary>
+    /// resets values related to loading bar
+    /// </summary>
     private void ResetLoadMembers()
     {
         m_Loading = false;
@@ -39,15 +42,22 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         {
             m_KnownState = currentState;
             m_Status.text = GetFormattedStatus(m_KnownState.ToString());
-            UpdateLoadBar();            
+            UpdateLoadTarget();            
         }
         CheckForTaskFinished();
     }
 
-    private void UpdateLoadBar()
-    {
+    /// <summary>
+    /// Updates load target based on load percentage step 
+    /// </summary>
+    private void UpdateLoadTarget()
+    {       
+        if (!m_Loading)
+            return;
+
         m_LoadTarget += m_LoadPercentageStep;
 
+        //make sure load target is is clamped to 1
         if (m_LoadTarget > 1f)
             m_LoadTarget = 1f;
     }
@@ -55,12 +65,17 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     private void CheckForTaskFinished()
     {
         if(!m_Loading && m_LoadPerc == 1f)
-        {           
+        {       
+            //if the loading bar is not loading and at its end, the task is finished
             OnTaskFinished(null);
         }
     }
 
-    public void Setup(ConnectTarget target)
+    /// <summary>
+    /// Sets the target on which the card can base its loading
+    /// </summary>
+    /// <param name="target"></param>
+    public void SetConnectTarget(ConnectTarget target)
     {
         switch (target)
         {
@@ -77,6 +92,11 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         }        
     }
 
+    /// <summary>
+    /// Returns state without white spaces
+    /// </summary>
+    /// <param name="state"></param>
+    /// <returns></returns>
     private string GetFormattedStatus(string state)
     {
         if (string.IsNullOrWhiteSpace(state))
@@ -94,6 +114,11 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         return newText.ToString();
     }
 
+    /// <summary>
+    /// Keeps loading the loadbar until it reaches 100%
+    /// Increase the load target by using UpdateLoadTarget
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator LoadBarByStepPercentage()
     {
         m_Loading = true;  

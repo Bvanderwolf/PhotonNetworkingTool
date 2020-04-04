@@ -41,14 +41,20 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 
     private void Start()
     {
+        //get connection callbacks from connection manager
         ConnectionManager.Instance.AddCallbackTarget(this);
     }
 
     private void OnDestroy()
     {
-        ConnectionManager.Instance.RemoteCallbackTarget(this);
+        //unsubscribe from getting connection callbacks
+        ConnectionManager.Instance.RemoveCallbackTarget(this);
     }
 
+    /// <summary>
+    /// Enables given connect card, and sets it up 
+    /// </summary>
+    /// <param name="card"></param>
     private void EnableConnectCard(ConnectCard card)
     {
         var cardGameObject = m_cardsDict[card];
@@ -57,6 +63,11 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
         m_ActiveCardGO = cardGameObject;
     }
 
+    /// <summary>
+    /// Disables given connect card, unsubscribing the task listener
+    /// among other things
+    /// </summary>
+    /// <param name="card"></param>
     private void DisableConnectCard(ConnectCard card)
     {
         var cardGameObject = m_cardsDict[card];
@@ -92,7 +103,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
             Debug.LogError("Wont setup connect status card :: card is not of right type");
             return;
         }
-        card.Setup(target);
+        card.SetConnectTarget(target);
     }
 
     private void ProvideDisconnectCardWithCause(DisconnectCause cause)
@@ -106,6 +117,11 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
         card.SetCause(cause.ToString());
     }
 
+    /// <summary>
+    /// Tries replacing old card with new card
+    /// </summary>
+    /// <param name="oldCard"></param>
+    /// <param name="newCard"></param>
     private void ReplaceCard(ConnectCard oldCard, ConnectCard newCard)
     {
         var activeCardCount = m_cardsDict.Count(p => p.Value.activeInHierarchy);
@@ -138,10 +154,12 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
         var activeCardCount = m_cardsDict.Count(p => p.Value.activeInHierarchy);
         if(activeCardCount == 0)
         {
+            //if there active no active cars, just enable the disconnect card
             EnableConnectCard(ConnectCard.Disconnect);
         }
         else if(activeCardCount == 1)
         {
+            //if there is an active card, replace that one
             var activeCard = m_cardsDict.Where(p => p.Value == m_ActiveCardGO).First().Key;
             ReplaceCard(activeCard, ConnectCard.Disconnect);
         }

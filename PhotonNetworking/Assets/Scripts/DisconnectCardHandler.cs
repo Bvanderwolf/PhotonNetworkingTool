@@ -10,13 +10,17 @@ public class DisconnectCardHandler : ConnectCardAbstract
     private Text m_Cause;
 
     private void Awake()
-    {
+    {      
         m_ReconnectButton.onClick.AddListener(() =>
         {
             OnTaskFinished(null);
         });
     }
 
+    /// <summary>
+    /// Display given cause on card
+    /// </summary>
+    /// <param name="cause"></param>
     public void SetCause(string cause)
     {
         m_Cause.text = $"Cause: {cause}";

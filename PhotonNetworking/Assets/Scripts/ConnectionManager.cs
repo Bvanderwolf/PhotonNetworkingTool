@@ -36,7 +36,7 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
         m_CallbackTargets.Add(target);
     }
 
-    public void RemoteCallbackTarget(IConnectionCallbacks target)
+    public void RemoveCallbackTarget(IConnectionCallbacks target)
     {
         if(m_CallbackTargets != null)
         {
