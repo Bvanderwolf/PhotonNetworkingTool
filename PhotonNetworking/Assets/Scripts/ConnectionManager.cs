@@ -3,7 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 
-public enum ConnectTarget { MASTER, LOBBY, ROOM }
+public enum ConnectTarget { MasterDefault, MasterReconnect, Lobby, Room }
 
 public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 {
@@ -36,37 +36,81 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
         m_CallbackTargets.Add(target);
     }
 
+    public void RemoteCallbackTarget(IConnectionCallbacks target)
+    {
+        if(m_CallbackTargets != null)
+        {
+            m_CallbackTargets.Remove(target);
+
+            if (m_CallbackTargets.Count == 0)
+                m_CallbackTargets = null;
+        }
+    }
+
     public void OnConnected()
     {
-       //todo: implementation
+        if (m_CallbackTargets == null)
+            return;
+
+        foreach (var target in m_CallbackTargets)
+            target.OnConnected();
     }
 
     public void ConnectToMaster(string nickname)
-    {
+    {      
         PhotonNetwork.NickName = nickname;
-        PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.ConnectUsingSettings();           
+    }
+
+    public void ReconnectToMaster()
+    {
+        PhotonNetwork.Reconnect();
     }
 
     public void OnConnectedToMaster()
     {
-        //todo: implementation
+        if (m_CallbackTargets == null)
+            return;
+
+        foreach (var target in m_CallbackTargets)
+            target.OnConnectedToMaster();
     }
 
     public void OnDisconnected(DisconnectCause cause)
-    {
-        //todo: implementation (reset connectCard handler through callback targets)
+    {        
         Debug.Log($"disconnected with cause {cause}");
+
+        if (m_CallbackTargets == null)
+            return;
+
+        foreach (var target in m_CallbackTargets)
+            target.OnDisconnected(cause);
     }
 
     public void OnRegionListReceived(RegionHandler regionHandler)
     {
+        if (m_CallbackTargets == null)
+            return;
+
+        foreach (var target in m_CallbackTargets)
+            target.OnRegionListReceived(regionHandler);
     }
 
     public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
     {
+        if (m_CallbackTargets == null)
+            return;
+
+        foreach (var target in m_CallbackTargets)
+            target.OnCustomAuthenticationResponse(data);
     }
 
     public void OnCustomAuthenticationFailed(string debugMessage)
     {
+        if (m_CallbackTargets == null)
+            return;
+
+        foreach (var target in m_CallbackTargets)
+            target.OnCustomAuthenticationFailed(debugMessage);
     }
 }

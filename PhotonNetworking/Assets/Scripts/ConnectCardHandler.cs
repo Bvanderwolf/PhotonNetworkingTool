@@ -1,21 +1,22 @@
-﻿using Photon.Realtime;
+﻿using Photon.Pun;
+using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum ConnectCard { StartConnect, ConnectStatus}
+public enum ConnectCard { StartConnect, ConnectStatus, Disconnect}
 
 public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 {
-    [SerializeField, Tooltip("Check if you have multiple scenes for your game")]
+    [SerializeField, Tooltip("Check this flag, if you have multiple scenes for your game")]
     private bool m_DontDestroyOnLoad;
 
     [SerializeField]
     private GameObject[] m_cards;
 
     private Dictionary<ConnectCard, GameObject> m_cardsDict = new Dictionary<ConnectCard, GameObject>();
-    private GameObject m_ActiveCard = null;
+    private GameObject m_ActiveCardGO = null;
 
     private void Awake()
     {
@@ -32,9 +33,20 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
             DontDestroyOnLoad(this.gameObject);
     }
 
+    public void DisconnectFromServer()
+    {
+        if(PhotonNetwork.IsConnectedAndReady)
+            PhotonNetwork.Disconnect();
+    }
+
     private void Start()
     {
         ConnectionManager.Instance.AddCallbackTarget(this);
+    }
+
+    private void OnDestroy()
+    {
+        ConnectionManager.Instance.RemoteCallbackTarget(this);
     }
 
     private void EnableConnectCard(ConnectCard card)
@@ -42,7 +54,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
         var cardGameObject = m_cardsDict[card];
         cardGameObject.SetActive(true);
         cardGameObject.GetComponent<ConnectCardAbstract>().m_TaskFinished += OnConnectCardFinishedTask;
-        m_ActiveCard = cardGameObject;
+        m_ActiveCardGO = cardGameObject;
     }
 
     private void DisableConnectCard(ConnectCard card)
@@ -59,30 +71,61 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
         {
             case ConnectCard.StartConnect:
                 ReplaceCard(ConnectCard.StartConnect, ConnectCard.ConnectStatus);
-                SetupConnectStatusCard(ConnectTarget.MASTER);
+                SetupConnectStatusCard(ConnectTarget.MasterDefault);
                 ConnectionManager.Instance.ConnectToMaster((string)args);
                 break;
             case ConnectCard.ConnectStatus:
-                DisableConnectCard(ConnectCard.ConnectStatus);
+                break;
+            case ConnectCard.Disconnect:
+                ReplaceCard(ConnectCard.Disconnect, ConnectCard.ConnectStatus);
+                SetupConnectStatusCard(ConnectTarget.MasterReconnect);
+                ConnectionManager.Instance.ReconnectToMaster();
                 break;
         }
     }
 
     private void SetupConnectStatusCard(ConnectTarget target)
     {
-        var card = m_ActiveCard.GetComponent<ConnectStatusCardHandler>();
+        var card = m_ActiveCardGO.GetComponent<ConnectStatusCardHandler>();
         if(card == null)
         {
             Debug.LogError("Wont setup connect status card :: card is not of right type");
             return;
         }
-        card.SetConnectTarget(target);
+        card.Setup(target);
+    }
+
+    private void ProvideDisconnectCardWithCause(DisconnectCause cause)
+    {
+        var card = m_ActiveCardGO.GetComponent<DisconnectCardHandler>();
+        if (card == null)
+        {
+            Debug.LogError("Wont setup connect status card :: card is not of right type");
+            return;
+        }
+        card.SetCause(cause.ToString());
     }
 
     private void ReplaceCard(ConnectCard oldCard, ConnectCard newCard)
     {
-        EnableConnectCard(newCard);
-        DisableConnectCard(oldCard);
+        var activeCardCount = m_cardsDict.Count(p => p.Value.activeInHierarchy);
+        if(activeCardCount != 1)
+        {
+            Debug.LogError($"Wont replace card :: active card count {activeCardCount} is not 1");
+            return;
+        }
+
+        if(m_cardsDict[oldCard] != m_ActiveCardGO)
+        {
+            var newOldCard = m_cardsDict.Where(p => p.Value == m_ActiveCardGO).First().Key;
+            DisableConnectCard(newOldCard);
+        }
+        else
+        {
+            DisableConnectCard(oldCard);
+        }
+
+        EnableConnectCard(newCard);       
     }
 
     public void OnConnected()
@@ -92,7 +135,22 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 
     public void OnDisconnected(DisconnectCause cause)
     {
-
+        var activeCardCount = m_cardsDict.Count(p => p.Value.activeInHierarchy);
+        if(activeCardCount == 0)
+        {
+            EnableConnectCard(ConnectCard.Disconnect);
+        }
+        else if(activeCardCount == 1)
+        {
+            var activeCard = m_cardsDict.Where(p => p.Value == m_ActiveCardGO).First().Key;
+            ReplaceCard(activeCard, ConnectCard.Disconnect);
+        }
+        else
+        {
+            Debug.LogError($"Disconnect Card could not be shown :: active card count {activeCardCount} is neither 0 or 1");
+            return;
+        }
+        ProvideDisconnectCardWithCause(cause);
     }
 
     public void OnConnectedToMaster()

@@ -17,23 +17,16 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
 
     private float m_LoadPercentageStep;
     private float m_LoadTarget;
-    private float m_LoadStartPerc;
     private float m_LoadPerc;
     private bool m_Loading;
 
-    private const int SERVER_CONNECT_STEPS = 4;
-
-    private void Awake()
-    {
-        m_KnownState = PhotonNetwork.NetworkClientState;
-        m_Status.text = GetFormattedStatus(m_KnownState.ToString());
-    }
+    private const int SERVER_CONNECT_STEPS_DEFAULT = 5;
+    private const int SERVER_CONNECT_STEPS_RECONNECT = 3;
 
     private void ResetLoadMembers()
     {
         m_Loading = false;
         m_LoadTarget = 0;
-        m_LoadStartPerc = 0;
         m_LoadPerc = 0;
         m_Loadbar.fillAmount = 0;
     }
@@ -41,53 +34,47 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     private void Update()
     {
         var currentState = PhotonNetwork.NetworkClientState;
-        var statusUpdate = currentState !=  m_KnownState;
+        var statusUpdate = currentState != m_KnownState;
         if (statusUpdate)
         {
-            m_KnownState = PhotonNetwork.NetworkClientState;
+            m_KnownState = currentState;
             m_Status.text = GetFormattedStatus(m_KnownState.ToString());
-            UpdateLoadBar();
+            UpdateLoadBar();            
         }
+        CheckForTaskFinished();
     }
 
     private void UpdateLoadBar()
     {
-        if (m_Loading)
-        {
-            //set lerp start to current fill ammount
-            m_LoadStartPerc = m_Loadbar.fillAmount;  
-            //set target to target plus another step
-            m_LoadTarget += m_LoadPercentageStep;
-            //reset current load percentage
-            m_LoadPerc = 0;
-        }
-        else
-        {
-            StartCoroutine(LoadBarByStepPercentage());
-        }       
+        m_LoadTarget += m_LoadPercentageStep;
+
+        if (m_LoadTarget > 1f)
+            m_LoadTarget = 1f;
     }
 
     private void CheckForTaskFinished()
     {
         if(!m_Loading && m_LoadPerc == 1f)
-        {
-            ResetLoadMembers();
+        {           
             OnTaskFinished(null);
         }
     }
 
-    public void SetConnectTarget(ConnectTarget target)
+    public void Setup(ConnectTarget target)
     {
         switch (target)
         {
-            case ConnectTarget.MASTER:
-                m_LoadPercentageStep = 1f / SERVER_CONNECT_STEPS;
+            case ConnectTarget.MasterDefault:
+                m_LoadPercentageStep = 1f / SERVER_CONNECT_STEPS_DEFAULT;
                 break;
-            case ConnectTarget.LOBBY:
+            case ConnectTarget.MasterReconnect:
+                m_LoadPercentageStep =  1f / SERVER_CONNECT_STEPS_RECONNECT;
                 break;
-            case ConnectTarget.ROOM:
+            case ConnectTarget.Lobby:
                 break;
-        }
+            case ConnectTarget.Room:
+                break;
+        }        
     }
 
     private string GetFormattedStatus(string state)
@@ -109,20 +96,35 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
 
     private IEnumerator LoadBarByStepPercentage()
     {
-        m_Loading = true;
-        m_LoadStartPerc = m_Loadbar.fillAmount;
-        m_LoadTarget = m_Loadbar.fillAmount + m_LoadPercentageStep;  
+        m_Loading = true;  
         
-        while(m_LoadPerc < m_LoadTarget)
+        while(m_LoadPerc != 1f)
         {
-            if (m_LoadPerc > 1f)
-                m_LoadPerc = 1f;
-
-            m_LoadPerc += Time.deltaTime;
-            m_Loadbar.fillAmount = Mathf.Lerp(m_LoadStartPerc, m_LoadTarget, m_LoadPerc);
+            if(m_LoadPerc != m_LoadTarget)
+            {
+                m_LoadPerc += Time.deltaTime;
+                if (m_LoadPerc > m_LoadTarget)                
+                    m_LoadPerc = m_LoadTarget;
+                                                                                                                        
+                m_Loadbar.fillAmount = Mathf.Lerp(0, 1, m_LoadPerc);
+            }
+           
             yield return new WaitForFixedUpdate();
         }
 
         m_Loading = false;
+    }
+
+    private void OnEnable()
+    {
+        m_KnownState = PhotonNetwork.NetworkClientState;
+        m_Status.text = GetFormattedStatus(m_KnownState.ToString());
+
+        StartCoroutine(LoadBarByStepPercentage());
+    }
+
+    private void OnDisable()
+    {
+        ResetLoadMembers();
     }
 }
