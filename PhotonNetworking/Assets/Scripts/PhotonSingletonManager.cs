@@ -12,7 +12,12 @@ public class PhotonSingletonManager : MonoBehaviour
             new GameObject("ConnectionManager", typeof(ConnectionManager))
                 .GetComponent<ConnectionManager>()
                 .Init(m_AutomaticallySyncScene);
-        }             
+        }  
+        
+        if(InLobbyManager.Instance == null)
+        {
+            new GameObject("InLobbyManager", typeof(InLobbyManager));
+        }
         
         Destroy(this.gameObject);
     }

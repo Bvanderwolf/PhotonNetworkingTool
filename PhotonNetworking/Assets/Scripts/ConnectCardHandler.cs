@@ -7,7 +7,7 @@ using UnityEngine;
 
 public enum ConnectCard { StartConnect, ConnectStatus, Disconnect, ConnectToLobby }
 
-public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
+public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCallbacks
 {
     [SerializeField, Tooltip("Check this flag, if you have multiple scenes for your game")]
     private bool m_DontDestroyOnLoad;
@@ -41,14 +41,16 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 
     private void Start()
     {
-        //get connection callbacks from connection manager
+        //get connection callbacks 
         ConnectionManager.Instance.AddCallbackTarget(this);
+        InLobbyManager.Instance.AddCallbackTarget(this);
     }
 
     private void OnDestroy()
     {
-        //unsubscribe from getting connection callbacks
+        //unsubscribe from getting callbacks
         ConnectionManager.Instance.RemoveCallbackTarget(this);
+        InLobbyManager.Instance.AddCallbackTarget(this);
     }
 
     /// <summary>
@@ -184,5 +186,25 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks
 
     public void OnCustomAuthenticationResponse(Dictionary<string, object> data){}
     
-    public void OnRegionListReceived(RegionHandler regionHandler){}   
+    public void OnRegionListReceived(RegionHandler regionHandler){}
+
+    public void OnJoinedLobby()
+    {
+        print("joined lobby");
+    }
+
+    public void OnLeftLobby()
+    {
+
+    }
+
+    public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
+    {
+
+    }
+
+    public void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+
+    }
 }
