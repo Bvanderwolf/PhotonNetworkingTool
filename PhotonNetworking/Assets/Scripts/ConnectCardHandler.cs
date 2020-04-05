@@ -27,10 +27,20 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
             m_cardsDict.Add(key, card);
         }
 
+        InitCards();
         EnableConnectCard(ConnectCard.StartConnect);     
 
         if (m_DontDestroyOnLoad)
             DontDestroyOnLoad(this.gameObject);
+    }
+
+    private void InitCards()
+    {
+        foreach(var card in m_cards)
+        {
+            var cardAbstract = card.GetComponent<ConnectCardAbstract>();
+            cardAbstract.Init();
+        }
     }
 
     public void DisconnectFromServer()
@@ -200,7 +210,13 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
     {
-
+        var card = m_cardsDict[ConnectCard.ConnectToLobby].GetComponent<ConnectToLobbyCard>();
+        if (card == null)
+        {
+            Debug.LogError("Wont update lobby statistics :: card is in dictionary");
+            return;
+        }
+        card.UpdateLobbyStatistics(lobbyStatistics);
     }
 
     public void OnRoomListUpdate(List<RoomInfo> roomList)

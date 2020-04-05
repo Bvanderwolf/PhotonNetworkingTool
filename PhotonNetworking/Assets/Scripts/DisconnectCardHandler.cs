@@ -9,8 +9,9 @@ public class DisconnectCardHandler : ConnectCardAbstract
     [SerializeField]
     private Text m_Cause;
 
-    private void Awake()
-    {      
+    public override void Init()
+    {
+        base.Init();
         m_ReconnectButton.onClick.AddListener(() =>
         {
             OnTaskFinished(null);

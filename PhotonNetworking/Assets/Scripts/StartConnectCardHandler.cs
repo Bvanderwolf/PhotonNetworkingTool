@@ -18,8 +18,9 @@ public class StartConnectCardHandler : ConnectCardAbstract
 
     private bool m_NicknameInputed = false;
 
-    private void Awake()
+    public override void Init()
     {
+        base.Init();
         m_NickNameInput.onEndEdit.AddListener(OnNickNameInputFinished);
         m_ConnectButton.onClick.AddListener(OnConnectButtonClick);
         m_Animator = m_NickNameInput.GetComponent<Animator>();
