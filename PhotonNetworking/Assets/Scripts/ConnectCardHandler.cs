@@ -98,7 +98,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
                 ConnectionManager.Instance.ConnectToMaster((string)args);
                 break;
             case ConnectCard.ConnectStatus:
-                ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
+                HandleConnectStatusTargetReached((ConnectTarget)args);
                 break;
             case ConnectCard.Disconnect:
                 ReplaceCard(ConnectCard.Disconnect, ConnectCard.ConnectStatus);
@@ -106,7 +106,12 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
                 ConnectionManager.Instance.ReconnectToMaster();
                 break;
             case ConnectCard.ConnectToLobby:
+                ReplaceCard(ConnectCard.ConnectToLobby, ConnectCard.ConnectStatus);
+                SetupConnectStatusCard(ConnectTarget.Lobby);
                 ConnectionManager.Instance.ConnectToLobby((string)args);
+                break;
+            case ConnectCard.InLobby:
+                HandleInLobbyConnectResult((InLobbyConnectResult)args);
                 break;
         }
     }
@@ -119,7 +124,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
             Debug.LogError("Wont setup connect status card :: card is not of right type");
             return;
         }
-        card.SetConnectTarget(target);
+        card.StartLoadWithTarget(target);
     }
 
     private void ProvideDisconnectCardWithCause(DisconnectCause cause)
@@ -131,6 +136,39 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
             return;
         }
         card.SetCause(cause.ToString());
+    }
+
+    private void HandleInLobbyConnectResult(InLobbyConnectResult result)
+    {
+        switch (result)
+        {
+            case InLobbyConnectResult.Joining:
+                break;
+            case InLobbyConnectResult.Creating:
+                break;
+            case InLobbyConnectResult.Leaving:
+                ReplaceCard(ConnectCard.InLobby, ConnectCard.ConnectToLobby);
+                InLobbyManager.Instance.LeaveLobby();              
+                break;
+        }
+    }
+
+    private void HandleConnectStatusTargetReached(ConnectTarget target)
+    {
+        switch (target)
+        {
+            case ConnectTarget.MasterDefault:
+                ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
+                break;
+            case ConnectTarget.MasterReconnect:
+                ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
+                break;
+            case ConnectTarget.Lobby:
+                ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InLobby);
+                break;
+            case ConnectTarget.Room:
+                break;
+        }
     }
 
     /// <summary>
@@ -221,6 +259,6 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     public void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-
+        
     }
 }

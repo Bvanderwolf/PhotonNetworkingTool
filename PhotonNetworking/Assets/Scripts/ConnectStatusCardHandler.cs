@@ -15,6 +15,7 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     private Image m_Loadbar;
 
     private ClientState m_KnownState;
+    private ConnectTarget m_Target;
 
     private float m_LoadPercentageStep;
     private float m_LoadTarget;
@@ -25,6 +26,7 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
 
     private const int SERVER_CONNECT_STEPS_DEFAULT = 5;
     private const int SERVER_CONNECT_STEPS_RECONNECT = 3;
+    private const int LOBBY_CONNECT_STEPS = 2;
 
     private const float HIGHLIGHT_TIME = 4f;
     private const float HIGHLIGHT_SPEED = 4.5f;
@@ -46,9 +48,10 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         var statusUpdate = currentState != m_KnownState;
         if (statusUpdate)
         {
+            print(m_KnownState);
             m_KnownState = currentState;
             m_Status.text = GetFormattedStatus(m_KnownState.ToString());
-            UpdateLoadTarget();            
+            UpdateLoadTarget();          
         }
         CheckForTaskFinished();
     }
@@ -73,8 +76,7 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         if(!m_Loading && m_LoadPerc == 1f && !m_Finishing)
         {
             //if the loading bar is not loading and at its end, the task is finished (can be false)
-            const bool succes = true;
-            StartCoroutine(ShowTaskFinishedStatus(succes, () => OnTaskFinished(succes)));
+            StartCoroutine(ShowTaskFinishedStatus(true, () => OnTaskFinished(m_Target)));
         }
     }
 
@@ -82,7 +84,7 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     /// Sets the target on which the card can base its loading
     /// </summary>
     /// <param name="target"></param>
-    public void SetConnectTarget(ConnectTarget target)
+    public void StartLoadWithTarget(ConnectTarget target)
     {
         switch (target)
         {
@@ -93,10 +95,14 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
                 m_LoadPercentageStep =  1f / SERVER_CONNECT_STEPS_RECONNECT;
                 break;
             case ConnectTarget.Lobby:
+                m_LoadPercentageStep = 1f / LOBBY_CONNECT_STEPS;
                 break;
             case ConnectTarget.Room:
                 break;
-        }        
+        }
+        m_Target = target;
+
+        StartCoroutine(LoadBarByStepPercentage());
     }
 
     /// <summary>
@@ -128,8 +134,8 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     /// <returns></returns>
     private IEnumerator LoadBarByStepPercentage()
     {
-        m_Loading = true;  
-        
+        m_Loading = true;
+
         while(m_LoadPerc != 1f)
         {
             if(m_LoadPerc != m_LoadTarget)
@@ -172,8 +178,6 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     {
         m_KnownState = PhotonNetwork.NetworkClientState;
         m_Status.text = GetFormattedStatus(m_KnownState.ToString());
-
-        StartCoroutine(LoadBarByStepPercentage());
     }
 
     private void OnDisable()

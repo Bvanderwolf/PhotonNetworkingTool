@@ -45,6 +45,24 @@ public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
         }
     }
 
+    public void LeaveLobby()
+    {
+        if (PhotonNetwork.InLobby)       
+            PhotonNetwork.LeaveLobby();      
+    }
+
+    public void CreateRoom(string name, RoomOptions options)
+    {        
+        if (PhotonNetwork.IsConnectedAndReady)
+            PhotonNetwork.CreateRoom(name, options, TypedLobby.Default);
+    }
+
+    public void JoinRoom(string name)
+    {
+        if (PhotonNetwork.IsConnectedAndReady)
+            PhotonNetwork.JoinRoom(name);
+    }
+
     public void OnJoinedLobby()
     {
         if (m_CallbackTargets == null)

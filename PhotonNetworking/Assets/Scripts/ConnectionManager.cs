@@ -64,21 +64,28 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
     }
 
     public void ConnectToMaster(string nickname)
-    {      
-        PhotonNetwork.NickName = nickname;
-        PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;       
-        PhotonNetwork.ConnectUsingSettings();           
+    {
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.NickName = nickname;
+            PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;
+            PhotonNetwork.ConnectUsingSettings();
+        }              
     }
 
     public void ConnectToLobby(string name)
     {
-        var lobby = new TypedLobby(name, LobbyType.Default);
-        PhotonNetwork.JoinLobby(lobby);      
+        if (PhotonNetwork.IsConnected && !PhotonNetwork.InLobby)
+        {
+            var lobby = new TypedLobby(name, LobbyType.Default);
+            PhotonNetwork.JoinLobby(lobby);
+        }             
     }
 
     public void ReconnectToMaster()
     {
-        PhotonNetwork.Reconnect();
+        if(!PhotonNetwork.IsConnected)
+            PhotonNetwork.Reconnect();
     }
 
     public void OnConnectedToMaster()
