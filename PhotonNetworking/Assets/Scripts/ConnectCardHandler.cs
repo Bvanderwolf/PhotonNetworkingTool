@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum ConnectCard { StartConnect, ConnectStatus, Disconnect, ConnectToLobby }
+public enum ConnectCard { StartConnect, ConnectStatus, Disconnect, ConnectToLobby, InLobby }
 
 public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCallbacks
 {
@@ -200,7 +200,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     public void OnJoinedLobby()
     {
-        print("joined lobby");
+        
     }
 
     public void OnLeftLobby()

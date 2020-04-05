@@ -26,8 +26,8 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     private const int SERVER_CONNECT_STEPS_DEFAULT = 5;
     private const int SERVER_CONNECT_STEPS_RECONNECT = 3;
 
-    private const float HIGHLIGHT_TIME = 3f;
-    private const float HIGHLIGHT_SPEED = 3f;
+    private const float HIGHLIGHT_TIME = 4f;
+    private const float HIGHLIGHT_SPEED = 4.5f;
 
     /// <summary>
     /// resets values related to loading bar
