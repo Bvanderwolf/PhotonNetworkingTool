@@ -28,7 +28,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
         }
 
         InitCards();
-        EnableConnectCard(ConnectCard.StartConnect);     
+        EnableConnectCard(ConnectCard.StartConnect);
 
         if (m_DontDestroyOnLoad)
             DontDestroyOnLoad(this.gameObject);
@@ -36,7 +36,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     private void InitCards()
     {
-        foreach(var card in m_cards)
+        foreach (var card in m_cards)
         {
             var cardAbstract = card.GetComponent<ConnectCardAbstract>();
             cardAbstract.Init();
@@ -45,13 +45,13 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     public void DisconnectFromServer()
     {
-        if(PhotonNetwork.IsConnectedAndReady)
+        if (PhotonNetwork.IsConnectedAndReady)
             PhotonNetwork.Disconnect();
     }
 
     private void Start()
     {
-        //get connection callbacks 
+        //get connection callbacks
         ConnectionManager.Instance.AddCallbackTarget(this);
         InLobbyManager.Instance.AddCallbackTarget(this);
     }
@@ -64,7 +64,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
     }
 
     /// <summary>
-    /// Enables given connect card, and sets it up 
+    /// Enables given connect card, and sets it up
     /// </summary>
     /// <param name="card"></param>
     private void EnableConnectCard(ConnectCard card)
@@ -88,7 +88,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
     }
 
     private void OnConnectCardFinishedTask(GameObject cardGameObject, object args)
-    {     
+    {
         var card = m_cardsDict.Where(pair => pair.Value == cardGameObject).First().Key;
         switch (card)
         {
@@ -97,19 +97,23 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
                 SetupConnectStatusCard(ConnectTarget.MasterDefault);
                 ConnectionManager.Instance.ConnectToMaster((string)args);
                 break;
+
             case ConnectCard.ConnectStatus:
                 HandleConnectStatusTargetReached((ConnectTarget)args);
                 break;
+
             case ConnectCard.Disconnect:
                 ReplaceCard(ConnectCard.Disconnect, ConnectCard.ConnectStatus);
                 SetupConnectStatusCard(ConnectTarget.MasterReconnect);
                 ConnectionManager.Instance.ReconnectToMaster();
                 break;
+
             case ConnectCard.ConnectToLobby:
                 ReplaceCard(ConnectCard.ConnectToLobby, ConnectCard.ConnectStatus);
                 SetupConnectStatusCard(ConnectTarget.Lobby);
                 ConnectionManager.Instance.ConnectToLobby((string)args);
                 break;
+
             case ConnectCard.InLobby:
                 HandleInLobbyConnectResult((InLobbyConnectResult)args);
                 break;
@@ -119,7 +123,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
     private void SetupConnectStatusCard(ConnectTarget target)
     {
         var card = m_ActiveCardGO.GetComponent<ConnectStatusCardHandler>();
-        if(card == null)
+        if (card == null)
         {
             Debug.LogError("Wont setup connect status card :: card is not of right type");
             return;
@@ -144,11 +148,13 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
         {
             case InLobbyConnectChoice.Joining:
                 break;
+
             case InLobbyConnectChoice.Creating:
                 break;
+
             case InLobbyConnectChoice.Leaving:
                 ReplaceCard(ConnectCard.InLobby, ConnectCard.ConnectToLobby);
-                InLobbyManager.Instance.LeaveLobby();              
+                InLobbyManager.Instance.LeaveLobby();
                 break;
         }
     }
@@ -160,12 +166,15 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
             case ConnectTarget.MasterDefault:
                 ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
                 break;
+
             case ConnectTarget.MasterReconnect:
                 ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
                 break;
+
             case ConnectTarget.Lobby:
                 ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InLobby);
                 break;
+
             case ConnectTarget.Room:
                 break;
         }
@@ -179,13 +188,13 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
     private void ReplaceCard(ConnectCard oldCard, ConnectCard newCard)
     {
         var activeCardCount = m_cardsDict.Count(p => p.Value.activeInHierarchy);
-        if(activeCardCount != 1)
+        if (activeCardCount != 1)
         {
             Debug.LogError($"Wont replace card :: active card count {activeCardCount} is not 1");
             return;
         }
 
-        if(m_cardsDict[oldCard] != m_ActiveCardGO)
+        if (m_cardsDict[oldCard] != m_ActiveCardGO)
         {
             var newOldCard = m_cardsDict.Where(p => p.Value == m_ActiveCardGO).First().Key;
             DisableConnectCard(newOldCard);
@@ -195,23 +204,22 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
             DisableConnectCard(oldCard);
         }
 
-        EnableConnectCard(newCard);       
+        EnableConnectCard(newCard);
     }
 
     public void OnConnected()
     {
-        
     }
 
     public void OnDisconnected(DisconnectCause cause)
     {
         var activeCardCount = m_cardsDict.Count(p => p.Value.activeInHierarchy);
-        if(activeCardCount == 0)
+        if (activeCardCount == 0)
         {
             //if there active no active cars, just enable the disconnect card
             EnableConnectCard(ConnectCard.Disconnect);
         }
-        else if(activeCardCount == 1)
+        else if (activeCardCount == 1)
         {
             //if there is an active card, replace that one
             var activeCard = m_cardsDict.Where(p => p.Value == m_ActiveCardGO).First().Key;
@@ -227,23 +235,26 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     public void OnConnectedToMaster()
     {
-        
     }
 
-    public void OnCustomAuthenticationFailed(string debugMessage){}
+    public void OnCustomAuthenticationFailed(string debugMessage)
+    {
+    }
 
-    public void OnCustomAuthenticationResponse(Dictionary<string, object> data){}
-    
-    public void OnRegionListReceived(RegionHandler regionHandler){}
+    public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
+    {
+    }
+
+    public void OnRegionListReceived(RegionHandler regionHandler)
+    {
+    }
 
     public void OnJoinedLobby()
     {
-        
     }
 
     public void OnLeftLobby()
     {
-
     }
 
     public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)

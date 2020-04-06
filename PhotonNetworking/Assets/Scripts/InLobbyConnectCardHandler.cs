@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public enum InLobbyConnectChoice { Joining, Creating, Leaving }
+
 public struct InLobbyConnectResult
 {
     public object args;
@@ -28,8 +29,9 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
     private InLobbyContentHandler m_ContentHandler;
 
     private enum ContentType { None, RoomList, CreateRoom }
+
     private ContentType m_DetourContent;
-    private ContentType m_ContentOpen;         
+    private ContentType m_ContentOpen;
 
     public override void Init()
     {
@@ -45,6 +47,7 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
         m_ContentHandler.ContentOpened += OnContentOpened;
         m_ContentHandler.ContentClosed += OnContentClosed;
         m_ContentHandler.RoomItemJoinButtonClick += OnRoomItemJoinButtonClick;
+        m_ContentHandler.CreateRoomFormTurnedIn += OnCreateRoomTurnedIn;
 
         m_ContentHandler.Init();
     }
@@ -73,6 +76,11 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
         OnTaskFinished(result);
     }
 
+    private void OnCreateRoomTurnedIn(RoomOptions options)
+    {
+        //finish task using options as args
+    }
+
     private void OnJoinRoomButtonClick()
     {
         switch (m_ContentOpen)
@@ -80,9 +88,11 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
             case ContentType.None:
                 OpenContent(ContentType.RoomList);
                 break;
+
             case ContentType.RoomList:
                 CloseContent();
                 break;
+
             case ContentType.CreateRoom:
                 CloseContent(ContentType.RoomList);
                 break;
@@ -93,32 +103,21 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
 
     private void OpenContent(ContentType content)
     {
-        if(content != ContentType.None)
+        if (content != ContentType.None)
         {
             m_ContentAnimator.SetTrigger("Open");
             m_ContentOpen = content;
-        }     
-    }
-
-    private void ShowContent(ContentType content)
-    {
-        switch (content)
-        {
-            case ContentType.RoomList:
-                break;
-            case ContentType.CreateRoom:
-                break;
         }
     }
 
-    private void HideContent(ContentType content)
+    private void SetActiveStateOfContent(ContentType content, bool value)
     {
         switch (content)
         {
-            case ContentType.None:
-                break;
             case ContentType.RoomList:
+                m_ContentHandler.SetActiveStateOfRoomListContent(value);
                 break;
+
             case ContentType.CreateRoom:
                 break;
         }
@@ -131,6 +130,7 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
             case ContentType.RoomList:
                 m_JoinRoomButton.interactable = true;
                 break;
+
             case ContentType.CreateRoom:
                 m_CreateRoomButton.interactable = true;
                 break;
@@ -139,13 +139,14 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
 
     private void OnContentClosed()
     {
-        if(m_DetourContent == ContentType.None)
+        if (m_DetourContent == ContentType.None)
         {
             switch (m_ContentOpen)
             {
                 case ContentType.RoomList:
-                    m_JoinRoomButton.interactable = true;                  
+                    m_JoinRoomButton.interactable = true;
                     break;
+
                 case ContentType.CreateRoom:
                     m_CreateRoomButton.interactable = true;
                     break;
@@ -172,9 +173,11 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
             case ContentType.None:
                 OpenContent(ContentType.CreateRoom);
                 break;
+
             case ContentType.RoomList:
                 CloseContent(ContentType.CreateRoom);
                 break;
+
             case ContentType.CreateRoom:
                 CloseContent();
                 break;
