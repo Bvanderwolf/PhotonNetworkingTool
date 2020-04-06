@@ -147,9 +147,15 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
         switch (result.choice)
         {
             case InLobbyConnectChoice.Joining:
+                //todo: *implement in room card
+                DisableConnectCard(ConnectCard.InLobby);
+                InLobbyManager.Instance.JoinRoom((RoomInfo)result.args);
                 break;
 
             case InLobbyConnectChoice.Creating:
+                //todo: *implement in room card
+                DisableConnectCard(ConnectCard.InLobby);
+                InLobbyManager.Instance.CreateRoom((CreateRoomFormResult)result.args);
                 break;
 
             case InLobbyConnectChoice.Leaving:
@@ -276,8 +282,8 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
             Debug.LogError("Wont update room list content :: card is not in dictionary");
             return;
         }
-        var maxRoomsReached = roomList.Count == InLobbyContentHandler.ROOM_ITEM_AMOUNT;
-        card.SetEnableStateOfCreateRoomButton(maxRoomsReached);
+        var roomsAvailable = roomList.Count != InLobbyContentHandler.ROOM_ITEM_AMOUNT;
+        card.SetEnableStateOfCreateRoomButton(roomsAvailable);
         card.UpdateRoomListContent(roomList);
     }
 }

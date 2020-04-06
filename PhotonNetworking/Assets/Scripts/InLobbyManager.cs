@@ -47,20 +47,29 @@ public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
 
     public void LeaveLobby()
     {
-        if (PhotonNetwork.InLobby)       
-            PhotonNetwork.LeaveLobby();      
+        if (PhotonNetwork.InLobby)
+            PhotonNetwork.LeaveLobby();
     }
 
-    public void CreateRoom(string name, RoomOptions options)
-    {        
-        if (PhotonNetwork.IsConnectedAndReady)
-            PhotonNetwork.CreateRoom(name, options, TypedLobby.Default);
+    public void CreateRoom(CreateRoomFormResult result)
+    {
+        if (!PhotonNetwork.IsConnectedAndReady)
+            return;
+
+        var options = new RoomOptions()
+        {
+            MaxPlayers = (byte)result.MaxPlayers,
+            IsVisible = result.IsVisible,
+            IsOpen = result.IsOpen
+        };
+
+        PhotonNetwork.CreateRoom(result.Name, options, TypedLobby.Default);
     }
 
-    public void JoinRoom(string name)
+    public void JoinRoom(RoomInfo info)
     {
         if (PhotonNetwork.IsConnectedAndReady)
-            PhotonNetwork.JoinRoom(name);
+            PhotonNetwork.JoinRoom(info.Name);
     }
 
     public void OnJoinedLobby()
@@ -97,5 +106,5 @@ public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
 
         foreach (var target in m_CallbackTargets)
             target.OnRoomListUpdate(roomList);
-    }   
+    }
 }

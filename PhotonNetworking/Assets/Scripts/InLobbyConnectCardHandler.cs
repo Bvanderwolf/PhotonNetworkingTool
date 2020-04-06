@@ -11,6 +11,14 @@ public struct InLobbyConnectResult
     public InLobbyConnectChoice choice;
 }
 
+public struct CreateRoomFormResult
+{
+    public string Name;
+    public int MaxPlayers;
+    public bool IsVisible;
+    public bool IsOpen;
+}
+
 public class InLobbyConnectCardHandler : ConnectCardAbstract
 {
     [SerializeField]
@@ -55,8 +63,12 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
     public void UpdateRoomListContent(List<RoomInfo> roomList)
     {
         if (roomList.Count == 0)
+        {
+            m_ContentHandler.SetNoRoomsFeedback(true);
             return;
+        }
 
+        m_ContentHandler.SetNoRoomsFeedback(false);
         m_ContentHandler.UpdateRoomListContent(roomList);
     }
 
@@ -76,9 +88,15 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
         OnTaskFinished(result);
     }
 
-    private void OnCreateRoomTurnedIn(RoomOptions options)
+    private void OnCreateRoomTurnedIn(CreateRoomFormResult createRoomResult)
     {
-        //finish task using options as args
+        var result = new InLobbyConnectResult()
+        {
+            args = createRoomResult,
+            choice = InLobbyConnectChoice.Creating
+        };
+
+        OnTaskFinished(result);
     }
 
     private void OnJoinRoomButtonClick()
