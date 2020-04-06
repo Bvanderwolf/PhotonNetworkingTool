@@ -81,10 +81,20 @@ public class InLobbyContentHandler : MonoBehaviour
 
     public void SetActiveStateOfRoomListContent(bool value)
     {
-        var count = value ? m_RoomCountSinceLastUpdate : m_RoomListContent.childCount;
+        if (value)
+        {
+            for (int ci = 0; ci < m_RoomCountSinceLastUpdate; ci++)
+                m_RoomListContent.GetChild(ci).gameObject.SetActive(value);
+        }
+        else
+        {
+            m_RoomListContent.gameObject.SetActive(false);
+        }
+    }
 
-        for (int ci = 0; ci < count; ci++)
-            m_RoomListContent.GetChild(ci).gameObject.SetActive(value);
+    public void SetActiveStateOfCreateRoomContent(bool value)
+    {
+        m_CreateRoomContent.gameObject.SetActive(value);
     }
 
     public void UpdateRoomListContent(List<RoomInfo> roomList)

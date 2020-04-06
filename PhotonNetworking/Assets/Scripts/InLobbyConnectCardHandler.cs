@@ -107,6 +107,16 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
         {
             m_ContentAnimator.SetTrigger("Open");
             m_ContentOpen = content;
+            switch (m_ContentOpen)
+            {
+                case ContentType.RoomList:
+                    m_ContentHandler.SetActiveStateOfRoomListContent(true);
+                    break;
+
+                case ContentType.CreateRoom:
+                    m_ContentHandler.SetActiveStateOfCreateRoomContent(true);
+                    break;
+            }
         }
     }
 
@@ -139,6 +149,17 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
 
     private void OnContentClosed()
     {
+        switch (m_ContentOpen)
+        {
+            case ContentType.RoomList:
+                m_ContentHandler.SetActiveStateOfRoomListContent(false);
+                break;
+
+            case ContentType.CreateRoom:
+                m_ContentHandler.SetActiveStateOfCreateRoomContent(false);
+                break;
+        }
+
         if (m_DetourContent == ContentType.None)
         {
             switch (m_ContentOpen)
