@@ -48,7 +48,6 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         var statusUpdate = currentState != m_KnownState;
         if (statusUpdate)
         {
-            print(m_KnownState);
             m_KnownState = currentState;
             m_Status.text = GetFormattedStatus(m_KnownState.ToString());
             UpdateLoadTarget();          

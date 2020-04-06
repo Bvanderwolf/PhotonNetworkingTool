@@ -140,13 +140,13 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     private void HandleInLobbyConnectResult(InLobbyConnectResult result)
     {
-        switch (result)
+        switch (result.choice)
         {
-            case InLobbyConnectResult.Joining:
+            case InLobbyConnectChoice.Joining:
                 break;
-            case InLobbyConnectResult.Creating:
+            case InLobbyConnectChoice.Creating:
                 break;
-            case InLobbyConnectResult.Leaving:
+            case InLobbyConnectChoice.Leaving:
                 ReplaceCard(ConnectCard.InLobby, ConnectCard.ConnectToLobby);
                 InLobbyManager.Instance.LeaveLobby();              
                 break;
@@ -251,7 +251,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
         var card = m_cardsDict[ConnectCard.ConnectToLobby].GetComponent<ConnectToLobbyCard>();
         if (card == null)
         {
-            Debug.LogError("Wont update lobby statistics :: card is in dictionary");
+            Debug.LogError("Wont update lobby statistics :: card is not in dictionary");
             return;
         }
         card.UpdateLobbyStatistics(lobbyStatistics);
@@ -259,6 +259,14 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
     public void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        
+        var card = m_cardsDict[ConnectCard.InLobby].GetComponent<InLobbyConnectCardHandler>();
+        if (card == null)
+        {
+            Debug.LogError("Wont update room list content :: card is not in dictionary");
+            return;
+        }
+        var maxRoomsReached = roomList.Count == InLobbyContentHandler.ROOM_ITEM_AMOUNT;
+        card.SetEnableStateOfCreateRoomButton(maxRoomsReached);
+        card.UpdateRoomListContent(roomList);
     }
 }

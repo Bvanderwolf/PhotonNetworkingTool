@@ -1,7 +1,14 @@
-﻿using UnityEngine;
+﻿using Photon.Realtime;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
-public enum InLobbyConnectResult { Joining, Creating, Leaving }
+public enum InLobbyConnectChoice { Joining, Creating, Leaving }
+public struct InLobbyConnectResult
+{
+    public object args;
+    public InLobbyConnectChoice choice;
+}
 
 public class InLobbyConnectCardHandler : ConnectCardAbstract
 {
@@ -22,7 +29,7 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
 
     private enum ContentType { None, RoomList, CreateRoom }
     private ContentType m_DetourContent;
-    private ContentType m_ContentOpen;
+    private ContentType m_ContentOpen;         
 
     public override void Init()
     {
@@ -37,6 +44,33 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
 
         m_ContentHandler.ContentOpened += OnContentOpened;
         m_ContentHandler.ContentClosed += OnContentClosed;
+        m_ContentHandler.RoomItemJoinButtonClick += OnRoomItemJoinButtonClick;
+
+        m_ContentHandler.Init();
+    }
+
+    public void UpdateRoomListContent(List<RoomInfo> roomList)
+    {
+        if (roomList.Count == 0)
+            return;
+
+        m_ContentHandler.UpdateRoomListContent(roomList);
+    }
+
+    public void SetEnableStateOfCreateRoomButton(bool value)
+    {
+        m_CreateRoomButton.enabled = value;
+    }
+
+    private void OnRoomItemJoinButtonClick(RoomInfo itemInfo)
+    {
+        var result = new InLobbyConnectResult()
+        {
+            args = itemInfo,
+            choice = InLobbyConnectChoice.Joining
+        };
+
+        OnTaskFinished(result);
     }
 
     private void OnJoinRoomButtonClick()
@@ -64,6 +98,30 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
             m_ContentAnimator.SetTrigger("Open");
             m_ContentOpen = content;
         }     
+    }
+
+    private void ShowContent(ContentType content)
+    {
+        switch (content)
+        {
+            case ContentType.RoomList:
+                break;
+            case ContentType.CreateRoom:
+                break;
+        }
+    }
+
+    private void HideContent(ContentType content)
+    {
+        switch (content)
+        {
+            case ContentType.None:
+                break;
+            case ContentType.RoomList:
+                break;
+            case ContentType.CreateRoom:
+                break;
+        }
     }
 
     private void OnContentOpened()
@@ -126,7 +184,13 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
     }
 
     private void OnLeaveLobbyButtonClick()
-    {        
-        OnTaskFinished(InLobbyConnectResult.Leaving);
+    {
+        var result = new InLobbyConnectResult()
+        {
+            args = null,
+            choice = InLobbyConnectChoice.Leaving
+        };
+
+        OnTaskFinished(result);
     }
 }

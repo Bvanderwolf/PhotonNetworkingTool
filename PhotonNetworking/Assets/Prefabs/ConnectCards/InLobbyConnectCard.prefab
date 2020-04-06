@@ -189,6 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e92f2fa49c42f24bb6958c0660ab5c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_RoomListContent: {fileID: 1777306936947786729}
+  m_CreateRoomContent: {fileID: 1510843224723679577}
 --- !u!1 &340163020171941226
 GameObject:
   m_ObjectHideFlags: 0
@@ -823,7 +825,7 @@ GameObject:
   - component: {fileID: 1825438884018639429}
   - component: {fileID: 1933299274355880717}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PlayerCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1237,7 +1239,7 @@ GameObject:
   - component: {fileID: 384142996523179416}
   - component: {fileID: 9087175694729162640}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PlayerCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1395,7 +1397,7 @@ GameObject:
   - component: {fileID: 2875900088279128478}
   - component: {fileID: 7518729199017357342}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PlayerCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1685,7 +1687,7 @@ GameObject:
   - component: {fileID: 2198181263520860393}
   - component: {fileID: 1837946166194396236}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PlayerCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2743,7 +2745,7 @@ GameObject:
   - component: {fileID: 1087997646420835120}
   - component: {fileID: 5214535662485692882}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PlayerCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3811,7 +3813,7 @@ GameObject:
   - component: {fileID: 6996182904632282326}
   - component: {fileID: 8454323931155159242}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PlayerCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4201,7 +4203,7 @@ GameObject:
   - component: {fileID: 2740339990636391105}
   - component: {fileID: 1585623217570032057}
   m_Layer: 5
-  m_Name: Text
+  m_Name: PlayerCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
