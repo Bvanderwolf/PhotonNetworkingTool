@@ -13,6 +13,9 @@ public class StartConnectCardHandler : ConnectCardAbstract
     [SerializeField]
     private Button m_ConnectButton;
 
+    [SerializeField]
+    private KeyCode ConnectKey = KeyCode.Return;
+
     private Animator m_Animator;
     private bool m_Animating = false;
 
@@ -30,14 +33,22 @@ public class StartConnectCardHandler : ConnectCardAbstract
 
     public void OnNickNameInputFinished(string nickname)
     {
-        if(nickname.Length == 0)
+        if (nickname.Length == 0)
         {
             m_NicknameInputed = false;
-            GiveFaulthyNicknameWarning();          
+            GiveFaulthyNicknameWarning();
         }
         else
         {
             m_NicknameInputed = true;
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(ConnectKey))
+        {
+            OnConnectButtonClick();
         }
     }
 
@@ -58,7 +69,6 @@ public class StartConnectCardHandler : ConnectCardAbstract
             m_Animator.SetTrigger("Warn");
             StartCoroutine(WaitForAnimation());
         }
-        
     }
 
     private IEnumerator WaitForAnimation()

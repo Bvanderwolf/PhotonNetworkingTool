@@ -9,6 +9,9 @@ public class DisconnectCardHandler : ConnectCardAbstract
     [SerializeField]
     private Text m_Cause;
 
+    [SerializeField]
+    private KeyCode ReconnectKey = KeyCode.Return;
+
     public override void Init()
     {
         base.Init();
@@ -16,6 +19,14 @@ public class DisconnectCardHandler : ConnectCardAbstract
         {
             OnTaskFinished(null);
         });
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(ReconnectKey))
+        {
+            OnTaskFinished(null);
+        }
     }
 
     /// <summary>
