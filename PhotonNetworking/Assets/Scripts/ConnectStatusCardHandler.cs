@@ -50,16 +50,16 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         {
             m_KnownState = currentState;
             m_Status.text = GetFormattedStatus(m_KnownState.ToString());
-            UpdateLoadTarget();          
+            UpdateLoadTarget();
         }
         CheckForTaskFinished();
     }
 
     /// <summary>
-    /// Updates load target based on load percentage step 
+    /// Updates load target based on load percentage step
     /// </summary>
     private void UpdateLoadTarget()
-    {       
+    {
         if (!m_Loading)
             return;
 
@@ -72,7 +72,7 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
 
     private void CheckForTaskFinished()
     {
-        if(!m_Loading && m_LoadPerc == 1f && !m_Finishing)
+        if (!m_Loading && m_LoadPerc == 1f && !m_Finishing)
         {
             //if the loading bar is not loading and at its end, the task is finished (can be false)
             StartCoroutine(ShowTaskFinishedStatus(true, () => OnTaskFinished(m_Target)));
@@ -90,12 +90,11 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
             case ConnectTarget.MasterDefault:
                 m_LoadPercentageStep = 1f / SERVER_CONNECT_STEPS_DEFAULT;
                 break;
+
             case ConnectTarget.MasterReconnect:
-                m_LoadPercentageStep =  1f / SERVER_CONNECT_STEPS_RECONNECT;
+                m_LoadPercentageStep = 1f / SERVER_CONNECT_STEPS_RECONNECT;
                 break;
-            case ConnectTarget.Lobby:
-                m_LoadPercentageStep = 1f / LOBBY_CONNECT_STEPS;
-                break;
+
             case ConnectTarget.Room:
                 break;
         }
@@ -135,17 +134,17 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     {
         m_Loading = true;
 
-        while(m_LoadPerc != 1f)
+        while (m_LoadPerc != 1f)
         {
-            if(m_LoadPerc != m_LoadTarget)
+            if (m_LoadPerc != m_LoadTarget)
             {
                 m_LoadPerc += Time.deltaTime;
-                if (m_LoadPerc > m_LoadTarget)                
+                if (m_LoadPerc > m_LoadTarget)
                     m_LoadPerc = m_LoadTarget;
-                                                                                                                        
+
                 m_Loadbar.fillAmount = Mathf.Lerp(0, 1, m_LoadPerc);
             }
-           
+
             yield return new WaitForFixedUpdate();
         }
 
@@ -154,14 +153,14 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
 
     private IEnumerator ShowTaskFinishedStatus(bool succesfull, Action endAction)
     {
-         m_Finishing = true;
+        m_Finishing = true;
 
         var cardBack = transform.Find("Back").GetComponent<Image>();
         var startColor = cardBack.color;
         var targetColor = succesfull ? Color.green : Color.red;
         var time = 0f;
 
-        while(time < HIGHLIGHT_TIME)
+        while (time < HIGHLIGHT_TIME)
         {
             time += Time.deltaTime * HIGHLIGHT_SPEED;
             cardBack.color = Color.Lerp(startColor, targetColor, Mathf.PingPong(time, 1f));

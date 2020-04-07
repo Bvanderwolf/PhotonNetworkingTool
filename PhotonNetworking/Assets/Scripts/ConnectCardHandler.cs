@@ -109,8 +109,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
                 break;
 
             case ConnectCard.ConnectToLobby:
-                ReplaceCard(ConnectCard.ConnectToLobby, ConnectCard.ConnectStatus);
-                SetupConnectStatusCard(ConnectTarget.Lobby);
+                ReplaceCard(ConnectCard.ConnectToLobby, ConnectCard.InLobby);
                 ConnectionManager.Instance.ConnectToLobby((string)args);
                 break;
 
@@ -175,10 +174,6 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
 
             case ConnectTarget.MasterReconnect:
                 ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
-                break;
-
-            case ConnectTarget.Lobby:
-                ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InLobby);
                 break;
 
             case ConnectTarget.Room:
@@ -266,14 +261,21 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
     // --- Will Callback on connected to master client and every 60 seconds after that ---
     public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
     {
-        var card = m_cardsDict[ConnectCard.ConnectToLobby].GetComponent<ConnectToLobbyCard>();
-        if (card == null)
+        var connectToLobbyCard = m_cardsDict[ConnectCard.ConnectToLobby].GetComponent<ConnectToLobbyCard>();
+        if (connectToLobbyCard == null)
         {
             Debug.LogError("Wont update lobby statistics :: card is not in dictionary");
             return;
         }
+        connectToLobbyCard.UpdateLobbyStatistics(lobbyStatistics);
 
-        card.UpdateLobbyStatistics(lobbyStatistics);
+        var inLobbyCard = m_cardsDict[ConnectCard.InLobby].GetComponent<InLobbyConnectCardHandler>();
+        if (inLobbyCard == null)
+        {
+            Debug.LogError("Wont update lobby statistics :: card is not in dictionary");
+            return;
+        }
+        inLobbyCard.UpdateLobbyStatsForContentHandler(lobbyStatistics);
     }
 
     public void OnRoomListUpdate(List<RoomInfo> roomList)

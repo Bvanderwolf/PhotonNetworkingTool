@@ -1,6 +1,7 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +34,7 @@ public class InLobbyContentHandler : MonoBehaviour
         public Text Name;
         public Text PlayerCount;
         public Button JoinButton;
+        public GameObject GO;
     }
 
     private struct CreateRoomTools
@@ -47,16 +49,14 @@ public class InLobbyContentHandler : MonoBehaviour
 
     private RoomItem[] m_RoomItems;
     private int m_RoomCountSinceLastUpdate = 0;
-    private Dictionary<string, int> m_LobbyRoomCounts;
+    private Dictionary<string, List<RoomInfo>> m_LobbyRooms;
 
     private CreateRoomTools m_CreateRoomTools;
-
-    private bool m_NoRooms = false;
 
     public void Init()
     {
         m_RoomItems = new RoomItem[ROOM_ITEM_AMOUNT];
-        m_LobbyRoomCounts = new Dictionary<string, int>();
+        m_LobbyRooms = new Dictionary<string, List<RoomInfo>>();
 
         for (int i = 0; i < m_RoomItems.Length; i++)
         {
@@ -64,6 +64,7 @@ public class InLobbyContentHandler : MonoBehaviour
             m_RoomItems[i].Name = roomItem.Find("Name").GetComponent<Text>();
             m_RoomItems[i].PlayerCount = roomItem.Find("PlayerCount").GetComponent<Text>();
             m_RoomItems[i].JoinButton = roomItem.Find("JoinButton").GetComponent<Button>();
+            m_RoomItems[i].GO = roomItem.gameObject;
         }
 
         m_CreateRoomTools = new CreateRoomTools();
@@ -115,12 +116,16 @@ public class InLobbyContentHandler : MonoBehaviour
         m_CreateRoomTools.Feedback.text = "";
     }
 
-    private void UpdateLobbyRoomCount(string lobbyName, int count)
+    private void AddToLobbyRooms(string lobbyName, RoomInfo room)
     {
-        if (m_LobbyRoomCounts.ContainsKey(lobbyName))
-            m_LobbyRoomCounts[lobbyName] = count;
-        else
-            m_LobbyRoomCounts.Add(lobbyName, count);
+        if (m_LobbyRooms.ContainsKey(lobbyName))
+            m_LobbyRooms[lobbyName].Add(room);
+    }
+
+    private void RemoveFromLobbyRooms(string lobbyName, RoomInfo room)
+    {
+        if (m_LobbyRooms.ContainsKey(lobbyName))
+            m_LobbyRooms[lobbyName].Remove(room);
     }
 
     public void OnContentOpened()
@@ -135,13 +140,34 @@ public class InLobbyContentHandler : MonoBehaviour
 
     public void SetActiveStateOfRoomListContent(bool active)
     {
-        var lobbyIn = PhotonNetwork.CurrentLobby.Name;
-        var iterateCount = active ? (m_LobbyRoomCounts.ContainsKey(lobbyIn) ? m_LobbyRoomCounts[lobbyIn] : 0) : ROOM_ITEM_AMOUNT;
+        if (!active)
+        {
+            foreach (var item in m_RoomItems)
+                item.GO.SetActive(false);
+            return;
+        }
 
-        for (int ci = 0; ci < iterateCount; ci++)
-            m_RoomListContent.GetChild(ci).gameObject.SetActive(active);
+        var rooms = m_LobbyRooms[PhotonNetwork.CurrentLobby.Name];
+        for (int ri = 0; ri < rooms.Count; ri++)
+        {
+            var room = rooms[ri];
+            m_RoomItems[ri].Name.text = room.Name;
+            m_RoomItems[ri].PlayerCount.text = $"({room.PlayerCount}/{room.MaxPlayers})";
+            bool isFull = room.PlayerCount == room.MaxPlayers;
+            if (isFull)
+            {
+                m_RoomItems[ri].JoinButton.interactable = false;
+            }
+            else
+            {
+                m_RoomItems[ri].JoinButton.onClick.AddListener(() => RoomItemJoinButtonClick(room));
+                m_RoomItems[ri].JoinButton.interactable = true;
+            }
+            m_RoomItems[ri].GO.SetActive(true);
+        }
 
-        m_NoRoomsFeedback.SetActive(active ? m_NoRooms : false);
+        var noRooms = rooms.Count == 0;
+        SetNoRoomsFeedback(noRooms);
     }
 
     public void SetActiveStateOfCreateRoomContent(bool value)
@@ -151,14 +177,23 @@ public class InLobbyContentHandler : MonoBehaviour
             CleanCreateRoomFeedBackText();
     }
 
-    public void SetNoRoomsFeedback(bool value, bool canShow)
+    public void SetNoRoomsFeedback(bool value)
     {
-        m_NoRooms = value;
-        if (canShow)
-            m_NoRoomsFeedback.SetActive(m_NoRooms);
+        m_NoRoomsFeedback.SetActive(value);
     }
 
-    public void UpdateRoomListContent(List<RoomInfo> roomList, bool canShowNoRoomsFeedback)
+    public void UpdateLobbyRoomsWithLobbyStatistics(List<TypedLobbyInfo> statistics)
+    {
+        foreach (var lobbyStat in statistics)
+        {
+            if (!m_LobbyRooms.ContainsKey(lobbyStat.Name))
+            {
+                m_LobbyRooms.Add(lobbyStat.Name, new List<RoomInfo>());
+            }
+        }
+    }
+
+    public void UpdateRoomListContent(List<RoomInfo> roomList, bool inRoomListUpdate)
     {
         if (roomList.Count > ROOM_ITEM_AMOUNT)
         {
@@ -166,42 +201,24 @@ public class InLobbyContentHandler : MonoBehaviour
             return;
         }
 
-        //maxplayers == playerCount means room is full
-        Func<RoomInfo, bool> hasMaxPlayers = (info) => info.PlayerCount == info.MaxPlayers;
-        //maxplayers == 0 means room is being removed
-        Func<RoomInfo, bool> isBeingRemoved = (info) => info.MaxPlayers == 0;
-        //isOpen = false or isVisible = false
-        Func<RoomInfo, bool> closedOrInvisible = (info) => !info.IsVisible || !info.IsOpen;
-        //keep track of room items being set inactive
-        var inActiveCount = 0;
-        var roomListCount = roomList.Count;
-        for (int i = 0; i < roomList.Count; i++)
+        //remove rooms from the list that are being removed, closed or invisible
+        var lobbyName = PhotonNetwork.CurrentLobby.Name;
+        foreach (var room in roomList)
         {
-            var listItem = roomList[i];
-            if (isBeingRemoved(listItem) || closedOrInvisible(listItem))
+            if (room.RemovedFromList)
             {
-                /*if an item is not supposed to be shown, set it inactive, increase inactive count
-                 and, by removing this list item and decreasing i, re-iterate on the next list item*/
-                m_RoomListContent.GetChild(i).gameObject.SetActive(false);
-                roomList.Remove(listItem);
-                i--;
-                inActiveCount++;
-                continue;
+                RemoveFromLobbyRooms(lobbyName, room);
             }
-
-            m_RoomItems[i].Name.text = listItem.Name;
-            m_RoomItems[i].PlayerCount.text = $"({listItem.PlayerCount}/{listItem.MaxPlayers})";
-            m_RoomItems[i].JoinButton.onClick.RemoveAllListeners();
-            m_RoomItems[i].JoinButton.onClick.AddListener(() => RoomItemJoinButtonClick(listItem));
-            m_RoomItems[i].JoinButton.interactable = !hasMaxPlayers(listItem);
-            m_RoomListContent.GetChild(i).gameObject.SetActive(true);
+            else
+            {
+                AddToLobbyRooms(lobbyName, room);
+            }
         }
-        //true room count is defined by subtracting items being removed or closedOrInvisble from roomlist count
-        var trueRoomCount = roomListCount - inActiveCount;
-        //set no rooms feedback based on the ammount of true rooms listed
-        var noRoomsListed = trueRoomCount == 0;
-        SetNoRoomsFeedback(noRoomsListed, canShowNoRoomsFeedback);
-        //store true room count as our room count for this lobby
-        UpdateLobbyRoomCount(PhotonNetwork.CurrentLobby.Name, trueRoomCount);
+
+        if (inRoomListUpdate)
+        {
+            SetActiveStateOfRoomListContent(false);
+            SetActiveStateOfRoomListContent(true);
+        }
     }
 }

@@ -74,8 +74,13 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
     public void UpdateRoomListContent(List<RoomInfo> roomList)
     {
         var noRooms = roomList.Count == 0;
-        var canShowNoRoomsFeedback = m_ContentOpen == ContentType.RoomList;
-        m_ContentHandler.UpdateRoomListContent(roomList, canShowNoRoomsFeedback);
+        var roomListContentOpen = m_ContentOpen == ContentType.RoomList;
+        m_ContentHandler.UpdateRoomListContent(roomList, roomListContentOpen);
+    }
+
+    public void UpdateLobbyStatsForContentHandler(List<TypedLobbyInfo> statistics)
+    {
+        m_ContentHandler.UpdateLobbyRoomsWithLobbyStatistics(statistics);
     }
 
     public void SetEnableStateOfCreateRoomButton(bool value)

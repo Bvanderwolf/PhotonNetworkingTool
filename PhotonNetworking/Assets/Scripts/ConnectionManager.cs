@@ -3,7 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 
-public enum ConnectTarget { MasterDefault, MasterReconnect, Lobby, Room }
+public enum ConnectTarget { MasterDefault, MasterReconnect, Room }
 
 public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 {
@@ -45,7 +45,7 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     public void RemoveCallbackTarget(IConnectionCallbacks target)
     {
-        if(m_CallbackTargets != null)
+        if (m_CallbackTargets != null)
         {
             m_CallbackTargets.Remove(target);
 
@@ -70,7 +70,7 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
             PhotonNetwork.NickName = nickname;
             PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;
             PhotonNetwork.ConnectUsingSettings();
-        }              
+        }
     }
 
     public void ConnectToLobby(string name)
@@ -79,12 +79,12 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
         {
             var lobby = new TypedLobby(name, LobbyType.Default);
             PhotonNetwork.JoinLobby(lobby);
-        }             
+        }
     }
 
     public void ReconnectToMaster()
     {
-        if(!PhotonNetwork.IsConnected)
+        if (!PhotonNetwork.IsConnected)
             PhotonNetwork.Reconnect();
     }
 
@@ -98,7 +98,7 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
     }
 
     public void OnDisconnected(DisconnectCause cause)
-    {        
+    {
         Debug.Log($"disconnected with cause {cause}");
 
         if (m_CallbackTargets == null)
