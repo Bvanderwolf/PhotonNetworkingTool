@@ -60,16 +60,22 @@ public class InLobbyConnectCardHandler : ConnectCardAbstract
         m_ContentHandler.Init();
     }
 
+    private void OnDisable()
+    {
+        SetActiveStateOfContent(ContentType.CreateRoom, false);
+        SetActiveStateOfContent(ContentType.RoomList, false);
+        m_ContentOpen = ContentType.None;
+        m_DetourContent = ContentType.None;
+        m_ContentHandler.SetActiveStateOfCreateRoomContent(false);
+        m_ContentHandler.SetActiveStateOfRoomListContent(false);
+        m_Content.transform.localScale = new Vector3(0, 0, 1);
+    }
+
     public void UpdateRoomListContent(List<RoomInfo> roomList)
     {
-        if (roomList.Count == 0)
-        {
-            m_ContentHandler.SetNoRoomsFeedback(true);
-            return;
-        }
-
-        m_ContentHandler.SetNoRoomsFeedback(false);
-        m_ContentHandler.UpdateRoomListContent(roomList);
+        var noRooms = roomList.Count == 0;
+        var canShowNoRoomsFeedback = m_ContentOpen == ContentType.RoomList;
+        m_ContentHandler.UpdateRoomListContent(roomList, canShowNoRoomsFeedback);
     }
 
     public void SetEnableStateOfCreateRoomButton(bool value)

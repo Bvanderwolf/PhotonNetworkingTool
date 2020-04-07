@@ -263,6 +263,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
     {
     }
 
+    // --- Will Callback on connected to master client and every 60 seconds after that ---
     public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
     {
         var card = m_cardsDict[ConnectCard.ConnectToLobby].GetComponent<ConnectToLobbyCard>();
@@ -271,6 +272,7 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
             Debug.LogError("Wont update lobby statistics :: card is not in dictionary");
             return;
         }
+
         card.UpdateLobbyStatistics(lobbyStatistics);
     }
 
