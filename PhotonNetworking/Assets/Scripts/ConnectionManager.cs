@@ -11,6 +11,8 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     private List<IConnectionCallbacks> m_CallbackTargets = null;
 
+    private IDeveloperCallbacks m_DeveloperTarget = null;
+
     private bool m_AutomaticallySyncScene;
 
     private void OnEnable()
@@ -35,27 +37,45 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
         m_AutomaticallySyncScene = autoSyncScene;
     }
 
-    public void AddCallbackTarget(IConnectionCallbacks target)
+    public void AddCallbackTarget(object target)
     {
-        if (m_CallbackTargets == null)
-            m_CallbackTargets = new List<IConnectionCallbacks>();
+        if (target as IConnectionCallbacks != null)
+        {
+            if (m_CallbackTargets == null)
+                m_CallbackTargets = new List<IConnectionCallbacks>();
 
-        m_CallbackTargets.Add(target);
+            m_CallbackTargets.Add((IConnectionCallbacks)target);
+        }
+        else if (target as IDeveloperCallbacks != null)
+        {
+            if (m_DeveloperTarget == null)
+                m_DeveloperTarget = (IDeveloperCallbacks)target;
+        }
     }
 
-    public void RemoveCallbackTarget(IConnectionCallbacks target)
+    public void RemoveCallbackTarget(object target)
     {
-        if (m_CallbackTargets != null)
+        if (target as IConnectionCallbacks != null)
         {
-            m_CallbackTargets.Remove(target);
+            if (m_CallbackTargets != null)
+            {
+                m_CallbackTargets.Remove((IConnectionCallbacks)target);
 
-            if (m_CallbackTargets.Count == 0)
-                m_CallbackTargets = null;
+                if (m_CallbackTargets.Count == 0)
+                    m_CallbackTargets = null;
+            }
+        }
+        else if (target as IDeveloperCallbacks != null)
+        {
+            if (m_DeveloperTarget != null)
+                m_DeveloperTarget = null;
         }
     }
 
     public void OnConnected()
     {
+        m_DeveloperTarget.OnConnected();
+
         if (m_CallbackTargets == null)
             return;
 
@@ -90,6 +110,8 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     public void OnConnectedToMaster()
     {
+        m_DeveloperTarget.OnConnectedToMaster();
+
         if (m_CallbackTargets == null)
             return;
 
@@ -99,7 +121,7 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     public void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log($"disconnected with cause {cause}");
+        m_DeveloperTarget.OnDisconnected();
 
         if (m_CallbackTargets == null)
             return;

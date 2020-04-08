@@ -1561,6 +1561,10 @@ MonoBehaviour:
   m_FullscreenButton: {fileID: 3877329264032891859}
   m_ScreenResolutions: {fileID: 916160996199416800}
   m_DisconnectButton: {fileID: 1615265364}
+  m_PlayerNickname: {fileID: 768392679}
+  m_CurrentClientState: {fileID: 1797375929}
+  m_LobbyStatUpdate: {fileID: 8682216142177437917}
+  m_AppStateUpdate: {fileID: 1501640649069129900}
 --- !u!114 &113811881
 MonoBehaviour:
   m_ObjectHideFlags: 0

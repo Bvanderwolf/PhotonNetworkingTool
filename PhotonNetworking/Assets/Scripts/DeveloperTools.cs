@@ -4,16 +4,15 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DeveloperTools : MonoBehaviour, IConnectionCallbacks
+public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
 {
-    [SerializeField]
-    private Button m_FullscreenButton;
-
-    [SerializeField]
-    private Dropdown m_ScreenResolutions;
-
-    [SerializeField]
-    private Button m_DisconnectButton;
+    [SerializeField] private Button m_FullscreenButton;
+    [SerializeField] private Dropdown m_ScreenResolutions;
+    [SerializeField] private Button m_DisconnectButton;
+    [SerializeField] private Text m_PlayerNickname;
+    [SerializeField] private Text m_CurrentClientState;
+    [SerializeField] private Image m_LobbyStatUpdate;
+    [SerializeField] private Image m_AppStateUpdate;
 
     private int m_ScreenWidth;
     private int m_ScreenHeight;
@@ -48,11 +47,13 @@ public class DeveloperTools : MonoBehaviour, IConnectionCallbacks
     private void Start()
     {
         ConnectionManager.Instance.AddCallbackTarget(this);
+        InLobbyManager.Instance.AddCallbackTarget(this);
     }
 
     private void OnDestroy()
     {
         ConnectionManager.Instance.RemoveCallbackTarget(this);
+        InLobbyManager.Instance.RemoveCallbackTarget(this);
     }
 
     private void SetStartValueOfScreenResolutions()
@@ -126,20 +127,16 @@ public class DeveloperTools : MonoBehaviour, IConnectionCallbacks
     {
     }
 
-    public void OnDisconnected(DisconnectCause cause)
+    public void OnDisconnected()
     {
         m_DisconnectButton.interactable = false;
     }
 
-    public void OnRegionListReceived(RegionHandler regionHandler)
+    public void OnPlayerNickNameUpdate(string newNickname)
     {
     }
 
-    public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
-    {
-    }
-
-    public void OnCustomAuthenticationFailed(string debugMessage)
+    public void OnLobbyStatisticsUpdate()
     {
     }
 }

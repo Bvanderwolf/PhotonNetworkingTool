@@ -9,6 +9,8 @@ public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
 
     private List<ILobbyCallbacks> m_CallbackTargets = null;
 
+    private IDeveloperCallbacks m_DeveloperTarget = null;
+
     private void OnEnable()
     {
         PhotonNetwork.AddCallbackTarget(this);
@@ -26,22 +28,38 @@ public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
         DontDestroyOnLoad(this.gameObject);
     }
 
-    public void AddCallbackTarget(ILobbyCallbacks target)
+    public void AddCallbackTarget(object target)
     {
-        if (m_CallbackTargets == null)
-            m_CallbackTargets = new List<ILobbyCallbacks>();
+        if (target as ILobbyCallbacks != null)
+        {
+            if (m_CallbackTargets == null)
+                m_CallbackTargets = new List<ILobbyCallbacks>();
 
-        m_CallbackTargets.Add(target);
+            m_CallbackTargets.Add((ILobbyCallbacks)target);
+        }
+        else if (target as IDeveloperCallbacks != null)
+        {
+            if (m_DeveloperTarget == null)
+                m_DeveloperTarget = (IDeveloperCallbacks)target;
+        }
     }
 
-    public void RemoveCallbackTarget(ILobbyCallbacks target)
+    public void RemoveCallbackTarget(object target)
     {
-        if (m_CallbackTargets != null)
+        if (target as ILobbyCallbacks != null)
         {
-            m_CallbackTargets.Remove(target);
+            if (m_CallbackTargets != null)
+            {
+                m_CallbackTargets.Remove((ILobbyCallbacks)target);
 
-            if (m_CallbackTargets.Count == 0)
-                m_CallbackTargets = null;
+                if (m_CallbackTargets.Count == 0)
+                    m_CallbackTargets = null;
+            }
+        }
+        else if (target as IDeveloperCallbacks != null)
+        {
+            if (m_DeveloperTarget != null)
+                m_DeveloperTarget = null;
         }
     }
 
@@ -92,6 +110,8 @@ public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
 
     public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
     {
+        m_DeveloperTarget.OnLobbyStatisticsUpdate();
+
         if (m_CallbackTargets == null)
             return;
 
