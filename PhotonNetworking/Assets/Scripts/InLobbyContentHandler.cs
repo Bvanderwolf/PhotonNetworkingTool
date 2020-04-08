@@ -140,34 +140,36 @@ public class InLobbyContentHandler : MonoBehaviour
 
     public void SetActiveStateOfRoomListContent(bool active)
     {
+        var rooms = m_LobbyRooms[PhotonNetwork.CurrentLobby.Name];
         if (!active)
         {
             foreach (var item in m_RoomItems)
                 item.GO.SetActive(false);
-            return;
         }
-
-        var rooms = m_LobbyRooms[PhotonNetwork.CurrentLobby.Name];
-        for (int ri = 0; ri < rooms.Count; ri++)
+        else
         {
-            var room = rooms[ri];
-            m_RoomItems[ri].Name.text = room.Name;
-            m_RoomItems[ri].PlayerCount.text = $"({room.PlayerCount}/{room.MaxPlayers})";
-            bool isFull = room.PlayerCount == room.MaxPlayers;
-            if (isFull)
+            for (int ri = 0; ri < rooms.Count; ri++)
             {
-                m_RoomItems[ri].JoinButton.interactable = false;
+                var room = rooms[ri];
+                m_RoomItems[ri].Name.text = room.Name;
+                m_RoomItems[ri].PlayerCount.text = $"({room.PlayerCount}/{room.MaxPlayers})";
+                bool isFull = room.PlayerCount == room.MaxPlayers;
+                if (isFull)
+                {
+                    m_RoomItems[ri].JoinButton.interactable = false;
+                }
+                else
+                {
+                    m_RoomItems[ri].JoinButton.onClick.RemoveAllListeners();
+                    m_RoomItems[ri].JoinButton.onClick.AddListener(() => RoomItemJoinButtonClick(room));
+                    m_RoomItems[ri].JoinButton.interactable = true;
+                }
+                m_RoomItems[ri].GO.SetActive(true);
             }
-            else
-            {
-                m_RoomItems[ri].JoinButton.onClick.AddListener(() => RoomItemJoinButtonClick(room));
-                m_RoomItems[ri].JoinButton.interactable = true;
-            }
-            m_RoomItems[ri].GO.SetActive(true);
         }
 
         var noRooms = rooms.Count == 0;
-        SetNoRoomsFeedback(noRooms);
+        SetNoRoomsFeedback(active ? noRooms : false);
     }
 
     public void SetActiveStateOfCreateRoomContent(bool value)
