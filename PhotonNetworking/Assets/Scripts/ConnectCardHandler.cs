@@ -43,12 +43,6 @@ public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCal
         }
     }
 
-    public void DisconnectFromServer()
-    {
-        if (PhotonNetwork.IsConnectedAndReady)
-            PhotonNetwork.Disconnect();
-    }
-
     private void Start()
     {
         //get connection callbacks
