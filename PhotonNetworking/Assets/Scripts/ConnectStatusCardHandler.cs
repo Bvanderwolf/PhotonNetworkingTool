@@ -49,7 +49,7 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
         if (statusUpdate)
         {
             m_KnownState = currentState;
-            m_Status.text = GetFormattedStatus(m_KnownState.ToString());
+            m_Status.text = StringUtils.AddWhiteSpaceAtUppers(m_KnownState.ToString());
             UpdateLoadTarget();
         }
         CheckForTaskFinished();
@@ -104,28 +104,6 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     }
 
     /// <summary>
-    /// Returns state without white spaces
-    /// </summary>
-    /// <param name="state"></param>
-    /// <returns></returns>
-    private string GetFormattedStatus(string state)
-    {
-        if (string.IsNullOrWhiteSpace(state))
-            return "";
-
-        StringBuilder newText = new StringBuilder(state.Length * 2);
-        newText.Append(state[0]);
-        for (int i = 1; i < state.Length; i++)
-        {
-            if (char.IsUpper(state[i]) && state[i - 1] != ' ')
-                newText.Append(' ');
-            newText.Append(state[i]);
-        }
-
-        return newText.ToString();
-    }
-
-    /// <summary>
     /// Keeps loading the loadbar until it reaches 100%
     /// Increase the load target by using UpdateLoadTarget
     /// </summary>
@@ -175,7 +153,7 @@ public class ConnectStatusCardHandler : ConnectCardAbstract
     private void OnEnable()
     {
         m_KnownState = PhotonNetwork.NetworkClientState;
-        m_Status.text = GetFormattedStatus(m_KnownState.ToString());
+        m_Status.text = StringUtils.AddWhiteSpaceAtUppers(m_KnownState.ToString());
     }
 
     private void OnDisable()

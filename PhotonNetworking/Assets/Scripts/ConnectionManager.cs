@@ -90,6 +90,8 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
             PhotonNetwork.NickName = nickname;
             PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;
             PhotonNetwork.ConnectUsingSettings();
+
+            m_DeveloperTarget.OnPlayerNickNameUpdate(nickname);
         }
     }
 
@@ -121,7 +123,7 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
 
     public void OnDisconnected(DisconnectCause cause)
     {
-        m_DeveloperTarget.OnDisconnected();
+        m_DeveloperTarget?.OnDisconnected();
 
         if (m_CallbackTargets == null)
             return;

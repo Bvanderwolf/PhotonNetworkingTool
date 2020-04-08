@@ -17,6 +17,18 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     private int m_ScreenWidth;
     private int m_ScreenHeight;
 
+    //According to Photon documentation lobby stat updates occur every minute (seems to be 2 after testing)
+    private const float LOBBY_STAT_UPDATE_INTERVAL = 120f;
+
+    //According to Photon documentation the app's stats update every 5 seconds
+    private const float APP_STATS_UPDATE_INTERVAL = 5f;
+
+    private float m_TimeTilLastLobbyStatUpdate = 0;
+    private float m_TimeTilLastAppStatUpdate = 0;
+    private bool m_ConnectedToMaster = false;
+
+    private ClientState shownState;
+
     private Resolution m_FullScreenResolution;
 
     private void Awake()
@@ -42,6 +54,8 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         }
         m_DisconnectButton.onClick.AddListener(DisconnectFromServer);
         m_DisconnectButton.interactable = false;
+
+        UpdateClientStateText(shownState);
     }
 
     private void Start()
@@ -56,6 +70,32 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         InLobbyManager.Instance.RemoveCallbackTarget(this);
     }
 
+    private void FixedUpdate()
+    {
+        var state = PhotonNetwork.NetworkClientState;
+        if (state != shownState)
+        {
+            UpdateClientStateText(state);
+        }
+
+        if (m_ConnectedToMaster)
+        {
+            m_TimeTilLastAppStatUpdate += Time.deltaTime;
+            if (m_TimeTilLastAppStatUpdate > APP_STATS_UPDATE_INTERVAL) m_TimeTilLastAppStatUpdate = 0;
+            m_AppStateUpdate.fillAmount = 1 - (m_TimeTilLastAppStatUpdate / APP_STATS_UPDATE_INTERVAL);
+
+            m_TimeTilLastLobbyStatUpdate += Time.deltaTime;
+            m_TimeTilLastLobbyStatUpdate = Mathf.Clamp(m_TimeTilLastLobbyStatUpdate, 0, LOBBY_STAT_UPDATE_INTERVAL);
+            m_LobbyStatUpdate.fillAmount = 1 - (m_TimeTilLastLobbyStatUpdate / LOBBY_STAT_UPDATE_INTERVAL);
+        }
+    }
+
+    private void UpdateClientStateText(ClientState state)
+    {
+        var stateString = StringUtils.AddWhiteSpaceAtUppers(state.ToString());
+        m_CurrentClientState.text = "Client State: " + stateString;
+    }
+
     private void SetStartValueOfScreenResolutions()
     {
         var windowResolution = $"{Screen.width}x{Screen.height}";
@@ -67,12 +107,6 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
             index++;
         }
         m_ScreenResolutions.SetValueWithoutNotify(index);
-    }
-
-    private void DisconnectFromServer()
-    {
-        if (PhotonNetwork.IsConnected)
-            PhotonNetwork.Disconnect();
     }
 
     //----------------------------------------------------------------------------------------------//
@@ -118,6 +152,12 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         }
     }
 
+    private void DisconnectFromServer()
+    {
+        if (PhotonNetwork.IsConnected)
+            PhotonNetwork.Disconnect();
+    }
+
     public void OnConnected()
     {
         m_DisconnectButton.interactable = true;
@@ -125,18 +165,23 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
 
     public void OnConnectedToMaster()
     {
+        m_ConnectedToMaster = true;
     }
 
     public void OnDisconnected()
     {
         m_DisconnectButton.interactable = false;
+        m_ConnectedToMaster = false;
     }
 
     public void OnPlayerNickNameUpdate(string newNickname)
     {
+        m_PlayerNickname.text = "Nickname: " + newNickname;
     }
 
     public void OnLobbyStatisticsUpdate()
     {
+        print(m_TimeTilLastLobbyStatUpdate);
+        m_TimeTilLastLobbyStatUpdate = 0;
     }
 }
