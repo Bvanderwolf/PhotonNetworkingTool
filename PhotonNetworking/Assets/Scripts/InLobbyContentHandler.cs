@@ -95,10 +95,10 @@ public class InLobbyContentHandler : MonoBehaviour
         }
 
         var maxPlayers = int.Parse(m_CreateRoomTools.MaxPlayers.text);
-        if (maxPlayers < 0 || maxPlayers > MAX_PLAYERS_AMMOUNT)
+        if (maxPlayers <= 1 || maxPlayers > MAX_PLAYERS_AMMOUNT)
         {
             m_CreateRoomTools.MaxPlayers.text = "";
-            m_CreateRoomTools.Feedback.text = "Max Players can be between 0 and " + MAX_PLAYERS_AMMOUNT;
+            m_CreateRoomTools.Feedback.text = "Max Players can be between 1 and " + MAX_PLAYERS_AMMOUNT + 1;
             return;
         }
 
