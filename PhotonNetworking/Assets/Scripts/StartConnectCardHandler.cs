@@ -11,7 +11,10 @@ public class StartConnectCardHandler : ConnectCardAbstract
     private InputField m_NickNameInput;
 
     [SerializeField]
-    private Button m_ConnectButton;
+    private Button m_SelectionButton;
+
+    [SerializeField]
+    private Button m_GenericButton;
 
     [SerializeField]
     private KeyCode ConnectKey = KeyCode.Return;
@@ -20,12 +23,14 @@ public class StartConnectCardHandler : ConnectCardAbstract
     private bool m_Animating = false;
 
     private bool m_NicknameInputed = false;
+    public const string GENERIC_CONNECT_NAME = "Player";
 
     public override void Init()
     {
         base.Init();
         m_NickNameInput.onEndEdit.AddListener(OnNickNameInputFinished);
-        m_ConnectButton.onClick.AddListener(OnConnectButtonClick);
+        m_SelectionButton.onClick.AddListener(OnSelectionButtonClick);
+        m_GenericButton.onClick.AddListener(OnGenericNameButtonClick);
         m_Animator = m_NickNameInput.GetComponent<Animator>();
 
         m_NickNameInput.characterLimit = m_MaxNicknameLength;
@@ -44,15 +49,12 @@ public class StartConnectCardHandler : ConnectCardAbstract
         }
     }
 
-    private void Update()
+    private void OnGenericNameButtonClick()
     {
-        if (Input.GetKeyDown(ConnectKey))
-        {
-            OnConnectButtonClick();
-        }
+        OnTaskFinished(GENERIC_CONNECT_NAME);
     }
 
-    public void OnConnectButtonClick()
+    public void OnSelectionButtonClick()
     {
         if (!m_NicknameInputed)
         {

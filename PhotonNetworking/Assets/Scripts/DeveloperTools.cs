@@ -83,6 +83,7 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     {
         ConnectionManager.Instance.AddCallbackTarget(this);
         InLobbyManager.Instance.AddCallbackTarget(this);
+        PlayerManager.Instance.AddCallbackTarget(this);
 
         ToggleActiveSelf();
     }
@@ -91,6 +92,7 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     {
         ConnectionManager.Instance.RemoveCallbackTarget(this);
         InLobbyManager.Instance.RemoveCallbackTarget(this);
+        PlayerManager.Instance.RemoveCallbackTarget(this);
     }
 
     private void FixedUpdate()
@@ -247,7 +249,6 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
 
     public void OnLobbyStatisticsUpdate()
     {
-        print(m_TimeTilLastLobbyStatUpdate);
         m_TimeTilLastLobbyStatUpdate = 0;
     }
 }

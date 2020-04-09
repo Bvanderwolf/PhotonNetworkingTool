@@ -7,18 +7,23 @@ public class PhotonSingletonManager : MonoBehaviour
 
     private void Awake()
     {
-        if(ConnectionManager.Instance == null)
+        if (ConnectionManager.Instance == null)
         {
             new GameObject("ConnectionManager", typeof(ConnectionManager))
                 .GetComponent<ConnectionManager>()
                 .Init(m_AutomaticallySyncScene);
-        }  
-        
-        if(InLobbyManager.Instance == null)
+        }
+
+        if (InLobbyManager.Instance == null)
         {
             new GameObject("InLobbyManager", typeof(InLobbyManager));
         }
-        
+
+        if (PlayerManager.Instance == null)
+        {
+            new GameObject("PlayerManager", typeof(PlayerManager));
+        }
+
         Destroy(this.gameObject);
     }
 }

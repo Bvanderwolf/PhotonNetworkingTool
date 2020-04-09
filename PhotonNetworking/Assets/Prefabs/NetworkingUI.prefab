@@ -1805,7 +1805,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5937174897570990962
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4521,6 +4521,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StartConnectCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 8112884246145670455, guid: 25025a52c6587ab499b381c305ee899b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8112884246145670454, guid: 25025a52c6587ab499b381c305ee899b,
         type: 3}

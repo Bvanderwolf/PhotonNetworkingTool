@@ -87,11 +87,12 @@ public class ConnectionManager : MonoBehaviour, IConnectionCallbacks
     {
         if (!PhotonNetwork.IsConnected)
         {
-            PhotonNetwork.NickName = nickname;
+            var hasGenericNickname = nickname == StartConnectCardHandler.GENERIC_CONNECT_NAME;
+            PlayerManager.Instance.UpdateProperties<bool>("GenericNickname", hasGenericNickname);
+            PlayerManager.Instance.UpdateNickname(nickname);
+
             PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;
             PhotonNetwork.ConnectUsingSettings();
-
-            m_DeveloperTarget.OnPlayerNickNameUpdate(nickname);
         }
     }
 
