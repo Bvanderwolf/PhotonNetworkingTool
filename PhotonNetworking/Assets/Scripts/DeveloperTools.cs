@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,8 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     [SerializeField] private Button m_FullscreenButton;
     [SerializeField] private Dropdown m_ScreenResolutions;
     [SerializeField] private Button m_DisconnectButton;
+    [SerializeField] private Toggle m_StastGUIToggle;
+    [SerializeField] private Toggle m_LagSimGUIToggle;
     [SerializeField] private Text m_PlayerNickname;
     [SerializeField] private Text m_CurrentClientState;
     [SerializeField] private Image m_LobbyStatUpdate;
@@ -30,6 +33,9 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     private ClientState shownState;
 
     private Resolution m_FullScreenResolution;
+
+    private PhotonStatsGui m_StatsGUI;
+    private PhotonLagSimulationGui m_LaggSimulationGUI;
 
     private void Awake()
     {
@@ -54,6 +60,12 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         }
         m_DisconnectButton.onClick.AddListener(DisconnectFromServer);
         m_DisconnectButton.interactable = false;
+
+        m_StastGUIToggle.onValueChanged.AddListener(OnStatsGuiToggleClick);
+        m_LagSimGUIToggle.onValueChanged.AddListener(OnLagSimGuiToggleClick);
+
+        m_StatsGUI = GetComponent<PhotonStatsGui>();
+        m_LaggSimulationGUI = GetComponent<PhotonLagSimulationGui>();
 
         UpdateClientStateText(shownState);
     }
@@ -150,6 +162,17 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         {
             Screen.SetResolution(m_ScreenWidth, m_ScreenHeight, Screen.fullScreen);
         }
+    }
+
+    private void OnStatsGuiToggleClick(bool newValue)
+    {
+        m_StatsGUI.statsWindowOn = newValue;
+        m_StatsGUI.statsOn = newValue;
+    }
+
+    private void OnLagSimGuiToggleClick(bool newValue)
+    {
+        m_LaggSimulationGUI.Visible = newValue;
     }
 
     private void DisconnectFromServer()
