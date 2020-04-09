@@ -27,7 +27,9 @@ public class InLobbyContentHandler : MonoBehaviour
 
     public const int ROOM_ITEM_AMOUNT = 7;
     private const int MIN_ROOM_CHAR_AMOUNT = 3;
-    private const int MAX_PLAYERS_AMMOUNT = 20;
+
+    // ---According to photon, when using their cloud service, 20 ccu is maximum, this can be put to this value ---
+    private const int MAX_PLAYERS_AMMOUNT = 8;
 
     private struct RoomItem
     {
