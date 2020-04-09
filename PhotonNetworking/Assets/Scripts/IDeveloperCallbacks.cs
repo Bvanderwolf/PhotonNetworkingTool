@@ -9,4 +9,6 @@
     void OnLobbyStatisticsUpdate();
 
     void OnConnectedToMaster();
+
+    void OnJoinedRoom();
 }

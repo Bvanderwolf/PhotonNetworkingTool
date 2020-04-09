@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Photon.Pun;
+﻿using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using UnityEngine;
@@ -16,6 +15,7 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     [SerializeField] private Text m_CurrentClientState;
     [SerializeField] private Image m_LobbyStatUpdate;
     [SerializeField] private Image m_AppStateUpdate;
+    [SerializeField] private AppStats m_AppInfo;
 
     private int m_ScreenWidth;
     private int m_ScreenHeight;
@@ -33,6 +33,15 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     private ClientState shownState;
 
     private Resolution m_FullScreenResolution;
+
+    [System.Serializable]
+    private struct AppStats
+    {
+        public Text CountOfRooms;
+        public Text CountOfPlayersOnMaster;
+        public Text CountOfPlayersInRooms;
+        public Text CountOfPlayers;
+    }
 
     private PhotonStatsGui m_StatsGUI;
     private PhotonLagSimulationGui m_LaggSimulationGUI;
@@ -74,6 +83,8 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     {
         ConnectionManager.Instance.AddCallbackTarget(this);
         InLobbyManager.Instance.AddCallbackTarget(this);
+
+        ToggleActiveSelf();
     }
 
     private void OnDestroy()
@@ -90,10 +101,14 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
             UpdateClientStateText(state);
         }
 
-        if (m_ConnectedToMaster)
+        if (m_ConnectedToMaster && !PhotonNetwork.InRoom)
         {
             m_TimeTilLastAppStatUpdate += Time.deltaTime;
-            if (m_TimeTilLastAppStatUpdate > APP_STATS_UPDATE_INTERVAL) m_TimeTilLastAppStatUpdate = 0;
+            if (m_TimeTilLastAppStatUpdate > APP_STATS_UPDATE_INTERVAL)
+            {
+                UpdateApplicationStatistics();
+                m_TimeTilLastAppStatUpdate = 0;
+            }
             m_AppStateUpdate.fillAmount = 1 - (m_TimeTilLastAppStatUpdate / APP_STATS_UPDATE_INTERVAL);
 
             m_TimeTilLastLobbyStatUpdate += Time.deltaTime;
@@ -107,10 +122,26 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         gameObject.SetActive(!gameObject.activeInHierarchy);
     }
 
+    private void ResetStatisticsUpdate()
+    {
+        m_TimeTilLastAppStatUpdate = 0;
+        m_TimeTilLastLobbyStatUpdate = 0;
+        m_AppStateUpdate.fillAmount = 1;
+        m_LobbyStatUpdate.fillAmount = 1;
+    }
+
     private void UpdateClientStateText(ClientState state)
     {
         var stateString = StringUtils.AddWhiteSpaceAtUppers(state.ToString());
         m_CurrentClientState.text = "Client State: " + stateString;
+    }
+
+    private void UpdateApplicationStatistics()
+    {
+        m_AppInfo.CountOfRooms.text = "Total Room Count: " + PhotonNetwork.CountOfRooms;
+        m_AppInfo.CountOfPlayersOnMaster.text = "Players On Master: " + PhotonNetwork.CountOfPlayersOnMaster;
+        m_AppInfo.CountOfPlayersInRooms.text = "Players In Rooms: " + PhotonNetwork.CountOfPlayersInRooms;
+        m_AppInfo.CountOfPlayers.text = "Total Player Count: " + PhotonNetwork.CountOfPlayers;
     }
 
     private void SetStartValueOfScreenResolutions()
@@ -191,6 +222,11 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         m_DisconnectButton.interactable = true;
     }
 
+    public void OnJoinedRoom()
+    {
+        ResetStatisticsUpdate();
+    }
+
     public void OnConnectedToMaster()
     {
         m_ConnectedToMaster = true;
@@ -200,6 +236,8 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
     {
         m_DisconnectButton.interactable = false;
         m_ConnectedToMaster = false;
+
+        ResetStatisticsUpdate();
     }
 
     public void OnPlayerNickNameUpdate(string newNickname)
