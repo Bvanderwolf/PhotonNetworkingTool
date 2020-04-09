@@ -102,6 +102,11 @@ public class DeveloperTools : MonoBehaviour, IDeveloperCallbacks
         }
     }
 
+    public void ToggleActiveSelf()
+    {
+        gameObject.SetActive(!gameObject.activeInHierarchy);
+    }
+
     private void UpdateClientStateText(ClientState state)
     {
         var stateString = StringUtils.AddWhiteSpaceAtUppers(state.ToString());
