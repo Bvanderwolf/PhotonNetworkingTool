@@ -1,16 +1,19 @@
-﻿public enum ConnectCard
+﻿namespace ConnectCards.Enums
 {
-    StartConnect,
-    ConnectStatus,
-    Disconnect,
-    ConnectToLobby,
-    InLobby,
-    InRoom
-}
+    public enum ConnectCard
+    {
+        StartConnect,
+        ConnectStatus,
+        Disconnect,
+        ConnectToLobby,
+        InLobby,
+        InRoom
+    }
 
-public enum InLobbyConnectChoice
-{
-    Joining,
-    Creating,
-    Leaving
+    public enum InLobbyConnectChoice
+    {
+        Joining,
+        Creating,
+        Leaving
+    }
 }

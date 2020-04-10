@@ -1,5 +1,7 @@
 ﻿namespace ConnectCards
 {
+    using Enums;
+    using HelperStructs;
     using Photon.Realtime;
     using System.Collections.Generic;
     using UnityEngine;

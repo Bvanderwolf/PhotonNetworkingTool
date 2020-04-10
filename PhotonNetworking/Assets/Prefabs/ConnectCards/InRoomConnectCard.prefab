@@ -2657,6 +2657,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 4528003176631398403}
+  PlayerListButton: {fileID: 2573957041320898842}
+  ChatButton: {fileID: 2566056448109142874}
+  LeaveRoomButton: {fileID: 762698406462237350}
 --- !u!222 &8190361038379560962
 CanvasRenderer:
   m_ObjectHideFlags: 0

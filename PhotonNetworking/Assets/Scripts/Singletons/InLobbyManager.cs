@@ -5,6 +5,7 @@
     using Photon.Pun;
     using Photon.Realtime;
     using UnityEngine;
+    using ConnectCards.HelperStructs;
 
     public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
     {

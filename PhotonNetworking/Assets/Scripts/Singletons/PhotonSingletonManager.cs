@@ -17,14 +17,16 @@
             }
 
             if (InLobbyManager.Instance == null)
-            {
                 new GameObject("InLobbyManager", typeof(InLobbyManager));
-            }
 
             if (PlayerManager.Instance == null)
-            {
                 new GameObject("PlayerManager", typeof(PlayerManager));
-            }
+
+            if (InRoomManager.Instance == null)
+                new GameObject("InRoomManager", typeof(InRoomManager));
+
+            if (MatchmakingManager.Instance == null)
+                new GameObject("MatchmakingManager", typeof(MatchmakingManager));
 
             Destroy(this.gameObject);
         }

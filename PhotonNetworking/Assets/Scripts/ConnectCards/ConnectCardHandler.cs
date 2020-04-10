@@ -7,6 +7,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
+    using Enums;
+    using HelperStructs;
 
     public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCallbacks
     {

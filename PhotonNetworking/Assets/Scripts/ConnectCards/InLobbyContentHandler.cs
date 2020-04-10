@@ -1,5 +1,6 @@
 ﻿namespace ConnectCards
 {
+    using HelperStructs;
     using Photon.Pun;
     using Photon.Realtime;
     using System;
