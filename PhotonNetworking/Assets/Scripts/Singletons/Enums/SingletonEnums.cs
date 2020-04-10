@@ -2,8 +2,9 @@
 {
     public enum ConnectTarget
     {
-        MasterDefault,
-        MasterReconnect,
-        Room
+        ConnectingToMaster,
+        ReconnectingToMaster,
+        JoiningRoom,
+        CreatingRoom
     }
 }

@@ -89,7 +89,7 @@
             {
                 case ConnectCard.StartConnect:
                     ReplaceCard(ConnectCard.StartConnect, ConnectCard.ConnectStatus);
-                    SetupConnectStatusCard(ConnectTarget.MasterDefault);
+                    SetupConnectStatusCard(ConnectTarget.ConnectingToMaster);
                     ConnectionManager.Instance.ConnectToMaster((string)args);
                     break;
 
@@ -99,12 +99,12 @@
 
                 case ConnectCard.Disconnect:
                     ReplaceCard(ConnectCard.Disconnect, ConnectCard.ConnectStatus);
-                    SetupConnectStatusCard(ConnectTarget.MasterReconnect);
+                    SetupConnectStatusCard(ConnectTarget.ReconnectingToMaster);
                     ConnectionManager.Instance.ReconnectToMaster();
                     break;
 
                 case ConnectCard.ConnectToLobby:
-                    ReplaceCard(ConnectCard.ConnectToLobby, ConnectCard.InLobby);
+                    DisableConnectCard(ConnectCard.ConnectToLobby);
                     ConnectionManager.Instance.ConnectToLobby((string)args);
                     break;
 
@@ -141,19 +141,19 @@
             switch (result.choice)
             {
                 case InLobbyConnectChoice.Joining:
-                    //todo: *implement in room card
-                    DisableConnectCard(ConnectCard.InLobby);
+                    ReplaceCard(ConnectCard.InLobby, ConnectCard.ConnectStatus);
+                    SetupConnectStatusCard(ConnectTarget.JoiningRoom);
                     InLobbyManager.Instance.JoinRoom((RoomInfo)result.args);
                     break;
 
                 case InLobbyConnectChoice.Creating:
-                    //todo: *implement in room card
-                    DisableConnectCard(ConnectCard.InLobby);
+                    ReplaceCard(ConnectCard.InLobby, ConnectCard.ConnectStatus);
+                    SetupConnectStatusCard(ConnectTarget.CreatingRoom);
                     InLobbyManager.Instance.CreateRoom((CreateRoomFormResult)result.args);
                     break;
 
                 case InLobbyConnectChoice.Leaving:
-                    ReplaceCard(ConnectCard.InLobby, ConnectCard.ConnectToLobby);
+                    DisableConnectCard(ConnectCard.InLobby);
                     InLobbyManager.Instance.LeaveLobby();
                     break;
             }
@@ -163,15 +163,20 @@
         {
             switch (target)
             {
-                case ConnectTarget.MasterDefault:
+                case ConnectTarget.ConnectingToMaster:
                     ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
                     break;
 
-                case ConnectTarget.MasterReconnect:
+                case ConnectTarget.ReconnectingToMaster:
                     ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
                     break;
 
-                case ConnectTarget.Room:
+                case ConnectTarget.JoiningRoom:
+                    ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InRoom);
+                    break;
+
+                case ConnectTarget.CreatingRoom:
+                    ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InRoom);
                     break;
             }
         }
@@ -247,10 +252,12 @@
 
         public void OnJoinedLobby()
         {
+            EnableConnectCard(ConnectCard.InLobby);
         }
 
         public void OnLeftLobby()
         {
+            EnableConnectCard(ConnectCard.ConnectToLobby);
         }
 
         // --- Will Callback on connected to master client and every 60 seconds after that ---

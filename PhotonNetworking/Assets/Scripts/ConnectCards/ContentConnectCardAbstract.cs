@@ -7,7 +7,14 @@
         [SerializeField]
         protected GameObject m_Content;
 
-        protected enum ContentType { None, RoomList, CreateRoom }
+        protected enum ContentType
+        {
+            None,
+            RoomList,
+            CreateRoom,
+            PlayerList,
+            Chat
+        }
 
         protected Animator m_ContentAnimator;
         protected ContentHandler m_ContentHandler;
@@ -26,18 +33,18 @@
             m_ContentHandler.ContentClosed += OnContentClosed;
         }
 
+        /// <summary>Override to get callbacks on content opened</summary>
         protected virtual void OnContentOpened()
         {
         }
 
+        /// <summary>Override to get callbacks on content closed</summary>
         protected virtual void OnContentClosed()
         {
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
-            SetActiveStateOfContent(ContentType.CreateRoom, false);
-            SetActiveStateOfContent(ContentType.RoomList, false);
             m_ContentOpen = ContentType.None;
             m_DetourContent = ContentType.None;
             m_Content.transform.localScale = new Vector3(0, 0, 1);
@@ -63,6 +70,14 @@
 
                 case ContentType.CreateRoom:
                     ((InLobbyContentHandler)m_ContentHandler).SetActiveStateOfCreateRoomContent(value);
+                    break;
+
+                case ContentType.PlayerList:
+                    ((InRoomContentHandler)m_ContentHandler).SetActiveStateOfPlayerListContent(value);
+                    break;
+
+                case ContentType.Chat:
+                    ((InRoomContentHandler)m_ContentHandler).SetActiveStateOfChatContent(value);
                     break;
             }
         }

@@ -31,6 +31,13 @@
             m_ContentHandler.Init();
         }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            SetActiveStateOfContent(ContentType.CreateRoom, false);
+            SetActiveStateOfContent(ContentType.RoomList, false);
+        }
+
         public void UpdateRoomListContent(List<RoomInfo> roomList)
         {
             var noRooms = roomList.Count == 0;
@@ -92,6 +99,8 @@
 
         protected override void OnContentOpened()
         {
+            base.OnContentOpened();
+
             switch (m_ContentOpen)
             {
                 case ContentType.RoomList:
@@ -106,6 +115,8 @@
 
         protected override void OnContentClosed()
         {
+            base.OnContentClosed();
+
             SetActiveStateOfContent(m_ContentOpen, false);
 
             if (m_DetourContent == ContentType.None)

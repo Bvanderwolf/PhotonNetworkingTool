@@ -17,6 +17,9 @@
         [SerializeField]
         private Image m_Loadbar;
 
+        [SerializeField]
+        private Text m_Title;
+
         private ClientState m_KnownState;
         private ConnectTarget m_Target;
 
@@ -29,7 +32,7 @@
 
         private const int SERVER_CONNECT_STEPS_DEFAULT = 5;
         private const int SERVER_CONNECT_STEPS_RECONNECT = 3;
-        private const int LOBBY_CONNECT_STEPS = 2;
+        private const int ROOM_CONNECT_STEPS = 4;
 
         private const float HIGHLIGHT_TIME = 4f;
         private const float HIGHLIGHT_SPEED = 4.5f;
@@ -51,6 +54,7 @@
             var statusUpdate = currentState != m_KnownState;
             if (statusUpdate)
             {
+                print(currentState);
                 m_KnownState = currentState;
                 m_Status.text = StringUtils.AddWhiteSpaceAtUppers(m_KnownState.ToString());
                 UpdateLoadTarget();
@@ -90,18 +94,24 @@
         {
             switch (target)
             {
-                case ConnectTarget.MasterDefault:
+                case ConnectTarget.ConnectingToMaster:
                     m_LoadPercentageStep = 1f / SERVER_CONNECT_STEPS_DEFAULT;
                     break;
 
-                case ConnectTarget.MasterReconnect:
+                case ConnectTarget.ReconnectingToMaster:
                     m_LoadPercentageStep = 1f / SERVER_CONNECT_STEPS_RECONNECT;
                     break;
 
-                case ConnectTarget.Room:
+                case ConnectTarget.JoiningRoom:
+                    m_LoadPercentageStep = 1f / ROOM_CONNECT_STEPS;
+                    break;
+
+                case ConnectTarget.CreatingRoom:
+                    m_LoadPercentageStep = 1f / ROOM_CONNECT_STEPS;
                     break;
             }
             m_Target = target;
+            m_Title.text = StringUtils.AddWhiteSpaceAtUppers(target.ToString());
 
             StartCoroutine(LoadBarByStepPercentage());
         }

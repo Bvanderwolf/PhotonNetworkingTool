@@ -9,8 +9,21 @@
             base.Init();
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
+            SetActiveStateOfContent(ContentType.PlayerList, false);
+            SetActiveStateOfContent(ContentType.Chat, false);
+        }
+
+        protected override void OnContentClosed()
+        {
+            base.OnContentClosed();
+        }
+
+        protected override void OnContentOpened()
+        {
+            base.OnContentOpened();
         }
 
         private void OnPlayerListButtonClick()

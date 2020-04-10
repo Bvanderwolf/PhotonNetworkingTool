@@ -4,7 +4,8 @@
     ConnectStatus,
     Disconnect,
     ConnectToLobby,
-    InLobby
+    InLobby,
+    InRoom
 }
 
 public enum InLobbyConnectChoice
