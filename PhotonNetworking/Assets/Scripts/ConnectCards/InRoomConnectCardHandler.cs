@@ -1,26 +1,35 @@
 ﻿namespace ConnectCards
 {
+    using Photon.Pun;
     using UnityEngine;
     using UnityEngine.UI;
 
     public class InRoomConnectCardHandler : ContentConnectCardAbstract
     {
         [SerializeField]
-        private Button PlayerListButton;
+        private Button m_PlayerListButton;
 
         [SerializeField]
-        private Button ChatButton;
+        private Button m_ChatButton;
 
         [SerializeField]
-        private Button LeaveRoomButton;
+        private Button m_LeaveRoomButton;
+
+        [SerializeField]
+        private Text m_Title;
 
         public override void Init()
         {
             base.Init();
 
-            PlayerListButton.onClick.AddListener(OnPlayerListButtonClick);
-            ChatButton.onClick.AddListener(OnChatButtonClick);
-            LeaveRoomButton.onClick.AddListener(OnLeaveRoomButtonClick);
+            m_PlayerListButton.onClick.AddListener(OnPlayerListButtonClick);
+            m_ChatButton.onClick.AddListener(OnChatButtonClick);
+            m_LeaveRoomButton.onClick.AddListener(OnLeaveRoomButtonClick);
+        }
+
+        private void OnEnable()
+        {
+            m_Title.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
         }
 
         protected override void OnDisable()
@@ -50,6 +59,8 @@
 
         private void OnLeaveRoomButtonClick()
         {
+            //leaving means, the task is not finished succesfully
+            OnTaskFinished(false);
         }
     }
 }

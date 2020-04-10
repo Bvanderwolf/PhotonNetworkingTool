@@ -32,7 +32,7 @@
 
         private const int SERVER_CONNECT_STEPS_DEFAULT = 5;
         private const int SERVER_CONNECT_STEPS_RECONNECT = 3;
-        private const int ROOM_CONNECT_STEPS = 4;
+        private const int ROOM_JOIN_LEAVE_STEPS = 4;
 
         private const float HIGHLIGHT_TIME = 4f;
         private const float HIGHLIGHT_SPEED = 4.5f;
@@ -103,11 +103,15 @@
                     break;
 
                 case ConnectTarget.JoiningRoom:
-                    m_LoadPercentageStep = 1f / ROOM_CONNECT_STEPS;
+                    m_LoadPercentageStep = 1f / ROOM_JOIN_LEAVE_STEPS;
                     break;
 
                 case ConnectTarget.CreatingRoom:
-                    m_LoadPercentageStep = 1f / ROOM_CONNECT_STEPS;
+                    m_LoadPercentageStep = 1f / ROOM_JOIN_LEAVE_STEPS;
+                    break;
+
+                case ConnectTarget.LeavingRoom:
+                    m_LoadPercentageStep = 1f / ROOM_JOIN_LEAVE_STEPS;
                     break;
             }
             m_Target = target;

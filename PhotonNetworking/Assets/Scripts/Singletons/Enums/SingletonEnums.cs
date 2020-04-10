@@ -5,6 +5,7 @@
         ConnectingToMaster,
         ReconnectingToMaster,
         JoiningRoom,
-        CreatingRoom
+        CreatingRoom,
+        LeavingRoom
     }
 }

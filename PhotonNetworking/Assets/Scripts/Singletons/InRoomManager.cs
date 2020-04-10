@@ -26,6 +26,16 @@
             PhotonNetwork.AddCallbackTarget(this);
         }
 
+        public void LeaveRoom()
+        {
+            if (PhotonNetwork.IsConnectedAndReady)
+            {
+                //*Note: Becoming inactive is something is a design choice for which i now choose false
+                //playerTTL is also set to 0 at creation of a room to prevent this
+                PhotonNetwork.LeaveRoom(false);
+            }
+        }
+
         public void OnMasterClientSwitched(Player newMasterClient)
         {
         }

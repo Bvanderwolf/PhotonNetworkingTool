@@ -92,7 +92,8 @@
                 case ConnectCard.StartConnect:
                     ReplaceCard(ConnectCard.StartConnect, ConnectCard.ConnectStatus);
                     SetupConnectStatusCard(ConnectTarget.ConnectingToMaster);
-                    ConnectionManager.Instance.ConnectToMaster((string)args);
+                    string nickName = (string)args;
+                    ConnectionManager.Instance.ConnectToMaster(nickName);
                     break;
 
                 case ConnectCard.ConnectStatus:
@@ -107,11 +108,17 @@
 
                 case ConnectCard.ConnectToLobby:
                     DisableConnectCard(ConnectCard.ConnectToLobby);
-                    ConnectionManager.Instance.ConnectToLobby((string)args);
+                    string lobbyName = (string)args;
+                    ConnectionManager.Instance.ConnectToLobby(lobbyName);
                     break;
 
                 case ConnectCard.InLobby:
                     HandleInLobbyConnectResult((InLobbyConnectResult)args);
+                    break;
+
+                case ConnectCard.InRoom:
+                    bool startedGame = (bool)args;
+                    HandleInRoomConnectResult(startedGame);
                     break;
             }
         }
@@ -161,6 +168,19 @@
             }
         }
 
+        private void HandleInRoomConnectResult(bool startedGame)
+        {
+            if (startedGame)
+            {
+            }
+            else
+            {
+                ReplaceCard(ConnectCard.InRoom, ConnectCard.ConnectStatus);
+                SetupConnectStatusCard(ConnectTarget.LeavingRoom);
+                InRoomManager.Instance.LeaveRoom();
+            }
+        }
+
         private void HandleConnectStatusTargetReached(ConnectTarget target)
         {
             switch (target)
@@ -179,6 +199,10 @@
 
                 case ConnectTarget.CreatingRoom:
                     ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InRoom);
+                    break;
+
+                case ConnectTarget.LeavingRoom:
+                    ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InLobby);
                     break;
             }
         }
