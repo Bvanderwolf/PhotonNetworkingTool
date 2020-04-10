@@ -50,8 +50,10 @@ public class InLobbyContentHandler : ContentHandler
 
     private CreateRoomTools m_CreateRoomTools;
 
-    public void Init()
+    public override void Init()
     {
+        base.Init();
+
         m_RoomItems = new RoomItem[ROOM_ITEM_AMOUNT];
         m_LobbyRooms = new Dictionary<string, List<RoomInfo>>();
 

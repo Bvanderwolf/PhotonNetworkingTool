@@ -7,6 +7,10 @@ public class ContentHandler : MonoBehaviour
 
     public event Action ContentClosed;
 
+    public virtual void Init()
+    {
+    }
+
     public void OnContentOpened()
     {
         ContentOpened?.Invoke();
