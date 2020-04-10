@@ -1,12 +1,11 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InLobbyContentHandler : MonoBehaviour
+public class InLobbyContentHandler : ContentHandler
 {
     [SerializeField]
     private RectTransform m_RoomListContent;
@@ -16,10 +15,6 @@ public class InLobbyContentHandler : MonoBehaviour
 
     [SerializeField]
     private GameObject m_NoRoomsFeedback;
-
-    public event Action ContentOpened;
-
-    public event Action ContentClosed;
 
     public event Action<RoomInfo> RoomItemJoinButtonClick;
 
@@ -128,16 +123,6 @@ public class InLobbyContentHandler : MonoBehaviour
     {
         if (m_LobbyRooms.ContainsKey(lobbyName))
             m_LobbyRooms[lobbyName].Remove(room);
-    }
-
-    public void OnContentOpened()
-    {
-        ContentOpened?.Invoke();
-    }
-
-    public void OnContentClosed()
-    {
-        ContentClosed?.Invoke();
     }
 
     public void SetActiveStateOfRoomListContent(bool active)
