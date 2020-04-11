@@ -75,8 +75,7 @@
         {
             if (!PhotonNetwork.IsConnected)
             {
-                var hasGenericNickname = nickname == StartConnectCardHandler.GENERIC_CONNECT_NAME;
-                PlayerManager.Instance.UpdateProperties<bool>("GenericNickname", hasGenericNickname);
+                PlayerManager.Instance.SetHasGenericNickname(nickname);
                 PlayerManager.Instance.UpdateNickname(nickname);
 
                 PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;

@@ -3,10 +3,15 @@
     using Utils;
     using Photon.Pun;
     using UnityEngine;
+    using Photon.Realtime;
+    using System.Linq;
 
     public class PlayerManager : MonoBehaviour
     {
         public static PlayerManager Instance { get; private set; }
+
+        public const string GENERIC_CONNECT_NAME = "Player";
+        public const string GENERIC_NICKNAME_KEY = "GenericNickname";
 
         private IDeveloperCallbacks m_DeveloperTarget = null;
 
@@ -42,6 +47,48 @@
 
             PhotonNetwork.NickName = nickname;
             m_DeveloperTarget.OnPlayerNickNameUpdate(nickname);
+        }
+
+        public void SetHasGenericNickname(string nickname)
+        {
+            var isGeneric = nickname == GENERIC_CONNECT_NAME;
+            UpdateProperties<bool>(GENERIC_CONNECT_NAME, isGeneric);
+        }
+
+        public bool HasGenericNickname()
+        {
+            return PhotonNetwork.NickName == GENERIC_CONNECT_NAME
+                || (bool)PhotonNetwork.LocalPlayer.CustomProperties[GENERIC_NICKNAME_KEY];
+        }
+
+        public void OnCreatingRoom()
+        {
+            if (HasGenericNickname())
+            {
+                UpdateNickname(GENERIC_CONNECT_NAME + "1");
+            }
+        }
+
+        public void OnJoiningRoom(RoomInfo room)
+        {
+            if (HasGenericNickname())
+            {
+                UpdateNickname(GENERIC_CONNECT_NAME + (room.PlayerCount + 1));
+            }
+        }
+
+        public void OnJoinedRoom()
+        {
+            if (HasGenericNickname())
+            {
+                var name = PhotonNetwork.NickName;
+                var actorNum = PhotonNetwork.LocalPlayer.ActorNumber;
+                if (PhotonNetwork.CurrentRoom.Players.Any(p => p.Value.ActorNumber != actorNum && p.Value.NickName == name))
+                {
+                    var newNickname = GENERIC_CONNECT_NAME + actorNum;
+                    UpdateNickname(newNickname);
+                }
+            }
         }
 
         /// <summary>

@@ -3,7 +3,9 @@
     using Photon.Pun;
     using Photon.Realtime;
     using Singletons;
+    using System.Linq;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using UnityEngine.UI;
     using Utils;
 
@@ -89,6 +91,7 @@
 
             var button = item.SetMasterButton;
             button.gameObject.SetActive(player.IsMasterClient);
+            button.interactable = !player.IsMasterClient;
 
             if (localPlayer.IsMasterClient && player != localPlayer)
             {
@@ -103,8 +106,9 @@
 
         public void OnSetMasterButtonClick(Player player)
         {
-            if (PhotonNetwork.IsMasterClient && player != PhotonNetwork.LocalPlayer)
-                PhotonNetwork.SetMasterClient(player);
+            print("test");
+            //if (PhotonNetwork.IsMasterClient && player != PhotonNetwork.LocalPlayer)
+            //    PhotonNetwork.SetMasterClient(player);
         }
 
         public void SetActiveStateOfChatContent(bool value)
@@ -113,12 +117,14 @@
 
         public void OnPlayerEnteredRoom(Player player)
         {
-            print("player entered");
+            SetActiveStateOfPlayerListContent(false);
+            SetActiveStateOfPlayerListContent(true);
         }
 
         public void OnPlayerLeftRoom(Player player)
         {
-            print("player left");
+            SetActiveStateOfPlayerListContent(false);
+            SetActiveStateOfPlayerListContent(true);
         }
     }
 }

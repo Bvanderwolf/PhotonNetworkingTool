@@ -40,6 +40,7 @@
 
         public void OnJoinedRoom()
         {
+            PlayerManager.Instance.OnJoinedRoom();
         }
 
         public void OnJoinRandomFailed(short returnCode, string message)

@@ -1,5 +1,6 @@
 ﻿namespace ConnectCards
 {
+    using Singletons;
     using System.Collections;
     using UnityEngine;
     using UnityEngine.UI;
@@ -25,7 +26,6 @@
         private bool m_Animating = false;
 
         private bool m_NicknameInputed = false;
-        public const string GENERIC_CONNECT_NAME = "Player";
 
         public override void Init()
         {
@@ -53,7 +53,7 @@
 
         private void OnGenericNameButtonClick()
         {
-            OnTaskFinished(GENERIC_CONNECT_NAME);
+            OnTaskFinished(PlayerManager.GENERIC_CONNECT_NAME);
         }
 
         public void OnSelectionButtonClick()

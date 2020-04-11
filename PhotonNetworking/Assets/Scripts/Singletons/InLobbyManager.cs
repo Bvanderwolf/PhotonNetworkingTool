@@ -71,6 +71,8 @@
             if (!PhotonNetwork.IsConnectedAndReady)
                 return;
 
+            PlayerManager.Instance.OnCreatingRoom();
+
             var options = new RoomOptions()
             {
                 MaxPlayers = (byte)result.MaxPlayers,
@@ -84,7 +86,10 @@
         public void JoinRoom(RoomInfo info)
         {
             if (PhotonNetwork.IsConnectedAndReady)
+            {
+                PlayerManager.Instance.OnJoiningRoom(info);
                 PhotonNetwork.JoinRoom(info.Name);
+            }
         }
 
         public void OnJoinedLobby()
