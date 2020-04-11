@@ -1,5 +1,6 @@
 ﻿namespace Singletons
 {
+    using ConnectCards;
     using ExitGames.Client.Photon;
     using Photon.Pun;
     using Photon.Realtime;
@@ -8,6 +9,11 @@
     public class InRoomManager : MonoBehaviour, IInRoomCallbacks
     {
         public static InRoomManager Instance { get; private set; }
+
+        private IConnectCardCallbacks m_ConnectCardTarget = null;
+
+        // ---According to photon, when using their cloud service, 20 ccu is maximum, this can be put to this value ---
+        public const int MAX_PLAYERS_AMMOUNT = 8;
 
         private void Awake()
         {
@@ -26,6 +32,24 @@
             PhotonNetwork.AddCallbackTarget(this);
         }
 
+        public void AddCallbackTarget(object target)
+        {
+            if (target as IConnectCardCallbacks != null)
+            {
+                if (m_ConnectCardTarget == null)
+                    m_ConnectCardTarget = (IConnectCardCallbacks)target;
+            }
+        }
+
+        public void RemoveCallbackTarget(object target)
+        {
+            if (target as IConnectCardCallbacks != null)
+            {
+                if (m_ConnectCardTarget != null)
+                    m_ConnectCardTarget = null;
+            }
+        }
+
         public void LeaveRoom()
         {
             if (PhotonNetwork.IsConnectedAndReady)
@@ -42,10 +66,12 @@
 
         public void OnPlayerEnteredRoom(Player newPlayer)
         {
+            m_ConnectCardTarget.OnPlayerEnteredRoom(newPlayer);
         }
 
         public void OnPlayerLeftRoom(Player otherPlayer)
         {
+            m_ConnectCardTarget.OnPlayerLeftRoom(otherPlayer);
         }
 
         public void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)

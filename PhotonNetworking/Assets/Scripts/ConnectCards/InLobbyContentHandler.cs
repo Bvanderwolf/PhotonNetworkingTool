@@ -3,6 +3,7 @@
     using HelperStructs;
     using Photon.Pun;
     using Photon.Realtime;
+    using Singletons;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
@@ -25,9 +26,6 @@
 
         public const int ROOM_ITEM_AMOUNT = 7;
         private const int MIN_ROOM_CHAR_AMOUNT = 3;
-
-        // ---According to photon, when using their cloud service, 20 ccu is maximum, this can be put to this value ---
-        private const int MAX_PLAYERS_AMMOUNT = 8;
 
         private struct RoomItem
         {
@@ -97,10 +95,10 @@
             }
 
             var maxPlayers = int.Parse(m_CreateRoomTools.MaxPlayers.text);
-            if (maxPlayers <= 1 || maxPlayers > MAX_PLAYERS_AMMOUNT)
+            if (maxPlayers <= 1 || maxPlayers > InRoomManager.MAX_PLAYERS_AMMOUNT)
             {
                 m_CreateRoomTools.MaxPlayers.text = "";
-                m_CreateRoomTools.Feedback.text = "Max Players can be between 1 and " + MAX_PLAYERS_AMMOUNT + 1;
+                m_CreateRoomTools.Feedback.text = "Max Players can be between 1 and " + InRoomManager.MAX_PLAYERS_AMMOUNT + 1;
                 return;
             }
 

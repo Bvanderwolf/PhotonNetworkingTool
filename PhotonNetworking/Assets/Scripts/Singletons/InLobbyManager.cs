@@ -6,14 +6,14 @@
     using Photon.Realtime;
     using UnityEngine;
     using ConnectCards.HelperStructs;
+    using ConnectCards;
 
     public class InLobbyManager : MonoBehaviour, ILobbyCallbacks
     {
         public static InLobbyManager Instance { get; private set; }
 
-        private List<ILobbyCallbacks> m_CallbackTargets = null;
-
         private IDeveloperCallbacks m_DeveloperTarget = null;
+        private IConnectCardCallbacks m_ConnectCardTarget = null;
 
         private void OnEnable()
         {
@@ -34,12 +34,10 @@
 
         public void AddCallbackTarget(object target)
         {
-            if (target as ILobbyCallbacks != null)
+            if (target as IConnectCardCallbacks != null)
             {
-                if (m_CallbackTargets == null)
-                    m_CallbackTargets = new List<ILobbyCallbacks>();
-
-                m_CallbackTargets.Add((ILobbyCallbacks)target);
+                if (m_ConnectCardTarget == null)
+                    m_ConnectCardTarget = (IConnectCardCallbacks)target;
             }
             else if (target as IDeveloperCallbacks != null)
             {
@@ -50,15 +48,10 @@
 
         public void RemoveCallbackTarget(object target)
         {
-            if (target as ILobbyCallbacks != null)
+            if (target as IConnectCardCallbacks != null)
             {
-                if (m_CallbackTargets != null)
-                {
-                    m_CallbackTargets.Remove((ILobbyCallbacks)target);
-
-                    if (m_CallbackTargets.Count == 0)
-                        m_CallbackTargets = null;
-                }
+                if (m_ConnectCardTarget != null)
+                    m_ConnectCardTarget = null;
             }
             else if (target as IDeveloperCallbacks != null)
             {
@@ -96,40 +89,23 @@
 
         public void OnJoinedLobby()
         {
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnJoinedLobby();
+            m_ConnectCardTarget.OnJoinedLobby();
         }
 
         public void OnLeftLobby()
         {
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnLeftLobby();
+            m_ConnectCardTarget.OnLeftLobby();
         }
 
         public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
         {
             m_DeveloperTarget.OnLobbyStatisticsUpdate();
-
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnLobbyStatisticsUpdate(lobbyStatistics);
+            m_ConnectCardTarget.OnLobbyStatisticsUpdate(lobbyStatistics);
         }
 
         public void OnRoomListUpdate(List<RoomInfo> roomList)
         {
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnRoomListUpdate(roomList);
+            m_ConnectCardTarget.OnRoomListUpdate(roomList);
         }
     }
 }

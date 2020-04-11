@@ -1,6 +1,7 @@
 ﻿namespace ConnectCards
 {
     using Photon.Pun;
+    using Photon.Realtime;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -25,6 +26,8 @@
             m_PlayerListButton.onClick.AddListener(OnPlayerListButtonClick);
             m_ChatButton.onClick.AddListener(OnChatButtonClick);
             m_LeaveRoomButton.onClick.AddListener(OnLeaveRoomButtonClick);
+
+            m_ContentHandler.Init();
         }
 
         private void OnEnable()
@@ -37,6 +40,16 @@
             base.OnDisable();
             SetActiveStateOfContent(ContentType.PlayerList, false);
             SetActiveStateOfContent(ContentType.Chat, false);
+        }
+
+        public void OnPlayerEnteredRoom(Player player)
+        {
+            ((InRoomContentHandler)m_ContentHandler).OnPlayerEnteredRoom(player);
+        }
+
+        public void OnPlayerLeftRoom(Player player)
+        {
+            ((InRoomContentHandler)m_ContentHandler).OnPlayerLeftRoom(player);
         }
 
         protected override void OnContentClosed()

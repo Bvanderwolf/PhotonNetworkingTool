@@ -54,7 +54,6 @@
             var statusUpdate = currentState != m_KnownState;
             if (statusUpdate)
             {
-                print(currentState);
                 m_KnownState = currentState;
                 m_Status.text = StringUtils.AddWhiteSpaceAtUppers(m_KnownState.ToString());
                 UpdateLoadTarget();

@@ -10,7 +10,7 @@
     using Enums;
     using HelperStructs;
 
-    public class ConnectCardHandler : MonoBehaviour, IConnectionCallbacks, ILobbyCallbacks
+    public class ConnectCardHandler : MonoBehaviour, IConnectCardCallbacks
     {
         [SerializeField, Tooltip("Check this flag, if you have multiple scenes for your game")]
         private bool m_DontDestroyOnLoad;
@@ -30,9 +30,6 @@
                 m_cardsDict.Add(key, card);
             }
 
-            InitCards();
-            EnableConnectCard(ConnectCard.StartConnect);
-
             if (m_DontDestroyOnLoad)
                 DontDestroyOnLoad(this.gameObject);
         }
@@ -48,16 +45,22 @@
 
         private void Start()
         {
+            //initialize all cards and enable the starting card (startconnect)
+            InitCards();
+            EnableConnectCard(ConnectCard.StartConnect);
+
             //get connection callbacks
             ConnectionManager.Instance.AddCallbackTarget(this);
             InLobbyManager.Instance.AddCallbackTarget(this);
+            InRoomManager.Instance.AddCallbackTarget(this);
         }
 
         private void OnDestroy()
         {
             //unsubscribe from getting callbacks
             ConnectionManager.Instance.RemoveCallbackTarget(this);
-            InLobbyManager.Instance.AddCallbackTarget(this);
+            InLobbyManager.Instance.RemoveCallbackTarget(this);
+            InRoomManager.Instance.AddCallbackTarget(this);
         }
 
         /// <summary>
@@ -234,10 +237,6 @@
             EnableConnectCard(newCard);
         }
 
-        public void OnConnected()
-        {
-        }
-
         public void OnDisconnected(DisconnectCause cause)
         {
             var activeCardCount = m_cardsDict.Count(p => p.Value.activeInHierarchy);
@@ -258,22 +257,6 @@
                 return;
             }
             ProvideDisconnectCardWithCause(cause);
-        }
-
-        public void OnConnectedToMaster()
-        {
-        }
-
-        public void OnCustomAuthenticationFailed(string debugMessage)
-        {
-        }
-
-        public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
-        {
-        }
-
-        public void OnRegionListReceived(RegionHandler regionHandler)
-        {
         }
 
         public void OnJoinedLobby()
@@ -317,6 +300,28 @@
             var roomsAvailable = roomList.Count != InLobbyContentHandler.ROOM_ITEM_AMOUNT;
             card.SetEnableStateOfCreateRoomButton(roomsAvailable);
             card.UpdateRoomListContent(roomList);
+        }
+
+        public void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            var card = m_cardsDict[ConnectCard.InRoom].GetComponent<InRoomConnectCardHandler>();
+            if (card == null)
+            {
+                Debug.LogError("Wont Update in room connect card :: card is not in dictionary");
+                return;
+            }
+            card.OnPlayerLeftRoom(otherPlayer);
+        }
+
+        public void OnPlayerEnteredRoom(Player newPlayer)
+        {
+            var card = m_cardsDict[ConnectCard.InRoom].GetComponent<InRoomConnectCardHandler>();
+            if (card == null)
+            {
+                Debug.LogError("Wont Update in room connect card :: card is not in dictionary");
+                return;
+            }
+            card.OnPlayerEnteredRoom(newPlayer);
         }
     }
 }

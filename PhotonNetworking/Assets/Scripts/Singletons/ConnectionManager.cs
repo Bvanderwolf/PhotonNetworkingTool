@@ -11,9 +11,8 @@
     {
         public static ConnectionManager Instance { get; private set; }
 
-        private List<IConnectionCallbacks> m_CallbackTargets = null;
-
         private IDeveloperCallbacks m_DeveloperTarget = null;
+        private IConnectCardCallbacks m_ConnectCardTarget = null;
 
         private bool m_AutomaticallySyncScene;
 
@@ -41,12 +40,10 @@
 
         public void AddCallbackTarget(object target)
         {
-            if (target as IConnectionCallbacks != null)
+            if (target as IConnectCardCallbacks != null)
             {
-                if (m_CallbackTargets == null)
-                    m_CallbackTargets = new List<IConnectionCallbacks>();
-
-                m_CallbackTargets.Add((IConnectionCallbacks)target);
+                if (m_ConnectCardTarget == null)
+                    m_ConnectCardTarget = (IConnectCardCallbacks)target;
             }
             else if (target as IDeveloperCallbacks != null)
             {
@@ -57,15 +54,10 @@
 
         public void RemoveCallbackTarget(object target)
         {
-            if (target as IConnectionCallbacks != null)
+            if (target as IConnectCardCallbacks != null)
             {
-                if (m_CallbackTargets != null)
-                {
-                    m_CallbackTargets.Remove((IConnectionCallbacks)target);
-
-                    if (m_CallbackTargets.Count == 0)
-                        m_CallbackTargets = null;
-                }
+                if (m_ConnectCardTarget != null)
+                    m_ConnectCardTarget = null;
             }
             else if (target as IDeveloperCallbacks != null)
             {
@@ -77,12 +69,6 @@
         public void OnConnected()
         {
             m_DeveloperTarget.OnConnected();
-
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnConnected();
         }
 
         public void ConnectToMaster(string nickname)
@@ -116,50 +102,24 @@
         public void OnConnectedToMaster()
         {
             m_DeveloperTarget.OnConnectedToMaster();
-
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnConnectedToMaster();
         }
 
         public void OnDisconnected(DisconnectCause cause)
         {
             m_DeveloperTarget?.OnDisconnected();
-
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnDisconnected(cause);
+            m_ConnectCardTarget?.OnDisconnected(cause);
         }
 
         public void OnRegionListReceived(RegionHandler regionHandler)
         {
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnRegionListReceived(regionHandler);
         }
 
         public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
         {
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnCustomAuthenticationResponse(data);
         }
 
         public void OnCustomAuthenticationFailed(string debugMessage)
         {
-            if (m_CallbackTargets == null)
-                return;
-
-            foreach (var target in m_CallbackTargets)
-                target.OnCustomAuthenticationFailed(debugMessage);
         }
     }
 }
