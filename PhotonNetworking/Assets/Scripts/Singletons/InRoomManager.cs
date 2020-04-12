@@ -77,6 +77,7 @@
 
         public void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
+            m_ConnectCardTarget.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
         }
 
         public void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)

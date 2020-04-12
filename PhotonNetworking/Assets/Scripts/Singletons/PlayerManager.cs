@@ -5,6 +5,7 @@
     using UnityEngine;
     using Photon.Realtime;
     using System.Linq;
+    using ConnectCards.Enums;
 
     public class PlayerManager : MonoBehaviour
     {
@@ -12,6 +13,8 @@
 
         public const string GENERIC_CONNECT_NAME = "Player";
         public const string GENERIC_NICKNAME_KEY = "GenericNickname";
+
+        public const string INROOMSTATUS_KEY = "InRoomStatus";
 
         private IDeveloperCallbacks m_DeveloperTarget = null;
 
@@ -53,6 +56,16 @@
         {
             var isGeneric = nickname == GENERIC_CONNECT_NAME;
             UpdateProperties<bool>(GENERIC_NICKNAME_KEY, isGeneric);
+        }
+
+        public void SetInRoomStatus(InRoomStatus status)
+        {
+            UpdateProperties<InRoomStatus>(INROOMSTATUS_KEY, status);
+        }
+
+        public InRoomStatus GetInRoomStatus(Player player)
+        {
+            return GetProperty<InRoomStatus>(INROOMSTATUS_KEY, player);
         }
 
         public bool HasGenericNickname()
@@ -112,10 +125,10 @@
             PhotonNetwork.SetPlayerCustomProperties(properties);
         }
 
-        public object GetProperty(string key)
+        public T GetProperty<T>(string key, Player player)
         {
-            var properties = PhotonNetwork.LocalPlayer.CustomProperties;
-            return properties.ContainsKey(key) ? properties[key] : null;
+            var properties = player.CustomProperties;
+            return properties.ContainsKey(key) ? (T)properties[key] : default;
         }
     }
 }

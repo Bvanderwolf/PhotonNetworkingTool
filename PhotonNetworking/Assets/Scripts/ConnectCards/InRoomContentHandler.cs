@@ -1,10 +1,10 @@
 ﻿namespace ConnectCards
 {
+    using ConnectCards.Enums;
     using Photon.Pun;
     using Photon.Realtime;
     using Singletons;
     using System;
-    using System.Collections;
     using System.Linq;
     using UnityEngine;
     using UnityEngine.EventSystems;
@@ -29,24 +29,18 @@
         {
             public Text Name;
             public Text Status;
+            public Selectable StatusSelectable;
             public Button SetMasterButton;
             public FocusAbleImage FocusAble;
             public GameObject GO;
-        }
-
-        private enum InRoomStatus
-        {
-            Inactive,
-            InPlayerlist,
-            Chatting,
-            Ready
         }
 
         private enum ChatBotMessages
         {
             PlayerLeft,
             PlayerJoined,
-            NewMasterClient
+            NewMasterClient,
+            IsReady
         }
 
         //*should implement for each chatbot message enum a message
@@ -54,7 +48,8 @@
         {
             (name) => name + " left the room",
             (name) => name + " joined the room",
-            (name) => name + " is the new host"
+            (name) => name + " is the new host",
+            (name) => name + " is ready to play"
         };
 
         private PlayerItem[] m_PlayerItems;
@@ -78,13 +73,14 @@
                 var child = m_PlayerListContent.GetChild(i);
                 m_PlayerItems[i].Name = child.Find("Name").GetComponent<Text>();
                 m_PlayerItems[i].Status = child.Find("Status").GetComponent<Text>();
+                m_PlayerItems[i].StatusSelectable = m_PlayerItems[i].Status.GetComponent<Selectable>();
                 m_PlayerItems[i].SetMasterButton = child.Find("SetMasterButton").GetComponent<Button>();
                 m_PlayerItems[i].FocusAble = child.GetComponent<FocusAbleImage>();
                 m_PlayerItems[i].FocusAble.AddListeners(OnPlayerItemSelected, OnPlayerItemDeselected);
                 m_PlayerItems[i].GO = child.gameObject;
             }
 
-            PlayerManager.Instance.UpdateProperties<InRoomStatus>("InRoomStatus", InRoomStatus.Inactive);
+            PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
         }
 
         public void SetActiveStateOfPlayerListContent(bool active)
@@ -113,15 +109,18 @@
         {
             item.Name.text = player.NickName;
 
-            var status = (InRoomStatus)player.CustomProperties["InRoomStatus"];
+            var status = PlayerManager.Instance.GetInRoomStatus(player);
             var statusString = StringUtils.AddWhiteSpaceAtUppers(status.ToString());
             item.Status.text = statusString;
+
+            var isMyItem = player == localPlayer;
+            item.StatusSelectable.interactable = isMyItem;
 
             var button = item.SetMasterButton;
             button.gameObject.SetActive(player.IsMasterClient);
             button.interactable = !player.IsMasterClient;
 
-            if (localPlayer.IsMasterClient && player != localPlayer)
+            if (localPlayer.IsMasterClient && !isMyItem)
             {
                 button.onClick.AddListener(() =>
                 {
@@ -150,6 +149,26 @@
                 if (item.Name.text != PhotonNetwork.NickName)
                     item.SetMasterButton.gameObject.SetActive(false);
             }
+        }
+
+        //should only be called when status selectable clicked is yours
+        public void OnStatusSelectableClick(BaseEventData data)
+        {
+            var item = m_PlayerItems.Where(i => i.StatusSelectable.gameObject == data.selectedObject).First();
+            var isReady = PlayerManager.Instance.GetInRoomStatus(PhotonNetwork.LocalPlayer) == InRoomStatus.Ready;
+            UpdateRoomStatus(item, isReady ? InRoomStatus.InPlayerlist : InRoomStatus.Ready);
+
+            if (!isReady)
+            {
+                //if the player wasn't ready when clicking, he is now ready and must wait on other players
+                //*disable interactability of playerlist and chat button
+            }
+        }
+
+        private void UpdateRoomStatus(PlayerItem item, InRoomStatus status)
+        {
+            item.Status.text = status.ToString();
+            PlayerManager.Instance.SetInRoomStatus(status);
         }
 
         public void OnSetMasterButtonClick(Player player)
@@ -230,6 +249,15 @@
         private bool IsClearInput(string input)
         {
             return input == "/Clear" || input == "/clear";
+        }
+
+        public void OnInRoomStatusChange(Player player, InRoomStatus status)
+        {
+            SetActiveStateOfPlayerListContent(false);
+            SetActiveStateOfPlayerListContent(true);
+
+            if (status == InRoomStatus.Ready)
+                AddTextToChat(ChatBotMessages.IsReady, player.NickName);
         }
 
         public void OnMasterClientChange(Player newMaster)

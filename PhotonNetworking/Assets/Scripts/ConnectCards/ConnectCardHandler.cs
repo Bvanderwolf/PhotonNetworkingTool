@@ -9,6 +9,7 @@
     using UnityEngine;
     using Enums;
     using HelperStructs;
+    using ExitGames.Client.Photon;
 
     public class ConnectCardHandler : MonoBehaviour, IConnectCardCallbacks
     {
@@ -333,6 +334,20 @@
                 return;
             }
             card.OnMasterClientChange(newMasterClient);
+        }
+
+        public void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+        {
+            if (changedProps.ContainsKey(PlayerManager.INROOMSTATUS_KEY))
+            {
+                var card = m_cardsDict[ConnectCard.InRoom].GetComponent<InRoomConnectCardHandler>();
+                if (card == null)
+                {
+                    Debug.LogError("Wont Update in room connect card :: card is not in dictionary");
+                    return;
+                }
+                card.OnInRoomStatusChange(targetPlayer, (InRoomStatus)changedProps[PlayerManager.INROOMSTATUS_KEY]);
+            }
         }
     }
 }

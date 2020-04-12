@@ -16,4 +16,12 @@
         Creating,
         Leaving
     }
+
+    public enum InRoomStatus
+    {
+        Inactive,
+        InPlayerlist,
+        Chatting,
+        Ready
+    }
 }

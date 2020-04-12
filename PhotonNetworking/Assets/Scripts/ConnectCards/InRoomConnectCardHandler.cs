@@ -1,7 +1,9 @@
 ﻿namespace ConnectCards
 {
+    using ConnectCards.Enums;
     using Photon.Pun;
     using Photon.Realtime;
+    using Singletons;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -42,6 +44,11 @@
             SetActiveStateOfContent(ContentType.Chat, false);
         }
 
+        public void OnInRoomStatusChange(Player player, InRoomStatus status)
+        {
+            ((InRoomContentHandler)m_ContentHandler).OnInRoomStatusChange(player, status);
+        }
+
         public void OnMasterClientChange(Player newMaster)
         {
             ((InRoomContentHandler)m_ContentHandler).OnMasterClientChange(newMaster);
@@ -75,6 +82,7 @@
                         m_ChatButton.interactable = true;
                         break;
                 }
+                PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
                 m_ContentOpen = ContentType.None;
             }
             else
@@ -92,10 +100,12 @@
             {
                 case ContentType.PlayerList:
                     m_PlayerListButton.interactable = true;
+                    PlayerManager.Instance.SetInRoomStatus(InRoomStatus.InPlayerlist);
                     break;
 
                 case ContentType.Chat:
                     m_ChatButton.interactable = true;
+                    PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Chatting);
                     break;
             }
         }

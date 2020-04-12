@@ -1,5 +1,6 @@
 ﻿namespace ConnectCards
 {
+    using ExitGames.Client.Photon;
     using Photon.Realtime;
     using System.Collections.Generic;
 
@@ -20,5 +21,7 @@
         void OnPlayerEnteredRoom(Player newPlayer);
 
         void OnMasterClientSwitched(Player newMasterClient);
+
+        void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps);
     }
 }
