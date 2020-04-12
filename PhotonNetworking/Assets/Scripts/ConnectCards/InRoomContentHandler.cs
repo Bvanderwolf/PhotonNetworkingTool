@@ -3,9 +3,7 @@
     using Photon.Pun;
     using Photon.Realtime;
     using Singletons;
-    using System.Linq;
     using UnityEngine;
-    using UnityEngine.EventSystems;
     using UnityEngine.UI;
     using Utils;
 
@@ -28,6 +26,7 @@
             public Text Name;
             public Text Status;
             public Button SetMasterButton;
+            public FocusAbleImage FocusAble;
             public GameObject GO;
         }
 
@@ -49,11 +48,13 @@
 
             for (int i = 0; i < m_PlayerItems.Length; i++)
             {
-                var item = m_PlayerListContent.GetChild(i);
-                m_PlayerItems[i].Name = item.Find("Name").GetComponent<Text>();
-                m_PlayerItems[i].Status = item.Find("Status").GetComponent<Text>();
-                m_PlayerItems[i].SetMasterButton = item.Find("SetMasterButton").GetComponent<Button>();
-                m_PlayerItems[i].GO = item.gameObject;
+                var child = m_PlayerListContent.GetChild(i);
+                m_PlayerItems[i].Name = child.Find("Name").GetComponent<Text>();
+                m_PlayerItems[i].Status = child.Find("Status").GetComponent<Text>();
+                m_PlayerItems[i].SetMasterButton = child.Find("SetMasterButton").GetComponent<Button>();
+                m_PlayerItems[i].FocusAble = child.GetComponent<FocusAbleImage>();
+                m_PlayerItems[i].FocusAble.AddListeners(OnPlayerItemSelected, OnPlayerItemDeselected);
+                m_PlayerItems[i].GO = child.gameObject;
             }
 
             PlayerManager.Instance.UpdateProperties<InRoomStatus>("InRoomStatus", InRoomStatus.Inactive);
@@ -102,6 +103,16 @@
             }
 
             item.GO.SetActive(true);
+        }
+
+        private void OnPlayerItemSelected(GameObject item)
+        {
+            print(item);
+        }
+
+        private void OnPlayerItemDeselected(GameObject item)
+        {
+            print(item);
         }
 
         public void OnSetMasterButtonClick(Player player)
