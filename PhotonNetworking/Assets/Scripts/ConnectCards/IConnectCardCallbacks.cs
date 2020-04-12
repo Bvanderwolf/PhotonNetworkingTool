@@ -18,5 +18,7 @@
         void OnPlayerLeftRoom(Player otherPlayer);
 
         void OnPlayerEnteredRoom(Player newPlayer);
+
+        void OnMasterClientSwitched(Player newMasterClient);
     }
 }

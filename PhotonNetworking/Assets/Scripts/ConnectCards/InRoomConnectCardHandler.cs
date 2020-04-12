@@ -42,6 +42,11 @@
             SetActiveStateOfContent(ContentType.Chat, false);
         }
 
+        public void OnMasterClientChange(Player newMaster)
+        {
+            ((InRoomContentHandler)m_ContentHandler).OnMasterClientChange(newMaster);
+        }
+
         public void OnPlayerEnteredRoom(Player player)
         {
             ((InRoomContentHandler)m_ContentHandler).OnPlayerEnteredRoom(player);

@@ -323,5 +323,16 @@
             }
             card.OnPlayerEnteredRoom(newPlayer);
         }
+
+        public void OnMasterClientSwitched(Player newMasterClient)
+        {
+            var card = m_cardsDict[ConnectCard.InRoom].GetComponent<InRoomConnectCardHandler>();
+            if (card == null)
+            {
+                Debug.LogError("Wont Update in room connect card :: card is not in dictionary");
+                return;
+            }
+            card.OnMasterClientChange(newMasterClient);
+        }
     }
 }

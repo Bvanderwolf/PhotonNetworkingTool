@@ -62,6 +62,7 @@
 
         public void OnMasterClientSwitched(Player newMasterClient)
         {
+            m_ConnectCardTarget.OnMasterClientSwitched(newMasterClient);
         }
 
         public void OnPlayerEnteredRoom(Player newPlayer)

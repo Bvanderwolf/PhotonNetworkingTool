@@ -3,6 +3,7 @@
     using Photon.Pun;
     using Photon.Realtime;
     using Singletons;
+    using System;
     using System.Linq;
     using UnityEngine;
     using UnityEngine.UI;
@@ -38,6 +39,16 @@
             Chatting,
             Ready
         }
+
+        private enum ChatBotMessages
+        {
+            PlayerLeft,
+            PlayerJoined,
+            NewMasterClient
+        }
+
+        //*should implement for each chatbot message enum a message
+        private Func<string, string>[] m_ChatBotMessages;
 
         private PlayerItem[] m_PlayerItems;
 
@@ -128,13 +139,18 @@
 
         public void OnSetMasterButtonClick(Player player)
         {
-            print("test");
-            //if (PhotonNetwork.IsMasterClient && player != PhotonNetwork.LocalPlayer)
-            //    PhotonNetwork.SetMasterClient(player);
+            if (PhotonNetwork.IsMasterClient && player != PhotonNetwork.LocalPlayer)
+                PhotonNetwork.SetMasterClient(player);
         }
 
         public void SetActiveStateOfChatContent(bool value)
         {
+        }
+
+        public void OnMasterClientChange(Player newMaster)
+        {
+            SetActiveStateOfPlayerListContent(false);
+            SetActiveStateOfPlayerListContent(true);
         }
 
         public void OnPlayerEnteredRoom(Player player)
