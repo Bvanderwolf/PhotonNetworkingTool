@@ -3,6 +3,7 @@
     using Photon.Pun;
     using Photon.Realtime;
     using Singletons;
+    using System.Linq;
     using UnityEngine;
     using UnityEngine.UI;
     using Utils;
@@ -105,14 +106,24 @@
             item.GO.SetActive(true);
         }
 
-        private void OnPlayerItemSelected(GameObject item)
+        private void OnPlayerItemSelected(GameObject selectedItem)
         {
-            print(item);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                var item = m_PlayerItems.Where(i => i.GO == selectedItem).First();
+                if (item.Name.text != PhotonNetwork.NickName)
+                    item.SetMasterButton.gameObject.SetActive(true);
+            }
         }
 
-        private void OnPlayerItemDeselected(GameObject item)
+        private void OnPlayerItemDeselected(GameObject deselectedItem)
         {
-            print(item);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                var item = m_PlayerItems.Where(i => i.GO == deselectedItem).First();
+                if (item.Name.text != PhotonNetwork.NickName)
+                    item.SetMasterButton.gameObject.SetActive(false);
+            }
         }
 
         public void OnSetMasterButtonClick(Player player)
