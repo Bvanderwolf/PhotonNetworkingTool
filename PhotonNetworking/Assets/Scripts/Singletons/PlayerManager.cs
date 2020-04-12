@@ -52,13 +52,13 @@
         public void SetHasGenericNickname(string nickname)
         {
             var isGeneric = nickname == GENERIC_CONNECT_NAME;
-            UpdateProperties<bool>(GENERIC_CONNECT_NAME, isGeneric);
+            UpdateProperties<bool>(GENERIC_NICKNAME_KEY, isGeneric);
         }
 
         public bool HasGenericNickname()
         {
-            return PhotonNetwork.NickName == GENERIC_CONNECT_NAME
-                || (bool)PhotonNetwork.LocalPlayer.CustomProperties[GENERIC_NICKNAME_KEY];
+            var player = PhotonNetwork.LocalPlayer;
+            return player.NickName == GENERIC_CONNECT_NAME || (bool)player.CustomProperties[GENERIC_NICKNAME_KEY];
         }
 
         public void OnCreatingRoom()
