@@ -121,8 +121,8 @@
                     break;
 
                 case ConnectCard.InRoom:
-                    bool startedGame = (bool)args;
-                    HandleInRoomConnectResult(startedGame);
+                    bool succes = (bool)args;
+                    HandleInRoomConnectResult(succes);
                     break;
             }
         }
@@ -172,11 +172,12 @@
             }
         }
 
-        private void HandleInRoomConnectResult(bool startedGame)
+        private void HandleInRoomConnectResult(bool succes)
         {
-            if (startedGame)
+            if (succes)
             {
                 Debug.LogError("game can now be loaded");
+                DisableConnectCard(ConnectCard.InRoom);
             }
             else
             {

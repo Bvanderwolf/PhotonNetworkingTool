@@ -36,8 +36,12 @@
         protected override void OnDisable()
         {
             base.OnDisable();
+
             SetActiveStateOfContent(ContentType.CreateRoom, false);
             SetActiveStateOfContent(ContentType.RoomList, false);
+
+            m_ContentOpen = ContentType.None;
+
             ((InLobbyContentHandler)m_ContentHandler).CleanCreateRoomForm();
         }
 

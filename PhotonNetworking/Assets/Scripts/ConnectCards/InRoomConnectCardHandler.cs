@@ -23,6 +23,8 @@
 
         private PhotonView m_PV;
 
+        private bool m_ClosingCountdownSuccesfully = false;
+
         public override void Init()
         {
             base.Init();
@@ -48,9 +50,14 @@
         protected override void OnDisable()
         {
             base.OnDisable();
+
             SetInteractableStateOfContentButtons(true);
             SetActiveStateOfContent(ContentType.PlayerList, false);
             SetActiveStateOfContent(ContentType.Chat, false);
+
+            m_ClosingCountdownSuccesfully = false;
+            m_ContentOpen = ContentType.None;
+
             PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
         }
 
@@ -65,13 +72,18 @@
                 m_PV.RPC("UpdateChatWithMessage", RpcTarget.AllViaServer, msg, PhotonNetwork.LocalPlayer);
         }
 
-        private void OnCountdownStopped(bool atZeroCount)
+        private void OnCountdownStopped(bool atZeroCount, Player byPlayer)
         {
-            m_PV.RPC("StartOrStopCountdown", RpcTarget.AllViaServer, false, PhotonNetwork.LocalPlayer);
             if (atZeroCount)
             {
                 //ending the countdown at zero means we ended the task succesfully
-                OnTaskFinished(true);
+                m_ClosingCountdownSuccesfully = true;
+                CloseContent();
+            }
+            else
+            {
+                //if the count down wasn't stopped at zero count, a player will have to let others know
+                m_PV.RPC("StartOrStopCountdown", RpcTarget.AllViaServer, false, byPlayer.NickName);
             }
         }
 
@@ -87,10 +99,10 @@
             if (PhotonNetwork.IsMasterClient)
             {
                 var readyStatuses = PlayerManager.Instance.GetSharedProperties<InRoomStatus>(PlayerManager.INROOMSTATUS_KEY);
-                var allReady = readyStatuses.TrueForAll(s => s == InRoomStatus.Ready);
+                var allReady = InRoomManager.Instance.IsFull && readyStatuses.TrueForAll(s => s == InRoomStatus.Ready);
                 if (allReady)
                 {
-                    m_PV.RPC("StartOrStopCountdown", RpcTarget.AllViaServer, true, PhotonNetwork.LocalPlayer);
+                    m_PV.RPC("StartOrStopCountdown", RpcTarget.AllViaServer, true, PhotonNetwork.LocalPlayer.NickName);
                 }
             }
         }
@@ -119,7 +131,16 @@
             if (m_DetourContent == ContentType.None)
             {
                 SetInteractableStateOfContentButtons(true);
+
                 PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
+
+                var closingCountdown = m_ContentOpen == ContentType.Countdown;
+                if (closingCountdown && m_ClosingCountdownSuccesfully)
+                {
+                    m_ClosingCountdownSuccesfully = false;
+                    OnTaskFinished(true);
+                }
+
                 m_ContentOpen = ContentType.None;
             }
             else
@@ -204,7 +225,7 @@
         }
 
         [PunRPC]
-        private void StartOrStopCountdown(bool start, Player sender)
+        private void StartOrStopCountdown(bool start, string senderNickName)
         {
             if (start)
             {
@@ -213,7 +234,7 @@
             else
             {
                 CloseContent();
-                ((InRoomContentHandler)m_ContentHandler).AddTextToChat(ChatBotMessages.StoppedCountdown, sender.NickName);
+                ((InRoomContentHandler)m_ContentHandler).AddTextToChat(ChatBotMessages.StoppedCountdown, senderNickName);
             }
         }
     }

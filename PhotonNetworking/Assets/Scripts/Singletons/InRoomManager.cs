@@ -15,6 +15,15 @@
         // ---According to photon, when using their cloud service, 20 ccu is maximum, this can be put to this value ---
         public const int MAX_PLAYERS_AMMOUNT = 8;
 
+        public bool IsFull
+        {
+            get
+            {
+                var room = PhotonNetwork.CurrentRoom;
+                return room != null && room.PlayerCount == room.MaxPlayers;
+            }
+        }
+
         private void Awake()
         {
             Instance = this;

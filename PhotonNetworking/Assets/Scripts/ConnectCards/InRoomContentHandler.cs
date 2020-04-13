@@ -65,7 +65,7 @@
 
         public event Action<string> ChatMessageHandled;
 
-        public event Action<bool> CountdownStopped;
+        public event Action<bool, Player> CountdownStopped;
 
         public override void Init()
         {
@@ -91,6 +91,8 @@
 
         public void SetActiveStateOfPlayerListContent(bool active)
         {
+            m_PlayerListContent.gameObject.SetActive(active);
+
             if (!active)
             {
                 foreach (var item in m_PlayerItems)
@@ -188,7 +190,7 @@
         {
             if (m_CountdownHandler.CountingDown)
             {
-                CountdownStopped(false);
+                CountdownStopped(false, PhotonNetwork.LocalPlayer);
             }
         }
 
@@ -285,7 +287,7 @@
             m_CountdownHandler.StartCountDown(() =>
             {
                 //countdown stopped at zero (succesfull)
-                CountdownStopped(true);
+                CountdownStopped(true, null);
             },
             (count) =>
             {
@@ -297,8 +299,11 @@
 
         public void OnInRoomStatusChange(Player player, InRoomStatus status)
         {
-            SetActiveStateOfPlayerListContent(false);
-            SetActiveStateOfPlayerListContent(true);
+            if (m_PlayerListContent.gameObject.activeInHierarchy)
+            {
+                SetActiveStateOfPlayerListContent(false);
+                SetActiveStateOfPlayerListContent(true);
+            }
 
             if (status == InRoomStatus.Ready)
                 AddTextToChat(ChatBotMessages.IsReady, player.NickName);
@@ -306,22 +311,37 @@
 
         public void OnMasterClientChange(Player newMaster)
         {
-            SetActiveStateOfPlayerListContent(false);
-            SetActiveStateOfPlayerListContent(true);
+            if (m_PlayerListContent.gameObject.activeInHierarchy)
+            {
+                SetActiveStateOfPlayerListContent(false);
+                SetActiveStateOfPlayerListContent(true);
+            }
+
             AddTextToChat(ChatBotMessages.NewMasterClient, newMaster.NickName);
         }
 
         public void OnPlayerEnteredRoom(Player player)
         {
-            SetActiveStateOfPlayerListContent(false);
-            SetActiveStateOfPlayerListContent(true);
+            if (m_PlayerListContent.gameObject.activeInHierarchy)
+            {
+                SetActiveStateOfPlayerListContent(false);
+                SetActiveStateOfPlayerListContent(true);
+            }
+
             AddTextToChat(ChatBotMessages.PlayerJoined, player.NickName);
         }
 
         public void OnPlayerLeftRoom(Player player)
         {
-            SetActiveStateOfPlayerListContent(false);
-            SetActiveStateOfPlayerListContent(true);
+            if (m_PlayerListContent.gameObject.activeInHierarchy)
+            {
+                SetActiveStateOfPlayerListContent(false);
+                SetActiveStateOfPlayerListContent(true);
+            }
+            else if (m_CountdownHandler.gameObject.activeInHierarchy || m_CountdownHandler.CountingDown)
+            {
+                CountdownStopped(false, player);
+            }
             AddTextToChat(ChatBotMessages.PlayerLeft, player.NickName);
         }
     }
