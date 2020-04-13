@@ -60,6 +60,8 @@
         private const int CHAT_INPUT_CHAR_AMOUNT = 50;
         private int m_CurrentChatLine = 0;
 
+        private const string READYUP_TEXT = "Click To ReadyUp";
+
         public override void Init()
         {
             base.Init();
@@ -109,11 +111,12 @@
         {
             item.Name.text = player.NickName;
 
-            var status = PlayerManager.Instance.GetInRoomStatus(player);
-            var statusString = StringUtils.AddWhiteSpaceAtUppers(status.ToString());
-            item.Status.text = statusString;
-
             var isMyItem = player == localPlayer;
+            var status = PlayerManager.Instance.GetInRoomStatus(player);
+            var localInPlayerList = status == InRoomStatus.InPlayerlist && isMyItem;
+
+            var statusString = localInPlayerList ? READYUP_TEXT : StringUtils.AddWhiteSpaceAtUppers(status.ToString());
+            item.Status.text = statusString;
             item.StatusSelectable.interactable = isMyItem;
 
             var button = item.SetMasterButton;
@@ -170,7 +173,8 @@
 
         private void UpdateRoomStatus(PlayerItem item, InRoomStatus status)
         {
-            item.Status.text = status.ToString();
+            var localInPlayerList = status == InRoomStatus.InPlayerlist && item.Name.text == PhotonNetwork.NickName;
+            item.Status.text = localInPlayerList ? READYUP_TEXT : status.ToString();
             PlayerManager.Instance.SetInRoomStatus(status);
         }
 
