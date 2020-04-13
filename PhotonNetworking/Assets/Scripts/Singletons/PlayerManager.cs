@@ -6,6 +6,7 @@
     using Photon.Realtime;
     using System.Linq;
     using ConnectCards.Enums;
+    using System.Collections.Generic;
 
     public class PlayerManager : MonoBehaviour
     {
@@ -129,6 +130,24 @@
         {
             var properties = player.CustomProperties;
             return properties.ContainsKey(key) ? (T)properties[key] : default;
+        }
+
+        /// <summary>
+        /// returns a list with shared properties among players based on
+        /// given key
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public List<T> GetSharedProperties<T>(string key)
+        {
+            List<T> l = new List<T>();
+
+            foreach (var pair in PhotonNetwork.CurrentRoom.Players)
+                if (pair.Value.CustomProperties.ContainsKey(key))
+                    l.Add((T)pair.Value.CustomProperties[key]);
+
+            return l;
         }
     }
 }

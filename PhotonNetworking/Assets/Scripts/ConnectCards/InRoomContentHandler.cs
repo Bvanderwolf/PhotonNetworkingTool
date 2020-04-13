@@ -62,6 +62,8 @@
 
         private const string READYUP_TEXT = "Click To ReadyUp";
 
+        public event Action<bool> ReadyStatusChanged;
+
         public override void Init()
         {
             base.Init();
@@ -160,14 +162,10 @@
                 return;
 
             var item = m_PlayerItems.Where(i => i.StatusSelectable.gameObject == data.selectedObject).First();
-            var isReady = PlayerManager.Instance.GetInRoomStatus(PhotonNetwork.LocalPlayer) == InRoomStatus.Ready;
-            UpdateRoomStatus(item, isReady ? InRoomStatus.InPlayerlist : InRoomStatus.Ready);
-
-            if (!isReady)
-            {
-                //if the player wasn't ready when clicking, he is now ready and must wait on other players
-                //*disable interactability of playerlist and chat button
-            }
+            var wasReady = PlayerManager.Instance.GetInRoomStatus(PhotonNetwork.LocalPlayer) == InRoomStatus.Ready;
+            //if the player wasn't ready when clicking, he is now ready
+            UpdateRoomStatus(item, wasReady ? InRoomStatus.InPlayerlist : InRoomStatus.Ready);
+            ReadyStatusChanged(!wasReady);
         }
 
         private void UpdateRoomStatus(PlayerItem item, InRoomStatus status)

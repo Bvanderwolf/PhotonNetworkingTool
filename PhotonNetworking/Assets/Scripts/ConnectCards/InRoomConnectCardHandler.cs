@@ -30,6 +30,8 @@
             m_LeaveRoomButton.onClick.AddListener(OnLeaveRoomButtonClick);
 
             m_ContentHandler.Init();
+
+            ((InRoomContentHandler)m_ContentHandler).ReadyStatusChanged += OnInRoomReadyStatusChange;
         }
 
         private void OnEnable()
@@ -40,13 +42,34 @@
         protected override void OnDisable()
         {
             base.OnDisable();
+            SetActiveStateOfReadyConstraints(true);
             SetActiveStateOfContent(ContentType.PlayerList, false);
             SetActiveStateOfContent(ContentType.Chat, false);
+        }
+
+        private void OnInRoomReadyStatusChange(bool ready)
+        {
+            SetActiveStateOfReadyConstraints(!ready);
+        }
+
+        private void SetActiveStateOfReadyConstraints(bool active)
+        {
+            m_PlayerListButton.interactable = active;
+            m_ChatButton.interactable = active;
         }
 
         public void OnInRoomStatusChange(Player player, InRoomStatus status)
         {
             ((InRoomContentHandler)m_ContentHandler).OnInRoomStatusChange(player, status);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                var readyStatuses = PlayerManager.Instance.GetSharedProperties<InRoomStatus>(PlayerManager.INROOMSTATUS_KEY);
+                var allReady = readyStatuses.TrueForAll(s => s == InRoomStatus.Ready);
+                if (allReady)
+                {
+                    print("all ready");
+                }
+            }
         }
 
         public void OnMasterClientChange(Player newMaster)
