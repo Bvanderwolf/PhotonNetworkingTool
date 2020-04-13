@@ -154,6 +154,9 @@
         //should only be called when status selectable clicked is yours
         public void OnStatusSelectableClick(BaseEventData data)
         {
+            if (data.selectedObject == null)
+                return;
+
             var item = m_PlayerItems.Where(i => i.StatusSelectable.gameObject == data.selectedObject).First();
             var isReady = PlayerManager.Instance.GetInRoomStatus(PhotonNetwork.LocalPlayer) == InRoomStatus.Ready;
             UpdateRoomStatus(item, isReady ? InRoomStatus.InPlayerlist : InRoomStatus.Ready);
