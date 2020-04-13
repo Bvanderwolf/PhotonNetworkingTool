@@ -81,7 +81,6 @@
                 m_PlayerItems[i].FocusAble.AddListeners(OnPlayerItemSelected, OnPlayerItemDeselected);
                 m_PlayerItems[i].GO = child.gameObject;
             }
-
             PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
         }
 

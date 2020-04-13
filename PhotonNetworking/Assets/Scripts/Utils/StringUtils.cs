@@ -1,8 +1,9 @@
 ﻿namespace Utils
 {
     using System.Text;
+    using UnityEngine;
 
-    public class StringUtils
+    public static class StringUtils
     {
         /// <summary>
         /// Returns given string with white spaces between
@@ -25,6 +26,19 @@
             }
 
             return newText.ToString();
+        }
+
+        public static void Print(params object[] a)
+        {
+            if (a != null && a.Length != 0)
+            {
+                string log = "";
+                foreach (var s in a)
+                {
+                    log += $"{s.ToString()} | ";
+                }
+                Debug.Log(log);
+            }
         }
     }
 }
