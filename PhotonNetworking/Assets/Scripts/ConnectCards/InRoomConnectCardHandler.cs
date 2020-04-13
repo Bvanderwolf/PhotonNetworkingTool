@@ -45,6 +45,7 @@
             SetActiveStateOfReadyConstraints(true);
             SetActiveStateOfContent(ContentType.PlayerList, false);
             SetActiveStateOfContent(ContentType.Chat, false);
+            PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
         }
 
         private void OnInRoomReadyStatusChange(bool ready)

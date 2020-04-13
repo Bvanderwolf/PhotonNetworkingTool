@@ -111,6 +111,14 @@
             });
         }
 
+        public void CleanCreateRoomForm()
+        {
+            m_CreateRoomTools.RoomName.text = "";
+            m_CreateRoomTools.MaxPlayers.text = "";
+            m_CreateRoomTools.IsOpen.isOn = true;
+            m_CreateRoomTools.IsVisible.isOn = true;
+        }
+
         public void CleanCreateRoomFeedBackText()
         {
             m_CreateRoomTools.Feedback.text = "";

@@ -38,6 +38,7 @@
             base.OnDisable();
             SetActiveStateOfContent(ContentType.CreateRoom, false);
             SetActiveStateOfContent(ContentType.RoomList, false);
+            ((InLobbyContentHandler)m_ContentHandler).CleanCreateRoomForm();
         }
 
         public void UpdateRoomListContent(List<RoomInfo> roomList)
