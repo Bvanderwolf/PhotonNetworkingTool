@@ -119,13 +119,15 @@
         private void AddToLobbyRooms(string lobbyName, RoomInfo room)
         {
             if (m_LobbyRooms.ContainsKey(lobbyName))
-                m_LobbyRooms[lobbyName].Add(room);
+                if (!m_LobbyRooms[lobbyName].Contains(room))
+                    m_LobbyRooms[lobbyName].Add(room);
         }
 
         private void RemoveFromLobbyRooms(string lobbyName, RoomInfo room)
         {
             if (m_LobbyRooms.ContainsKey(lobbyName))
-                m_LobbyRooms[lobbyName].Remove(room);
+                if (m_LobbyRooms[lobbyName].Contains(room))
+                    m_LobbyRooms[lobbyName].Remove(room);
         }
 
         public void SetActiveStateOfRoomListContent(bool active)
