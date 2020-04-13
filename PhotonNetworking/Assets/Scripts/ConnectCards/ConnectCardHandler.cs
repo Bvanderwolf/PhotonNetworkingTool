@@ -176,6 +176,7 @@
         {
             if (startedGame)
             {
+                Debug.LogError("game can now be loaded");
             }
             else
             {

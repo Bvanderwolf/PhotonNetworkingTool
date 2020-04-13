@@ -21,6 +21,8 @@
         [SerializeField]
         private Text m_Title;
 
+        private PhotonView m_PV;
+
         public override void Init()
         {
             base.Init();
@@ -29,9 +31,13 @@
             m_ChatButton.onClick.AddListener(OnChatButtonClick);
             m_LeaveRoomButton.onClick.AddListener(OnLeaveRoomButtonClick);
 
-            m_ContentHandler.Init();
+            m_PV = GetComponent<PhotonView>();
 
-            ((InRoomContentHandler)m_ContentHandler).ReadyStatusChanged += OnInRoomReadyStatusChange;
+            InRoomContentHandler handler = (InRoomContentHandler)m_ContentHandler;
+            handler.Init();
+            handler.ReadyStatusChanged += OnInRoomReadyStatusChange;
+            handler.ChatMessageHandled += OnChatMessageHandled;
+            handler.CountdownStopped += OnCountdownStopped;
         }
 
         private void OnEnable()
@@ -42,7 +48,7 @@
         protected override void OnDisable()
         {
             base.OnDisable();
-            SetActiveStateOfReadyConstraints(true);
+            SetInteractableStateOfContentButtons(true);
             SetActiveStateOfContent(ContentType.PlayerList, false);
             SetActiveStateOfContent(ContentType.Chat, false);
             PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
@@ -50,13 +56,29 @@
 
         private void OnInRoomReadyStatusChange(bool ready)
         {
-            SetActiveStateOfReadyConstraints(!ready);
+            SetInteractableStateOfContentButtons(!ready);
         }
 
-        private void SetActiveStateOfReadyConstraints(bool active)
+        private void OnChatMessageHandled(string msg)
         {
-            m_PlayerListButton.interactable = active;
-            m_ChatButton.interactable = active;
+            if (!string.IsNullOrEmpty(msg))
+                m_PV.RPC("UpdateChatWithMessage", RpcTarget.AllViaServer, msg, PhotonNetwork.LocalPlayer);
+        }
+
+        private void OnCountdownStopped(bool atZeroCount)
+        {
+            m_PV.RPC("StartOrStopCountdown", RpcTarget.AllViaServer, false, PhotonNetwork.LocalPlayer);
+            if (atZeroCount)
+            {
+                //ending the countdown at zero means we ended the task succesfully
+                OnTaskFinished(true);
+            }
+        }
+
+        private void SetInteractableStateOfContentButtons(bool interactable)
+        {
+            m_PlayerListButton.interactable = interactable;
+            m_ChatButton.interactable = interactable;
         }
 
         public void OnInRoomStatusChange(Player player, InRoomStatus status)
@@ -68,7 +90,7 @@
                 var allReady = readyStatuses.TrueForAll(s => s == InRoomStatus.Ready);
                 if (allReady)
                 {
-                    print("all ready");
+                    m_PV.RPC("StartOrStopCountdown", RpcTarget.AllViaServer, true, PhotonNetwork.LocalPlayer);
                 }
             }
         }
@@ -96,16 +118,7 @@
 
             if (m_DetourContent == ContentType.None)
             {
-                switch (m_ContentOpen)
-                {
-                    case ContentType.PlayerList:
-                        m_PlayerListButton.interactable = true;
-                        break;
-
-                    case ContentType.Chat:
-                        m_ChatButton.interactable = true;
-                        break;
-                }
+                SetInteractableStateOfContentButtons(true);
                 PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
                 m_ContentOpen = ContentType.None;
             }
@@ -123,13 +136,17 @@
             switch (m_ContentOpen)
             {
                 case ContentType.PlayerList:
-                    m_PlayerListButton.interactable = true;
+                    SetInteractableStateOfContentButtons(true);
                     PlayerManager.Instance.SetInRoomStatus(InRoomStatus.InPlayerlist);
                     break;
 
                 case ContentType.Chat:
-                    m_ChatButton.interactable = true;
+                    SetInteractableStateOfContentButtons(true);
                     PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Chatting);
+                    break;
+
+                case ContentType.Countdown:
+                    ((InRoomContentHandler)m_ContentHandler).StartGameCountdown();
                     break;
             }
         }
@@ -151,7 +168,7 @@
                     break;
             }
 
-            m_PlayerListButton.interactable = false;
+            SetInteractableStateOfContentButtons(false);
         }
 
         private void OnChatButtonClick()
@@ -171,13 +188,33 @@
                     break;
             }
 
-            m_ChatButton.interactable = false;
+            SetInteractableStateOfContentButtons(false);
         }
 
         private void OnLeaveRoomButtonClick()
         {
             //leaving means, the task is not finished succesfully
             OnTaskFinished(false);
+        }
+
+        [PunRPC]
+        private void UpdateChatWithMessage(string message, Player sender)
+        {
+            ((InRoomContentHandler)m_ContentHandler).AddTextToChat(message, sender);
+        }
+
+        [PunRPC]
+        private void StartOrStopCountdown(bool start, Player sender)
+        {
+            if (start)
+            {
+                CloseContent(ContentType.Countdown);
+            }
+            else
+            {
+                CloseContent();
+                ((InRoomContentHandler)m_ContentHandler).AddTextToChat(ChatBotMessages.StoppedCountdown, sender.NickName);
+            }
         }
     }
 }

@@ -97,23 +97,20 @@
                     break;
             }
 
-            m_JoinRoomButton.interactable = false;
+            SetInteractableStateOfContentButtons(false);
+        }
+
+        private void SetInteractableStateOfContentButtons(bool interactable)
+        {
+            m_JoinRoomButton.interactable = interactable;
+            m_CreateRoomButton.interactable = interactable;
         }
 
         protected override void OnContentOpened()
         {
             base.OnContentOpened();
 
-            switch (m_ContentOpen)
-            {
-                case ContentType.RoomList:
-                    m_JoinRoomButton.interactable = true;
-                    break;
-
-                case ContentType.CreateRoom:
-                    m_CreateRoomButton.interactable = true;
-                    break;
-            }
+            SetInteractableStateOfContentButtons(true);
         }
 
         protected override void OnContentClosed()
@@ -124,16 +121,7 @@
 
             if (m_DetourContent == ContentType.None)
             {
-                switch (m_ContentOpen)
-                {
-                    case ContentType.RoomList:
-                        m_JoinRoomButton.interactable = true;
-                        break;
-
-                    case ContentType.CreateRoom:
-                        m_CreateRoomButton.interactable = true;
-                        break;
-                }
+                SetInteractableStateOfContentButtons(true);
                 m_ContentOpen = ContentType.None;
             }
             else
@@ -160,7 +148,7 @@
                     break;
             }
 
-            m_CreateRoomButton.interactable = false;
+            SetInteractableStateOfContentButtons(false);
         }
 
         private void OnLeaveLobbyButtonClick()

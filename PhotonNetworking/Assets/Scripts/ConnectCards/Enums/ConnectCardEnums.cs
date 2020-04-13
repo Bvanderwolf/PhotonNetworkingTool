@@ -24,4 +24,13 @@
         Chatting,
         Ready
     }
+
+    public enum ChatBotMessages
+    {
+        PlayerLeft,
+        PlayerJoined,
+        NewMasterClient,
+        IsReady,
+        StoppedCountdown
+    }
 }

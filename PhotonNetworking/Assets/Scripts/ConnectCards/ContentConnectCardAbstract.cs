@@ -13,7 +13,8 @@
             RoomList,
             CreateRoom,
             PlayerList,
-            Chat
+            Chat,
+            Countdown
         }
 
         protected Animator m_ContentAnimator;
@@ -78,6 +79,10 @@
 
                 case ContentType.Chat:
                     ((InRoomContentHandler)m_ContentHandler).SetActiveStateOfChatContent(value);
+                    break;
+
+                case ContentType.Countdown:
+                    ((InRoomContentHandler)m_ContentHandler).SetActiveStatusOfCountdownContent(value);
                     break;
             }
         }

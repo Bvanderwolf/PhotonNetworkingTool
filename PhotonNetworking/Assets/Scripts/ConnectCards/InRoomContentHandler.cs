@@ -25,6 +25,12 @@
         [SerializeField]
         private InputField m_ChatInput;
 
+        [SerializeField]
+        private CountDownHandler m_CountdownHandler;
+
+        [SerializeField]
+        private Button m_CountdownStopButton;
+
         private struct PlayerItem
         {
             public Text Name;
@@ -35,42 +41,39 @@
             public GameObject GO;
         }
 
-        private enum ChatBotMessages
-        {
-            PlayerLeft,
-            PlayerJoined,
-            NewMasterClient,
-            IsReady
-        }
-
         //*should implement for each chatbot message enum a message
         private Func<string, string>[] m_ChatBotMessages = new Func<string, string>[]
         {
             (name) => name + " left the room",
             (name) => name + " joined the room",
             (name) => name + " is the new host",
-            (name) => name + " is ready to play"
+            (name) => name + " is ready to play",
+            (name) => name + " stopped countdown"
         };
 
         private PlayerItem[] m_PlayerItems;
-
-        private PhotonView m_PV;
 
         private const int CHAT_LINE_AMOUNT = 45;
         private const int CHAT_INPUT_CHAR_AMOUNT = 50;
         private int m_CurrentChatLine = 0;
 
+        private const int DISABLE_STOP_COUNT = 3;
+
         private const string READYUP_TEXT = "Click To ReadyUp";
 
         public event Action<bool> ReadyStatusChanged;
+
+        public event Action<string> ChatMessageHandled;
+
+        public event Action<bool> CountdownStopped;
 
         public override void Init()
         {
             base.Init();
 
             m_PlayerItems = new PlayerItem[InRoomManager.MAX_PLAYERS_AMMOUNT];
-            m_PV = GetComponent<PhotonView>();
             m_ChatInput.characterLimit = CHAT_INPUT_CHAR_AMOUNT;
+            m_CountdownStopButton.onClick.AddListener(OnStopCountdownButtonClick);
 
             for (int i = 0; i < m_PlayerItems.Length; i++)
             {
@@ -175,10 +178,18 @@
             PlayerManager.Instance.SetInRoomStatus(status);
         }
 
-        public void OnSetMasterButtonClick(Player player)
+        private void OnSetMasterButtonClick(Player player)
         {
             if (PhotonNetwork.IsMasterClient && player != PhotonNetwork.LocalPlayer)
                 PhotonNetwork.SetMasterClient(player);
+        }
+
+        private void OnStopCountdownButtonClick()
+        {
+            if (m_CountdownHandler.CountingDown)
+            {
+                CountdownStopped(false);
+            }
         }
 
         public void SetActiveStateOfChatContent(bool value)
@@ -197,7 +208,7 @@
                 return;
             }
 
-            m_PV.RPC("UpdateChatWithMessage", RpcTarget.AllViaServer, input, PhotonNetwork.LocalPlayer);
+            ChatMessageHandled(input);
         }
 
         private void ResetFocusOnChatInput()
@@ -226,7 +237,7 @@
             m_ChatText.text = text.Substring(indexOfNewLine);
         }
 
-        private void AddTextToChat(string text, Player sender)
+        public void AddTextToChat(string text, Player sender)
         {
             if (m_CurrentChatLine != CHAT_LINE_AMOUNT)
                 m_CurrentChatLine++;
@@ -238,7 +249,7 @@
             m_ChatText.text += (time + user + ": " + text + "\n");
         }
 
-        private void AddTextToChat(ChatBotMessages message, string nameOfPlayer)
+        public void AddTextToChat(ChatBotMessages message, string nameOfPlayer)
         {
             if (m_CurrentChatLine != CHAT_LINE_AMOUNT)
                 m_CurrentChatLine++;
@@ -253,6 +264,35 @@
         private bool IsClearInput(string input)
         {
             return input == "/Clear" || input == "/clear";
+        }
+
+        public void SetActiveStatusOfCountdownContent(bool active)
+        {
+            if (active)
+            {
+                m_CountdownHandler.gameObject.SetActive(true);
+            }
+            else
+            {
+                m_CountdownHandler.StopCountdown();
+                m_CountdownHandler.gameObject.SetActive(false);
+                m_CountdownStopButton.interactable = true;
+            }
+        }
+
+        public void StartGameCountdown()
+        {
+            m_CountdownHandler.StartCountDown(() =>
+            {
+                //countdown stopped at zero (succesfull)
+                CountdownStopped(true);
+            },
+            (count) =>
+            {
+                //check each count if stop button can be disabled
+                if (count == DISABLE_STOP_COUNT)
+                    m_CountdownStopButton.interactable = false;
+            });
         }
 
         public void OnInRoomStatusChange(Player player, InRoomStatus status)
@@ -283,12 +323,6 @@
             SetActiveStateOfPlayerListContent(false);
             SetActiveStateOfPlayerListContent(true);
             AddTextToChat(ChatBotMessages.PlayerLeft, player.NickName);
-        }
-
-        [PunRPC]
-        private void UpdateChatWithMessage(string message, Player sender)
-        {
-            AddTextToChat(message, sender);
         }
     }
 }

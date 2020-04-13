@@ -123,7 +123,11 @@
             {
                 properties.Add(key, (T)value);
             }
-            PhotonNetwork.SetPlayerCustomProperties(properties);
+
+            if (PhotonNetwork.IsConnected)
+                PhotonNetwork.SetPlayerCustomProperties(properties);
+            else
+                PhotonNetwork.LocalPlayer.CustomProperties = properties;
         }
 
         public T GetProperty<T>(string key, Player player)
