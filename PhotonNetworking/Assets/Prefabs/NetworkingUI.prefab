@@ -4193,6 +4193,11 @@ MonoBehaviour:
   - {fileID: 8278140421897510796}
   BuildIndexOfGameScene: 1
   BackGroundSprite: {fileID: 21300000, guid: 3aaf75aac1fb0d44c99e60aaa25d18a9, type: 3}
+  JobFinished:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ConnectCards.JobFinishedEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &7989399482867631102
 GameObject:
   m_ObjectHideFlags: 0

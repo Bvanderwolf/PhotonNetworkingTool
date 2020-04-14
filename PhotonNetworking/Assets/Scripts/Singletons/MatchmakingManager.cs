@@ -53,6 +53,7 @@
 
         public void OnLeftRoom()
         {
+            //*Will be called after leaving a room but before being connected to the master client
         }
     }
 }

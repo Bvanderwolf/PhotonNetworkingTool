@@ -5,6 +5,7 @@
     using Photon.Pun;
     using Photon.Realtime;
     using UnityEngine;
+    using UnityEngine.Events;
     using UnityEngine.SceneManagement;
 
     public class InRoomManager : MonoBehaviour, IInRoomCallbacks
@@ -67,13 +68,15 @@
             }
         }
 
-        public void TryLoadScene(int buildIndex)
+        public void TryLoadScene(int buildIndex, UnityAction<Scene, LoadSceneMode> onLoad)
         {
             if (buildIndex < 0 || buildIndex >= SceneManager.sceneCountInBuildSettings)
             {
                 Debug.LogError("Wont load scene :: Build Index " + buildIndex + " out of bounds");
                 return;
             }
+
+            SceneManager.sceneLoaded += onLoad;
 
             if (AutoMaticallySyncScene && !PhotonNetwork.IsMasterClient)
                 return;

@@ -10,9 +10,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
+    using UnityEngine.Events;
+    using UnityEngine.SceneManagement;
     using UnityEngine.UI;
 
-    public class ConnectCardHandler : MonoBehaviour, IConnectCardCallbacks
+    [Serializable]
+    public class JobFinishedEvent : UnityEvent<ConnectCardJobResult> { }
+
+    public class ConnectCardHandler : MonoBehaviour, IConnectCardCallbacks, ISimpleConnectCardInteractable
     {
         [SerializeField, Tooltip("Check this flag, if you have multiple scenes for your game")]
         private bool m_DontDestroyOnLoad;
@@ -31,6 +36,8 @@
 
         [HideInInspector]
         public Sprite BackGroundSprite;
+
+        public JobFinishedEvent JobFinished;
 
         private Dictionary<ConnectCard, GameObject> m_cardsDict = new Dictionary<ConnectCard, GameObject>();
         private GameObject m_ActiveCardGO = null;
@@ -209,15 +216,26 @@
             {
                 DisableConnectCard(ConnectCard.InRoom);
                 if (m_LoadSceneOnCountdownEnd)
-                {
-                    InRoomManager.Instance.TryLoadScene(BuildIndexOfGameScene);
-                }
+                    InRoomManager.Instance.TryLoadScene(BuildIndexOfGameScene, OnGameSceneLoaded);
+                else
+                    OnGameSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
             }
             else
             {
                 ReplaceCard(ConnectCard.InRoom, ConnectCard.ConnectStatus);
                 SetupConnectStatusCard(ConnectTarget.LeavingRoom);
                 InRoomManager.Instance.LeaveRoom();
+            }
+        }
+
+        private void OnGameSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (JobFinished != null)
+            {
+                var results = new ConnectCardJobResult()
+                {
+                };
+                JobFinished.Invoke(results);
             }
         }
 
@@ -384,6 +402,17 @@
                 }
                 card.OnInRoomStatusChange(targetPlayer, (InRoomStatus)changedProps[PlayerManager.INROOMSTATUS_KEY]);
             }
+        }
+
+        public void SetActiveAtTarget(ConnectTarget target)
+        {
+            //connect to given target
+        }
+
+        public ConnectCardHandlerInfo GetInfo()
+        {
+            //return information that can be used inside game
+            return new ConnectCardHandlerInfo();
         }
     }
 }
