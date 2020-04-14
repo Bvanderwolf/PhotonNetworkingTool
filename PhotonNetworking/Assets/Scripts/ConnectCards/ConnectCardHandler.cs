@@ -1,17 +1,18 @@
 ﻿namespace ConnectCards
 {
+    using ConnectCards.Enums;
+    using ConnectCards.HelperStructs;
+    using ExitGames.Client.Photon;
+    using Photon.Realtime;
     using Singletons;
     using Singletons.Enums;
-    using Photon.Realtime;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
-    using ConnectCards.Enums;
-    using ConnectCards.HelperStructs;
-    using ExitGames.Client.Photon;
-    using UnityEditor;
+    using UnityEngine.UI;
 
+    [Serializable]
     public class ConnectCardHandler : MonoBehaviour, IConnectCardCallbacks
     {
         [SerializeField, Tooltip("Check this flag, if you have multiple scenes for your game")]
@@ -21,13 +22,24 @@
         private bool m_LoadSceneOnCountdownEnd;
 
         [SerializeField]
+        private bool m_UseBackGroundImage;
+
+        [SerializeField]
         private GameObject[] m_cards;
+
+        [HideInInspector]
+        public int BuildIndexOfGameScene;
+
+        [HideInInspector]
+        public Sprite BackGroundSprite;
 
         private Dictionary<ConnectCard, GameObject> m_cardsDict = new Dictionary<ConnectCard, GameObject>();
         private GameObject m_ActiveCardGO = null;
 
         public bool LoadSceneOnCountdownEnd => m_LoadSceneOnCountdownEnd;
-        public int BuildIndexOfGameScene { get; private set; } = 0;
+        public bool UseBackGroundImage => m_UseBackGroundImage;
+
+        private Image m_BackGround;
 
         private void Awake()
         {
@@ -36,6 +48,13 @@
             {
                 var key = cards.Where(c => card.name.Contains(c.ToString())).First();
                 m_cardsDict.Add(key, card);
+            }
+
+            m_BackGround = transform.GetChild(0).GetComponent<Image>();
+            if (m_UseBackGroundImage && BackGroundSprite != null)
+            {
+                m_BackGround.gameObject.SetActive(true);
+                m_BackGround.sprite = BackGroundSprite;
             }
 
             if (m_DontDestroyOnLoad)
@@ -247,14 +266,6 @@
             }
 
             EnableConnectCard(newCard);
-        }
-
-        public void SetBuildIndexOfGameScene(Editor editor, int value)
-        {
-            if (editor != null && editor.GetType() == typeof(ConnectCardHandlerEditor))
-            {
-                BuildIndexOfGameScene = value;
-            }
         }
 
         public void OnDisconnected(DisconnectCause cause)

@@ -4003,7 +4003,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7870607106531468623
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4051,7 +4051,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 3aaf75aac1fb0d44c99e60aaa25d18a9, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4183,6 +4183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DontDestroyOnLoad: 0
   m_LoadSceneOnCountdownEnd: 0
+  m_UseBackGroundImage: 0
   m_cards:
   - {fileID: 7240766580394265468}
   - {fileID: 4093994567750320827}
@@ -4190,6 +4191,8 @@ MonoBehaviour:
   - {fileID: 7870607107479283223}
   - {fileID: 2701679157109310172}
   - {fileID: 8278140421897510796}
+  BuildIndexOfGameScene: 3
+  BackGroundSprite: {fileID: 21300000, guid: 3aaf75aac1fb0d44c99e60aaa25d18a9, type: 3}
 --- !u!1 &7989399482867631102
 GameObject:
   m_ObjectHideFlags: 0
