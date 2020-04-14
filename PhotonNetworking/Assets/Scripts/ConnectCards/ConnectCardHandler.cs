@@ -72,6 +72,12 @@
 
         private void Start()
         {
+            if (FindObjectOfType<PhotonSingletonManager>() == null)
+            {
+                Debug.LogError("Photon Singleton Manager is not in the scene :: drag prefab into scene");
+                return;
+            }
+
             //initialize all cards and enable the starting card (startconnect)
             InitCards();
             EnableConnectCard(ConnectCard.StartConnect);
@@ -85,9 +91,9 @@
         private void OnDestroy()
         {
             //unsubscribe from getting callbacks
-            ConnectionManager.Instance.RemoveCallbackTarget(this);
-            InLobbyManager.Instance.RemoveCallbackTarget(this);
-            InRoomManager.Instance.AddCallbackTarget(this);
+            ConnectionManager.Instance?.RemoveCallbackTarget(this);
+            InLobbyManager.Instance?.RemoveCallbackTarget(this);
+            InRoomManager.Instance?.AddCallbackTarget(this);
         }
 
         /// <summary>

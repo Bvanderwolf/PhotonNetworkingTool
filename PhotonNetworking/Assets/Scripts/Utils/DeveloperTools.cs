@@ -51,6 +51,9 @@
 
         private void Awake()
         {
+            if (FindObjectOfType<PhotonSingletonManager>() == null)
+                return;
+
             if (Application.isEditor)
             {
                 m_FullscreenButton.interactable = false;
@@ -84,6 +87,9 @@
 
         private void Start()
         {
+            if (FindObjectOfType<PhotonSingletonManager>() == null)
+                return;
+
             ConnectionManager.Instance.AddCallbackTarget(this);
             InLobbyManager.Instance.AddCallbackTarget(this);
             PlayerManager.Instance.AddCallbackTarget(this);
@@ -93,9 +99,9 @@
 
         private void OnDestroy()
         {
-            ConnectionManager.Instance.RemoveCallbackTarget(this);
-            InLobbyManager.Instance.RemoveCallbackTarget(this);
-            PlayerManager.Instance.RemoveCallbackTarget(this);
+            ConnectionManager.Instance?.RemoveCallbackTarget(this);
+            InLobbyManager.Instance?.RemoveCallbackTarget(this);
+            PlayerManager.Instance?.RemoveCallbackTarget(this);
         }
 
         private void FixedUpdate()
