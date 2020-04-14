@@ -7,20 +7,27 @@
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
-    using Enums;
-    using HelperStructs;
+    using ConnectCards.Enums;
+    using ConnectCards.HelperStructs;
     using ExitGames.Client.Photon;
+    using UnityEditor;
 
     public class ConnectCardHandler : MonoBehaviour, IConnectCardCallbacks
     {
         [SerializeField, Tooltip("Check this flag, if you have multiple scenes for your game")]
         private bool m_DontDestroyOnLoad;
 
+        [SerializeField, Tooltip("Do you want to load a new scene when the room countdown ends?")]
+        private bool m_LoadSceneOnCountdownEnd;
+
         [SerializeField]
         private GameObject[] m_cards;
 
         private Dictionary<ConnectCard, GameObject> m_cardsDict = new Dictionary<ConnectCard, GameObject>();
         private GameObject m_ActiveCardGO = null;
+
+        public bool LoadSceneOnCountdownEnd => m_LoadSceneOnCountdownEnd;
+        public int BuildIndexOfGameScene { get; private set; } = 0;
 
         private void Awake()
         {
@@ -176,8 +183,10 @@
         {
             if (succes)
             {
-                Debug.LogError("game can now be loaded");
                 DisableConnectCard(ConnectCard.InRoom);
+                if (m_LoadSceneOnCountdownEnd)
+                {
+                }
             }
             else
             {
@@ -238,6 +247,14 @@
             }
 
             EnableConnectCard(newCard);
+        }
+
+        public void SetBuildIndexOfGameScene(Editor editor, int value)
+        {
+            if (editor != null && editor.GetType() == typeof(ConnectCardHandlerEditor))
+            {
+                BuildIndexOfGameScene = value;
+            }
         }
 
         public void OnDisconnected(DisconnectCause cause)

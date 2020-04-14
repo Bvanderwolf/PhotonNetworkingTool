@@ -5,6 +5,7 @@
     using Photon.Pun;
     using Photon.Realtime;
     using UnityEngine;
+    using UnityEngine.SceneManagement;
 
     public class InRoomManager : MonoBehaviour, IInRoomCallbacks
     {
@@ -57,6 +58,17 @@
                 if (m_ConnectCardTarget != null)
                     m_ConnectCardTarget = null;
             }
+        }
+
+        public void LoadScene(int buildIndex)
+        {
+            if (buildIndex < 0 || buildIndex >= SceneManager.sceneCountInBuildSettings)
+            {
+                Debug.LogError("Wont load scene :: Build Index " + buildIndex + " out of bounds");
+                return;
+            }
+
+            PhotonNetwork.LoadLevel(buildIndex);
         }
 
         public void LeaveRoom()

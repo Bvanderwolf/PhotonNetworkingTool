@@ -4182,6 +4182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DontDestroyOnLoad: 0
+  m_LoadSceneOnCountdownEnd: 0
   m_cards:
   - {fileID: 7240766580394265468}
   - {fileID: 4093994567750320827}
@@ -5026,6 +5027,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729705289308694090, guid: 408a1fabe63d6944bb5c58ff0d149d2b,
+        type: 3}
+      propertyPath: viewIdField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 98222423754993533, guid: 408a1fabe63d6944bb5c58ff0d149d2b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -375.00003
+      objectReference: {fileID: 0}
+    - target: {fileID: 107105417884424639, guid: 408a1fabe63d6944bb5c58ff0d149d2b,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 107105417884424639, guid: 408a1fabe63d6944bb5c58ff0d149d2b,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 107105417884424639, guid: 408a1fabe63d6944bb5c58ff0d149d2b,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 408a1fabe63d6944bb5c58ff0d149d2b, type: 3}
