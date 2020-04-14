@@ -2,5 +2,5 @@
 
 public abstract class AIDecision : ScriptableObject
 {
-    public abstract bool Decide(AIStateController controller);
+    public abstract bool Decide(AIDataContainer data);
 }
