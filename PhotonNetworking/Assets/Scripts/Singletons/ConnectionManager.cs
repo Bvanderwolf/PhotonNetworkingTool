@@ -14,8 +14,6 @@
         private IDeveloperCallbacks m_DeveloperTarget = null;
         private IConnectCardCallbacks m_ConnectCardTarget = null;
 
-        private bool m_AutomaticallySyncScene;
-
         private void OnEnable()
         {
             PhotonNetwork.AddCallbackTarget(this);
@@ -31,11 +29,6 @@
             Instance = this;
 
             DontDestroyOnLoad(this);
-        }
-
-        public void Init(bool autoSyncScene)
-        {
-            m_AutomaticallySyncScene = autoSyncScene;
         }
 
         public void AddCallbackTarget(object target)
@@ -78,7 +71,7 @@
                 PlayerManager.Instance.SetHasGenericNickname(nickname);
                 PlayerManager.Instance.UpdateNickname(nickname);
 
-                PhotonNetwork.AutomaticallySyncScene = m_AutomaticallySyncScene;
+                PhotonNetwork.AutomaticallySyncScene = InRoomManager.Instance.AutoMaticallySyncScene;
                 PhotonNetwork.ConnectUsingSettings();
             }
         }

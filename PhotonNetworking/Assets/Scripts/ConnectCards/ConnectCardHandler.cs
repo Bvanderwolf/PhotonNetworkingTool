@@ -12,7 +12,6 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    [Serializable]
     public class ConnectCardHandler : MonoBehaviour, IConnectCardCallbacks
     {
         [SerializeField, Tooltip("Check this flag, if you have multiple scenes for your game")]
@@ -211,6 +210,7 @@
                 DisableConnectCard(ConnectCard.InRoom);
                 if (m_LoadSceneOnCountdownEnd)
                 {
+                    InRoomManager.Instance.TryLoadScene(BuildIndexOfGameScene);
                 }
             }
             else
@@ -242,7 +242,7 @@
                     break;
 
                 case ConnectTarget.LeavingRoom:
-                    ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.InLobby);
+                    ReplaceCard(ConnectCard.ConnectStatus, ConnectCard.ConnectToLobby);
                     break;
             }
         }

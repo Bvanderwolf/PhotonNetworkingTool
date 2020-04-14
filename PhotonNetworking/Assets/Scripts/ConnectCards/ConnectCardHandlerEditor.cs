@@ -1,4 +1,6 @@
-﻿using ConnectCards;
+﻿#if (UNITY_EDITOR)
+
+using ConnectCards;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,3 +40,5 @@ public class ConnectCardHandlerEditor : Editor
         this.serializedObject.ApplyModifiedProperties();
     }
 }
+
+#endif

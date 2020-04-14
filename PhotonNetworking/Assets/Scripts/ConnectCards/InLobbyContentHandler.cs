@@ -140,7 +140,11 @@
 
         public void SetActiveStateOfRoomListContent(bool active)
         {
-            var rooms = m_LobbyRooms[PhotonNetwork.CurrentLobby.Name];
+            var lobbyName = PhotonNetwork.CurrentLobby.Name;
+            if (!m_LobbyRooms.ContainsKey(lobbyName))
+                return;
+
+            var rooms = m_LobbyRooms[lobbyName];
             if (!active)
             {
                 foreach (var item in m_RoomItems)

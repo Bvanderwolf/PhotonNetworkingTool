@@ -16,6 +16,8 @@
         // ---According to photon, when using their cloud service, 20 ccu is maximum, this can be put to this value ---
         public const int MAX_PLAYERS_AMMOUNT = 8;
 
+        public bool AutoMaticallySyncScene { get; private set; }
+
         public bool IsFull
         {
             get
@@ -30,6 +32,11 @@
             Instance = this;
 
             DontDestroyOnLoad(this.gameObject);
+        }
+
+        public void Init(bool autoSyncScene)
+        {
+            AutoMaticallySyncScene = autoSyncScene;
         }
 
         private void OnEnable()
@@ -60,13 +67,16 @@
             }
         }
 
-        public void LoadScene(int buildIndex)
+        public void TryLoadScene(int buildIndex)
         {
             if (buildIndex < 0 || buildIndex >= SceneManager.sceneCountInBuildSettings)
             {
                 Debug.LogError("Wont load scene :: Build Index " + buildIndex + " out of bounds");
                 return;
             }
+
+            if (AutoMaticallySyncScene && !PhotonNetwork.IsMasterClient)
+                return;
 
             PhotonNetwork.LoadLevel(buildIndex);
         }

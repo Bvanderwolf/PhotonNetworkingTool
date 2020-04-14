@@ -58,6 +58,10 @@
             m_ClosingCountdownSuccesfully = false;
             m_ContentOpen = ContentType.None;
 
+            InRoomContentHandler handler = (InRoomContentHandler)m_ContentHandler;
+            handler.ClearChat();
+            handler.ClearChatInput();
+
             PlayerManager.Instance.SetInRoomStatus(InRoomStatus.Inactive);
         }
 

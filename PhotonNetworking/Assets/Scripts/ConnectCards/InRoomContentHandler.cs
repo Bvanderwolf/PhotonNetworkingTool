@@ -220,12 +220,12 @@
                 m_ChatInput.OnPointerClick(new PointerEventData(eventSystem));
         }
 
-        private void ClearChatInput()
+        public void ClearChatInput()
         {
             m_ChatInput.text = "";
         }
 
-        private void ClearChat()
+        public void ClearChat()
         {
             m_ChatText.text = "";
             m_CurrentChatLine = 0;

@@ -10,11 +10,7 @@
         private void Awake()
         {
             if (ConnectionManager.Instance == null)
-            {
-                new GameObject("ConnectionManager", typeof(ConnectionManager))
-                    .GetComponent<ConnectionManager>()
-                    .Init(m_AutomaticallySyncScene);
-            }
+                new GameObject("ConnectionManager", typeof(ConnectionManager));
 
             if (InLobbyManager.Instance == null)
                 new GameObject("InLobbyManager", typeof(InLobbyManager));
@@ -23,7 +19,9 @@
                 new GameObject("PlayerManager", typeof(PlayerManager));
 
             if (InRoomManager.Instance == null)
-                new GameObject("InRoomManager", typeof(InRoomManager));
+                new GameObject("InRoomManager", typeof(InRoomManager))
+                    .GetComponent<InRoomManager>()
+                    .Init(m_AutomaticallySyncScene);
 
             if (MatchmakingManager.Instance == null)
                 new GameObject("MatchmakingManager", typeof(MatchmakingManager));

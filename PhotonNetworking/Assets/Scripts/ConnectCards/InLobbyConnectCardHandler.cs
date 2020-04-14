@@ -37,6 +37,7 @@
         {
             base.OnDisable();
 
+            SetInteractableStateOfContentButtons(true);
             SetActiveStateOfContent(ContentType.CreateRoom, false);
             SetActiveStateOfContent(ContentType.RoomList, false);
 
