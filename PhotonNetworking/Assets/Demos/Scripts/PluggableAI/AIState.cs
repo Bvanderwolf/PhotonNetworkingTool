@@ -17,28 +17,18 @@ public class AIState : ScriptableObject
 
     private void DoActions(AIStateController controller)
     {
-        for (int i = 0; i < m_Actions.Length; i++)
-        {
-            m_Actions[i].Act(controller);
-        }
+        foreach (var action in m_Actions)
+            action.Act(controller);
     }
 
     private void CheckTransitions(AIStateController controller)
     {
-        for (int i = 0; i < m_Transitions.Length; i++)
+        foreach (var transition in m_Transitions)
         {
-            bool decisionSucceeded = m_Transitions[i].decision.Decide(controller);
-
-            if (decisionSucceeded)
-            {
-                controller.Transition(m_Transitions[i].trueState);
-            }
-            else
-            {
-                controller.Transition(m_Transitions[i].falseState);
-            }
-
-            break;
+            var decisionSucceeded = transition.decision.Decide(controller);
+            var transitionState = decisionSucceeded ? transition.trueState : transition.falseState;
+            var transitioned = controller.TryTransition(transitionState);
+            if (transitioned) break;
         }
     }
 }
