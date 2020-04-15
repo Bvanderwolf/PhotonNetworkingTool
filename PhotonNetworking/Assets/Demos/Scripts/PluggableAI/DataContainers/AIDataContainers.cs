@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 public abstract class AIDataContainer
 {
@@ -13,7 +13,7 @@ public abstract class AIDataContainer
 
 public class PatrolDataContainer : AIDataContainer
 {
-    public readonly List<Transform> Patrollables = new List<Transform>();
+    public readonly List<Patrollable> Patrollables = new List<Patrollable>();
     public bool PatrollingPatrollable { get; private set; } = false;
 
     public override AIStateController Controller
@@ -22,7 +22,7 @@ public class PatrolDataContainer : AIDataContainer
         set => m_Controller = value;
     }
 
-    private Transform m_Patrollable = null;
+    private Patrollable m_Patrollable;
     private AIStateController m_Controller;
 
     public PatrolDataContainer(AIStateController controller) : base(controller)
@@ -30,9 +30,15 @@ public class PatrolDataContainer : AIDataContainer
         Controller = controller;
     }
 
-    public void SetPatrollable(Transform patrollable)
+    public void SetPatrollable(Patrollable patrollable)
     {
         m_Patrollable = patrollable;
         PatrollingPatrollable = true;
+    }
+
+    public void UpdatePatrollables(Patrollable patrollable)
+    {
+        if (!Patrollables.Any(p => p.ID == patrollable.ID))
+            Patrollables.Add(patrollable);
     }
 }

@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: SearchPatrollables
   m_EditorClassIdentifier: 
   m_SearchRange: 6
+  m_LookRange: 6
+  m_LookView: 2.5

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "PluggableAI/Decisions/Patrol")]
@@ -16,11 +17,12 @@ public class PatrolDecision : AIDecision
     public override bool Decide(AIDataContainer data)
     {
         var container = (PatrolDataContainer)data;
-        var patrollables = container.Patrollables;
-        if (!container.PatrollingPatrollable && patrollables.Count != 0)
+        var patrollables = container.Patrollables.Where(p => p.Spotted);
+        var count = patrollables.Count();
+        if (!container.PatrollingPatrollable && count != 0)
         {
-            var patrolRandom = patrollables.Count > 1 && Random.Range(0, 1f) < m_ChanceOfRandomPatrol;
-            var patrollable = patrolRandom ? GetRandomPatrollable(patrollables) : patrollables[0];
+            var patrolRandom = count > 1 && Random.Range(0, 1f) < m_ChanceOfRandomPatrol;
+            var patrollable = patrolRandom ? GetRandomPatrollable(patrollables, count) : patrollables.First();
             container.SetPatrollable(patrollable);
             return true;
         }
@@ -28,8 +30,19 @@ public class PatrolDecision : AIDecision
         return false;
     }
 
-    private Transform GetRandomPatrollable(List<Transform> patrollables)
+    private Patrollable GetRandomPatrollable(IEnumerable<Patrollable> patrollables, int count)
     {
-        return patrollables[Random.Range(0, patrollables.Count + 1)];
+        Patrollable patrollable = null;
+        int rdmCount = Random.Range(0, count);
+        int counter = 0;
+        foreach (var p in patrollables)
+        {
+            if (counter++ == rdmCount)
+            {
+                patrollable = p;
+                break;
+            }
+        }
+        return patrollable;
     }
 }

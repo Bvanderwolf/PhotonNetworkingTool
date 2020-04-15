@@ -21,4 +21,9 @@ public class AIStateData
     {
         return m_Containers[dataType];
     }
+
+    public void UpdatePatrollables(Patrollable patrollable)
+    {
+        ((PatrolDataContainer)m_Containers[AIStateDataType.Patrol]).UpdatePatrollables(patrollable);
+    }
 }

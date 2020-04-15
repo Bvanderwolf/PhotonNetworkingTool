@@ -27,6 +27,14 @@ public class AIStateController : MonoBehaviour
         m_CurrentState.UpdateState(this);
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Patrollable")
+        {
+            m_Data.UpdatePatrollables(new Patrollable(other.transform, other.gameObject.GetInstanceID()));
+        }
+    }
+
     public AIDataContainer GetData(AIStateDataType _type)
     {
         return m_Data.GetData(_type);
