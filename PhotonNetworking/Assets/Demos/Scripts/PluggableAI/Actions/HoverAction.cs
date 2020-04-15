@@ -8,7 +8,7 @@ public class HoverAction : AIAction
     private float m_HoverSpeed;
 
     private Func<float, float, float, float> m_Sine = (a, f, t) => a * Mathf.Sin(f * t);
-    private const float m_SineAmplitude = 0.25f;
+    private const float m_SineAmplitude = 0.15f;
 
     public override void Act(AIDataContainer data)
     {

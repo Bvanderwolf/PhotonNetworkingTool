@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bba2043cc8eb1bd478d5fb0fc1b3ffec, type: 3}
   m_Name: SearchPatrollables
   m_EditorClassIdentifier: 
+  m_SearchRange: 6

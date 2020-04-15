@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class AIStateController : MonoBehaviour
 {
     [SerializeField]
     private AIState m_CurrentState;
+
+    public NavMeshAgent Agent { get; private set; }
 
     public float TimeSinceAwakening { get; private set; } = 0;
     public float SpawnHeight { get; private set; }
@@ -14,6 +18,7 @@ public class AIStateController : MonoBehaviour
     {
         SpawnHeight = transform.position.y;
         m_Data = new AIStateData(this);
+        Agent = GetComponent<NavMeshAgent>();
     }
 
     private void Update()

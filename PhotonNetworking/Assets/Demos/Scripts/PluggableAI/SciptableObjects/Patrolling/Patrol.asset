@@ -16,4 +16,4 @@ MonoBehaviour:
     type: 2}
   m_SearchPatrollables: {fileID: 11400000, guid: 8a9f6e443428fd84ea3083355ff4bf9f,
     type: 2}
-  m_PatrolDecision: {fileID: 0}
+  m_PatrolDecision: {fileID: 11400000, guid: 466a36c08da417c4cbae672fa0143d76, type: 2}
