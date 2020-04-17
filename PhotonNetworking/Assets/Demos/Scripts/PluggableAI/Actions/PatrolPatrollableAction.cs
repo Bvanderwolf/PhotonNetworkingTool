@@ -6,5 +6,7 @@ public class PatrolPatrollableAction : AIAction
     public override void Act(AIDataContainer data)
     {
         //walk around patrollable object (make use of navmesh, navAgent)
+        var container = (PatrolDataContainer)data;
+        Debug.Log("patrolling patrollable");
     }
 }

@@ -26,4 +26,9 @@ public class AIStateData
     {
         ((PatrolDataContainer)m_Containers[AIStateDataType.Patrol]).UpdatePatrollables(patrollable);
     }
+
+    public void SpotPatrollable(int instanceID)
+    {
+        ((PatrolDataContainer)m_Containers[AIStateDataType.Patrol]).SpotPatrollable(instanceID);
+    }
 }

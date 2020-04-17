@@ -7,7 +7,11 @@ public class AIStateController : MonoBehaviour
     [SerializeField]
     private AIState m_CurrentState;
 
+    [SerializeField]
+    private Transform m_Eye;
+
     public NavMeshAgent Agent { get; private set; }
+    public Transform Eye => m_Eye;
 
     public float TimeSinceAwakening { get; private set; } = 0;
     public float SpawnHeight { get; private set; }
@@ -48,5 +52,16 @@ public class AIStateController : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        var forward = Eye.forward;
+        var position = m_Eye.transform.position + forward;
+        var radius = 0.25f;
+        for (int i = 0; i < 5; i++)
+        {
+            Gizmos.DrawSphere(position + (forward * i * (radius * i)), radius * i);
+        }
     }
 }

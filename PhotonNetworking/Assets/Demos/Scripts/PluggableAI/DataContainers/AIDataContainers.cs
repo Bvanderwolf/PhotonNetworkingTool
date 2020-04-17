@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public abstract class AIDataContainer
 {
@@ -14,13 +15,14 @@ public abstract class AIDataContainer
 public class PatrolDataContainer : AIDataContainer
 {
     public readonly List<Patrollable> Patrollables = new List<Patrollable>();
-    public bool PatrollingPatrollable { get; private set; } = false;
 
     public override AIStateController Controller
     {
         get => m_Controller;
         set => m_Controller = value;
     }
+
+    public bool HasPatrollable => m_Patrollable != null;
 
     private Patrollable m_Patrollable;
     private AIStateController m_Controller;
@@ -33,12 +35,24 @@ public class PatrolDataContainer : AIDataContainer
     public void SetPatrollable(Patrollable patrollable)
     {
         m_Patrollable = patrollable;
-        PatrollingPatrollable = true;
     }
 
     public void UpdatePatrollables(Patrollable patrollable)
     {
         if (!Patrollables.Any(p => p.ID == patrollable.ID))
             Patrollables.Add(patrollable);
+    }
+
+    public void SpotPatrollable(int instanceID)
+    {
+        var patrollable = Patrollables.Where(p => p.ID == instanceID).FirstOrDefault();
+
+        if (patrollable != null)
+        {
+            patrollable.Spotted = true;
+
+            if (m_Patrollable == null)
+                SetPatrollable(patrollable);
+        }
     }
 }

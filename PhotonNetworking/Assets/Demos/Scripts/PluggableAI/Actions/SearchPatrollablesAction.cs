@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "PluggableAI/Actions/Patrol/Search")]
 public class SearchPatrollablesAction : AIAction
@@ -12,6 +11,8 @@ public class SearchPatrollablesAction : AIAction
 
     [SerializeField]
     private float m_LookView = 2.5f;
+
+    private const int PATROL_LAYER = 8;
 
     public override void Act(AIDataContainer data)
     {
@@ -28,43 +29,24 @@ public class SearchPatrollablesAction : AIAction
 
         var patrollables = container.Patrollables;
         if (patrollables.Count != 0)
-            TrySpottingPatrollables(controller.transform, patrollables);
+            TrySpottingPatrollables(controller.Eye, container);
     }
 
-    private void TrySpottingPatrollables(Transform transform, List<Patrollable> patrollables)
+    private void TrySpottingPatrollables(Transform eyeTransform, PatrolDataContainer data)
     {
-        Vector3 c = transform.position;
-        Vector3 a = transform.position + (transform.forward * m_LookRange) - (transform.right * m_LookView);
-        Vector3 b = transform.position + (transform.forward * m_LookRange) - (-transform.right * m_LookView);
-        DrawView(a, b, c);
-        foreach (var patrollable in patrollables)
+        Collider[] colliders = null;
+        var forward = eyeTransform.forward;
+        var position = eyeTransform.position + forward;
+        var radius = 0.25f;
+        var layerMask = 1 << PATROL_LAYER;
+        for (int i = 0; i < 5; i++)
         {
-            if (InsideView(patrollable.Transform.position, a, b, c))
+            colliders = Physics.OverlapSphere(position + (forward * i * (radius * i)), radius * i, layerMask);
+            if (colliders.Length != 0)
             {
-                Debug.DrawLine(transform.position, patrollable.Transform.position, Color.yellow);
+                data.SpotPatrollable(colliders[0].gameObject.GetInstanceID());
                 break;
             }
         }
-    }
-
-    private void DrawView(Vector3 a, Vector3 b, Vector3 c)
-    {
-        Debug.DrawLine(a, b, Color.red);
-        Debug.DrawLine(a, c, Color.red);
-        Debug.DrawLine(b, c, Color.red);
-    }
-
-    private bool InsideView(Vector3 point, Vector3 a, Vector3 b, Vector3 c)
-    {
-        return OnSameSide(point, a, b, c)
-            && OnSameSide(point, b, a, c)
-            && OnSameSide(point, c, a, b);
-    }
-
-    private bool OnSameSide(Vector3 pt1, Vector3 pt2, Vector3 a, Vector3 b)
-    {
-        Vector3 cp1 = Vector3.Cross(b - a, pt1 - a);
-        Vector3 cp2 = Vector3.Cross(b - a, pt2 - a);
-        return Vector3.Dot(cp1, cp2) >= 0;
     }
 }
