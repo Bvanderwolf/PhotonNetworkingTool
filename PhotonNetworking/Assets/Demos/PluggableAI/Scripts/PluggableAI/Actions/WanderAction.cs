@@ -33,8 +33,8 @@ public class WanderAction : AIAction
     {
         controller.Agent.speed = wanderSpeed;
         WanderDataContainer container = (WanderDataContainer)controller.GetData(AIStateDataType.Wander);
-        container.SetWanderTarget(this, controller);
         container.SetStartPosition(controller.transform.position);
+        container.SetWanderTarget(this, controller);
     }
 
     public override void Act(AIStateController controller)
