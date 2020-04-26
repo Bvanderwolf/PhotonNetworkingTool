@@ -28,7 +28,7 @@ public class WanderAction : AIAction
         }
     }
 
-    public override void Start(AIStateController controller)
+    public override void Begin(AIStateController controller)
     {
         WanderDataContainer container = (WanderDataContainer)controller.GetData(AIStateDataType.Wander);
         container.SetWanderTarget(this, controller);

@@ -29,7 +29,7 @@ public class AIState : ScriptableObject
     {
         foreach (var action in m_Actions)
         {
-            action.Start(controller);
+            action.Begin(controller);
         }
     }
 
