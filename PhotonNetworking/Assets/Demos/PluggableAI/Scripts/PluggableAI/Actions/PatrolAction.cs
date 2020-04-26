@@ -17,8 +17,12 @@ public class PatrolAction : AIAction
         var patrollingPatrollable = m_PatrolDecision.Decide(data);
 
         if (patrollingPatrollable)
+        {
             m_PatrolPatrollable.Act(data);
+        }           
         else
+        {
             m_SearchPatrollables.Act(data);
+        }
     }
 }
