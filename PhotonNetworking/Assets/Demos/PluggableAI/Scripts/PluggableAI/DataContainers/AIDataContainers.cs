@@ -36,6 +36,7 @@ public class WanderDataContainer : AIDataContainer
     {
         Vector2 v = Random.insideUnitCircle * action.WanderDistance;
         WanderTarget = controller.transform.position + new Vector3(v.x, 0, v.y);
-        controller.transform.LookAt(WanderTarget);
+        controller.Agent.destination = WanderTarget;
+        controller.Animator.SetInteger("Walk", 1);
     }
 }

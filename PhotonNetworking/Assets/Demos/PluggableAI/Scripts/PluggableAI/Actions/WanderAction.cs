@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 [CreateAssetMenu(menuName = "PluggableAI/Actions/WanderAction")]
 public class WanderAction : AIAction
@@ -30,6 +31,7 @@ public class WanderAction : AIAction
 
     public override void Begin(AIStateController controller)
     {
+        controller.Agent.speed = wanderSpeed;
         WanderDataContainer container = (WanderDataContainer)controller.GetData(AIStateDataType.Wander);
         container.SetWanderTarget(this, controller);
     }
@@ -43,12 +45,18 @@ public class WanderAction : AIAction
         }
         else
         {
-            if (Vector3.Distance(controller.transform.position, container.WanderTarget) < 0.1f)
+            NavMeshAgent agent = controller.Agent;
+            if (!agent.pathPending)
             {
-                container.SetIdleState(true);
+                if (agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                    {
+                        container.SetIdleState(true);
+                        controller.Animator.SetInteger("Walk", 0);
+                    }
+                }
             }
-
-            controller.transform.position = Vector3.MoveTowards(controller.transform.position, container.WanderTarget, Time.deltaTime * wanderSpeed);
         }
     }
 
