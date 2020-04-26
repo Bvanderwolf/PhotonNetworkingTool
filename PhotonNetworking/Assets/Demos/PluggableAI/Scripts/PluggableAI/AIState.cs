@@ -29,10 +29,11 @@ public class AIState : ScriptableObject
     {
         foreach (var transition in m_Transitions)
         {
-            var decisionSucceeded = transition.decision.Decide(data);
-            var transitionState = decisionSucceeded ? transition.trueState : transition.falseState;
-            var transitioned = data.Controller.TryTransition(transitionState);
-            if (transitioned) break;
+            if (transition.decision.Decide(data))
+            {
+                data.Transition(transition.trueState);
+                break;
+            }
         }
     }
 }
