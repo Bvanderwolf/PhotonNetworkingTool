@@ -1,36 +1,41 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
 
-public class AIDataContainer
+public abstract class AIDataContainer
 {
-    protected AIStateController controller;
+}
 
-    public Transform transform
+public class WanderDataContainer : AIDataContainer
+{
+    public bool IsIdle { get; private set; }
+    public Vector3 WanderTarget { get; private set; }
+    private float currentIdleTime = 0;
+
+    public void UpdateCurrentIdleTime(WanderAction action, AIStateController controller)
     {
-        get
+        currentIdleTime += Time.deltaTime;
+        if (currentIdleTime > action.IdleTime)
         {
-            return controller.transform;
+            currentIdleTime = 0;
+            IsIdle = false;
+            SetWanderTarget(action, controller);
         }
     }
 
-    public NavMeshAgent agent
+    public void Reset()
     {
-        get
-        {
-            return controller.Agent;
-        }
+        currentIdleTime = 0;
+        IsIdle = false;
     }
 
-    public AIDataContainer(AIStateController controller)
+    public void SetIdleState(bool idle)
     {
-        this.controller = controller;
+        IsIdle = idle;
     }
 
-    public void Transition(AIState nextState)
+    public void SetWanderTarget(WanderAction action, AIStateController controller)
     {
-        if (nextState != null)
-        {
-            controller.Transition(nextState);
-        }
+        Vector2 v = Random.insideUnitCircle * action.WanderDistance;
+        WanderTarget = controller.transform.position + new Vector3(v.x, 0, v.y);
+        controller.transform.LookAt(WanderTarget);
     }
 }

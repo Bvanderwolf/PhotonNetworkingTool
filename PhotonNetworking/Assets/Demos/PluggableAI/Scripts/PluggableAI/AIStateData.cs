@@ -2,6 +2,7 @@
 
 public enum AIStateDataType
 {
+    Wander
 }
 
 public class AIStateData
@@ -12,6 +13,7 @@ public class AIStateData
     {
         dataContainerDict = new Dictionary<AIStateDataType, AIDataContainer>
         {
+            { AIStateDataType.Wander, new WanderDataContainer() }
         };
     }
 

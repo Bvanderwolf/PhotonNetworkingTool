@@ -9,29 +9,53 @@ public class AIState : ScriptableObject
     [SerializeField]
     private AIStateTransition[] m_Transitions;
 
-    [SerializeField, Tooltip("Select type of data this state needs")]
-    private AIStateDataType m_DataType;
-
     public void UpdateState(AIStateController controller)
     {
-        var data = controller.GetData(m_DataType);
-        DoActions(data);
-        CheckTransitions(data);
+        DoActions(controller);
+        CheckTransitions(controller);
     }
 
-    private void DoActions(AIDataContainer data)
+    public void StartState(AIStateController controller)
+    {
+        StartActions(controller);
+    }
+
+    public void EndState(AIStateController controller)
+    {
+        EndActions(controller);
+    }
+
+    private void StartActions(AIStateController controller)
     {
         foreach (var action in m_Actions)
-            action.Act(data);
+        {
+            action.Start(controller);
+        }
     }
 
-    private void CheckTransitions(AIDataContainer data)
+    private void DoActions(AIStateController controller)
+    {
+        foreach (var action in m_Actions)
+        {
+            action.Act(controller);
+        }
+    }
+
+    private void EndActions(AIStateController controller)
+    {
+        foreach (var action in m_Actions)
+        {
+            action.End(controller);
+        }
+    }
+
+    private void CheckTransitions(AIStateController controller)
     {
         foreach (var transition in m_Transitions)
         {
-            if (transition.decision.Decide(data))
+            if (transition.decision.Decide(controller))
             {
-                data.Transition(transition.trueState);
+                controller.Transition(transition.trueState);
                 break;
             }
         }

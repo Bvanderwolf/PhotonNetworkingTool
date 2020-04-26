@@ -246,6 +246,7 @@ GameObject:
   - component: {fileID: 4333491988720984}
   - component: {fileID: 65079961972077558}
   - component: {fileID: 95039602943946200}
+  - component: {fileID: 5425800126502440728}
   m_Layer: 0
   m_Name: Cat
   m_TagString: Untagged
@@ -305,6 +306,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5425800126502440728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585349779547952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1cf1b563e2a9f64d8716986f825a828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: {fileID: 11400000, guid: 9f11f2924e06f494983618b5a8cf5089, type: 2}
 --- !u!1 &1686542506629698
 GameObject:
   m_ObjectHideFlags: 0

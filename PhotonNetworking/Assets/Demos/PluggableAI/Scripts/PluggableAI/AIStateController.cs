@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
+//[RequireComponent(typeof(NavMeshAgent))]
 public class AIStateController : MonoBehaviour
 {
     [SerializeField]
@@ -15,6 +15,7 @@ public class AIStateController : MonoBehaviour
     {
         data = new AIStateData(this);
         Agent = GetComponent<NavMeshAgent>();
+        currentState.StartState(this);
     }
 
     private void Update()
@@ -34,7 +35,19 @@ public class AIStateController : MonoBehaviour
     {
         if (nextState != currentState)
         {
+            OnStateEnd(currentState);
             currentState = nextState;
+            OnStateStart(currentState);
         }
+    }
+
+    private void OnStateStart(AIState state)
+    {
+        state.StartState(this);
+    }
+
+    private void OnStateEnd(AIState state)
+    {
+        state.EndState(this);
     }
 }
