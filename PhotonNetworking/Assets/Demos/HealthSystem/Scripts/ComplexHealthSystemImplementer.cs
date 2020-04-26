@@ -29,6 +29,9 @@ public class ComplexHealthSystemImplementer : MonoBehaviour
     [SerializeField]
     private Dropdown systemChoice;
 
+    [SerializeField]
+    private Button modifyHealthButton;
+
     [Header("Weather")]
     [SerializeField]
     private Toggle hotWeatherToggle;
@@ -40,6 +43,8 @@ public class ComplexHealthSystemImplementer : MonoBehaviour
         hitPointSystem.SetCurrentToMax();
         energySystem.SetCurrentToMax();
         thirstSystem.SetCurrentToMax();
+        regenToggle.onValueChanged.AddListener(OnRegenToggled);
+        modifyHealthButton.onClick.AddListener(OnModifyHealthButtonClick);
     }
 
     private void Update()
@@ -56,6 +61,7 @@ public class ComplexHealthSystemImplementer : MonoBehaviour
 
         int value = int.Parse(healthInput.text);
         float time = float.Parse(timeInput.text);
+        Debug.Log(time);
         SystemChoice choice = (SystemChoice)systemChoice.value;
         switch (choice)
         {
@@ -71,6 +77,12 @@ public class ComplexHealthSystemImplementer : MonoBehaviour
                 thirstSystem.AddModifier(new TimedHealthModifier(time, value, regenToggle.isOn, currentToggle.isOn));
                 break;
         }
+    }
+
+    public void OnRegenToggled(bool value)
+    {
+        string text = value ? "Regenerate" : "Decay";
+        modifyHealthButton.GetComponentInChildren<Text>().text = text;
     }
 
     public void OnHotWeatherToggle(bool value)

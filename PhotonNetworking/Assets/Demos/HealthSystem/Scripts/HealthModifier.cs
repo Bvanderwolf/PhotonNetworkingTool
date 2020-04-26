@@ -104,6 +104,7 @@ public class ConditionalHealthModifier : HealthModifier
         this.condition = condition;
     }
 
+    /// <summary>Modifies system by regenerating or decaying given value each second</summary>
     public override void Modify(HealthSystem system)
     {
         timePassed += Time.deltaTime;
