@@ -61,7 +61,6 @@ public class ComplexHealthSystemImplementer : MonoBehaviour
 
         int value = int.Parse(healthInput.text);
         float time = float.Parse(timeInput.text);
-        Debug.Log(time);
         SystemChoice choice = (SystemChoice)systemChoice.value;
         switch (choice)
         {

@@ -63,6 +63,7 @@ public class HealthSystem
             return;
         }
 
+        //let each modifier modify this system and remove it if it is finished
         for (int i = modifiers.Count - 1; i >= 0; i--)
         {
             modifiers[i].Modify(this);
@@ -72,6 +73,7 @@ public class HealthSystem
             }
         }
 
+        //show feedback of data on healthbar and text if showable
         healthBar.fillAmount = current / max;
         if (showText && healthText != null)
         {
@@ -79,16 +81,47 @@ public class HealthSystem
         }
     }
 
+    /// <summary>Sets current to max</summary>
     public void SetCurrentToMax()
     {
         current = max;
     }
 
+    /// <summary>Adds modifier to system modifiers if it is valid</summary>
     public void AddModifier(HealthModifier modifier)
     {
+        if (modifier as TimedHealthModifier != null)
+        {
+            TimedHealthModifier timed = (TimedHealthModifier)modifier;
+            if (!timed.HasValidTime)
+            {
+                Debug.LogWarning($"Didn't add timed modifier to health system :: time was invalid");
+                return;
+            }
+            else if (!timed.HasValidValue)
+            {
+                Debug.LogWarning($"Didn't add timed modifier to health system :: value was invalid");
+                return;
+            }
+        }
+        else if (modifier as ConditionalHealthModifier != null)
+        {
+            ConditionalHealthModifier conditional = (ConditionalHealthModifier)modifier;
+            if (!conditional.HasValidValuePerSecond)
+            {
+                Debug.LogWarning($"Didn't add conditional modifier to health system :: value per second was invalid");
+                return;
+            }
+            else if (!conditional.HasValidCondition)
+            {
+                Debug.LogWarning($"Didn't add conditional modifier to health system :: condition threw exception");
+                return;
+            }
+        }
         modifiers.Add(modifier);
     }
 
+    /// <summary>Lets a modifier that is in the list of modifiers modify current</summary>
     public void ModifyCurrent(HealthModifier modifier, int value)
     {
         if (modifiers.Contains(modifier))
@@ -112,6 +145,7 @@ public class HealthSystem
         }
     }
 
+    /// <summary>Lets a modifier that is in the list of modifiers modify max</summary>
     public void ModifyMax(HealthModifier modifier, int value)
     {
         if (modifiers.Contains(modifier))
@@ -131,11 +165,13 @@ public class HealthSystem
         }
     }
 
+    /// <summary>Adds given health system to the set of stored priority systems</summary>
     public void AddPrioritySystem(HealthSystem system)
     {
         highPrioritySystems.Add(system);
     }
 
+    /// <summary>removes given health system from the priority systems set</summary>
     public void RemovePrioritySystem(HealthSystem system)
     {
         highPrioritySystems.Remove(system);

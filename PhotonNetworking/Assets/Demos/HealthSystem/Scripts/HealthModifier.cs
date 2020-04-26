@@ -29,6 +29,24 @@ public class TimedHealthModifier : HealthModifier
         }
     }
 
+    /// <summary>Returns whether this modifier has a valid time</summary>
+    public bool HasValidTime
+    {
+        get
+        {
+            return time >= 0;
+        }
+    }
+
+    /// <summary>Returns whether this modifier has a valid value</summary>
+    public bool HasValidValue
+    {
+        get
+        {
+            return value > 0;
+        }
+    }
+
     /// <summary>creates health modifer given time(sec), value, whether it regenerates or decays and whether it modifies current or max health</summary>
     public TimedHealthModifier(float time, int value, bool regenerate, bool modifiesCurrent)
     {
@@ -91,6 +109,33 @@ public class ConditionalHealthModifier : HealthModifier
         get
         {
             return condition();
+        }
+    }
+
+    /// <summary>Returns whether value per second is valid</summary>
+    public bool HasValidValuePerSecond
+    {
+        get
+        {
+            return valuePerSecond > 0;
+        }
+    }
+
+    /// <summary>Returns whether condition is valid (doesn't throw exception)</summary>
+    public bool HasValidCondition
+    {
+        get
+        {
+            try
+            {
+                condition();
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("condition threw exception: " + e);
+                return false;
+            }
+            return true;
         }
     }
 
