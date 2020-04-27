@@ -70,13 +70,22 @@ public class HealthSystem
             return;
         }
 
-        //let each modifier modify this system and remove it if it is finished
+        //let each modifier modify this system and remove it if it is finished giving callbacks if the condition is right
         for (int i = modifiers.Count - 1; i >= 0; i--)
         {
-            modifiers[i].Modify(this);
-            if (modifiers[i].Finished)
+            HealthModifier modifier = modifiers[i];
+            modifier.Modify(this);
+            if (modifier.Finished)
             {
                 modifiers.RemoveAt(i);
+                if (modifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && modifier.Regenerate && modifier.IsOverTime)
+                {
+                    OnRegenEnd?.Invoke();
+                }
+                else if (modifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !modifier.Regenerate && modifier.IsOverTime)
+                {
+                    OnDecayEnd?.Invoke();
+                }
             }
         }
 
