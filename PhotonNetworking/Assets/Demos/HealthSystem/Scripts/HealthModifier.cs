@@ -4,6 +4,9 @@ using UnityEngine;
 public abstract class HealthModifier
 {
     public abstract bool Finished { get; }
+    public abstract bool IsOverTime { get; }
+
+    public bool Regenerate { get; protected set; }
 
     public abstract void Modify(HealthSystem system);
 }
@@ -18,7 +21,6 @@ public class TimedHealthModifier : HealthModifier
     private int currentValue;
 
     private bool modifiesCurrent;
-    private bool regenerate;
 
     /// <summary>Returns whether the given time has been reached</summary>
     public override bool Finished
@@ -26,6 +28,15 @@ public class TimedHealthModifier : HealthModifier
         get
         {
             return timePassed >= time;
+        }
+    }
+
+    /// <summary>Returns whether the health modifier modifies the system over a period and not instant</summary>
+    public override bool IsOverTime
+    {
+        get
+        {
+            return time > 0f;
         }
     }
 
@@ -52,7 +63,7 @@ public class TimedHealthModifier : HealthModifier
     {
         this.time = time;
         this.value = value;
-        this.regenerate = regenerate;
+        this.Regenerate = regenerate;
         this.modifiesCurrent = modifiesCurrent;
     }
 
@@ -63,11 +74,11 @@ public class TimedHealthModifier : HealthModifier
         {
             if (modifiesCurrent)
             {
-                system.ModifyCurrent(this, regenerate ? value : -value);
+                system.ModifyCurrent(this, Regenerate ? value : -value);
             }
             else
             {
-                system.ModifyMax(this, regenerate ? value : -value);
+                system.ModifyMax(this, Regenerate ? value : -value);
             }
             return;
         }
@@ -80,11 +91,11 @@ public class TimedHealthModifier : HealthModifier
             valueModified += difference;
             if (modifiesCurrent)
             {
-                system.ModifyCurrent(this, regenerate ? difference : -difference);
+                system.ModifyCurrent(this, Regenerate ? difference : -difference);
             }
             else
             {
-                system.ModifyMax(this, regenerate ? difference : -difference);
+                system.ModifyMax(this, Regenerate ? difference : -difference);
             }
         }
     }
@@ -95,20 +106,28 @@ public class ConditionalHealthModifier : HealthModifier
     private Func<bool> condition;
 
     private float timePassed;
-    private float time;
 
     private int valuePerSecond;
     private int lastModifiedSecond;
     private int seconds;
 
     private bool modifiesCurrent;
-    private bool regenerate;
 
+    /// <summary>Returns whether the condition has been met</summary>
     public override bool Finished
     {
         get
         {
             return condition();
+        }
+    }
+
+    /// <summary>A conditional health modifier is always over time</summary>
+    public override bool IsOverTime
+    {
+        get
+        {
+            return true;
         }
     }
 
@@ -144,7 +163,7 @@ public class ConditionalHealthModifier : HealthModifier
     public ConditionalHealthModifier(int valuePerSecond, bool regenerate, bool modifiesCurrent, Func<bool> condition)
     {
         this.valuePerSecond = valuePerSecond;
-        this.regenerate = regenerate;
+        this.Regenerate = regenerate;
         this.modifiesCurrent = modifiesCurrent;
         this.condition = condition;
     }
@@ -159,11 +178,11 @@ public class ConditionalHealthModifier : HealthModifier
             lastModifiedSecond++;
             if (modifiesCurrent)
             {
-                system.ModifyCurrent(this, regenerate ? valuePerSecond : -valuePerSecond);
+                system.ModifyCurrent(this, Regenerate ? valuePerSecond : -valuePerSecond);
             }
             else
             {
-                system.ModifyMax(this, regenerate ? valuePerSecond : -valuePerSecond);
+                system.ModifyMax(this, Regenerate ? valuePerSecond : -valuePerSecond);
             }
         }
     }

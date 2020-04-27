@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,12 @@ public class HealthSystem
     private List<HealthModifier> modifiers = new List<HealthModifier>();
 
     private float current;
+
+    public event Action OnRegenStart, OnRegenEnd;
+
+    public event Action OnDecayStart, OnDecayEnd;
+
+    public event Action OnReachedMax, OnReachedZero;
 
     /// <summary>Returns current health value rounded to nearest integer value</summary>
     public int Current
@@ -87,7 +94,7 @@ public class HealthSystem
         current = max;
     }
 
-    /// <summary>Adds modifier to system modifiers if it is valid</summary>
+    /// <summary>Adds modifier to system modifiers if it is valid and fires start events if condition is right</summary>
     public void AddModifier(HealthModifier modifier)
     {
         if (modifier as TimedHealthModifier != null)
@@ -103,6 +110,15 @@ public class HealthSystem
                 Debug.LogWarning($"Didn't add timed modifier to health system :: value was invalid");
                 return;
             }
+
+            if (modifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && timed.Regenerate && timed.IsOverTime)
+            {
+                OnRegenStart?.Invoke();
+            }
+            else if (modifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !timed.Regenerate && timed.IsOverTime)
+            {
+                OnDecayStart?.Invoke();
+            }
         }
         else if (modifier as ConditionalHealthModifier != null)
         {
@@ -116,6 +132,15 @@ public class HealthSystem
             {
                 Debug.LogWarning($"Didn't add conditional modifier to health system :: condition threw exception");
                 return;
+            }
+
+            if (modifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && conditional.Regenerate)
+            {
+                OnRegenStart?.Invoke();
+            }
+            else if (modifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !conditional.Regenerate)
+            {
+                OnDecayStart?.Invoke();
             }
         }
         modifiers.Add(modifier);
