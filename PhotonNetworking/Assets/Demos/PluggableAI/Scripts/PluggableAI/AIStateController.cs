@@ -20,6 +20,16 @@ public class AIStateController : MonoBehaviour
         currentState.StartState(this);
     }
 
+    private void Start()
+    {
+        AIService.Instance.Subscribe(transform);
+    }
+
+    private void OnDestroy()
+    {
+        AIService.Instance.UnSubscribe(transform);
+    }
+
     private void Update()
     {
         if (currentState != null)
