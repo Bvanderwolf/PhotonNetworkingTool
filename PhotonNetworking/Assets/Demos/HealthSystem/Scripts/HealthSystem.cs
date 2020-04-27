@@ -70,6 +70,9 @@ public class HealthSystem
             return;
         }
 
+        bool currentIsMax = current == max;
+        bool currentIsZero = current == 0f;
+
         //let each modifier modify this system and remove it if it is finished giving callbacks if the condition is right
         for (int i = modifiers.Count - 1; i >= 0; i--)
         {
@@ -94,6 +97,19 @@ public class HealthSystem
         if (showText && healthText != null)
         {
             healthText.text = $"{Current}/{max}";
+        }
+
+        //if current was not equal to max before modification but is now equal after modification, on reached max is called
+        if (!currentIsMax && current == max)
+        {
+            OnReachedMax?.Invoke();
+        }
+
+        //if current was not equal to zero before modification but is now equal after modification, on reached zero is called
+        if (!currentIsZero && current == 0f)
+        {
+            Debug.Log("test");
+            OnReachedZero?.Invoke();
         }
     }
 
@@ -194,6 +210,10 @@ public class HealthSystem
                 if (max < minimalMax)
                 {
                     max = minimalMax;
+                }
+                if (current > max)
+                {
+                    current = max;
                 }
             }
         }
