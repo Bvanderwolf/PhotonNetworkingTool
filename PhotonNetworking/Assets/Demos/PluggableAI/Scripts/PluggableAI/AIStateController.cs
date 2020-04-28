@@ -52,6 +52,10 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
         data = new AIStateData(this);
         Agent = GetComponent<NavMeshAgent>();
         Animator = GetComponent<Animator>();
+
+        hitPointSystem.SetCurrentToMax();
+        experienceSystem.OnReachedMax += OnLevelUp;
+        energySystem.SetCurrentToMax();
         currentState.StartState(this);
     }
 
@@ -67,7 +71,16 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
 
     public void Damage(HealthModifier modifier)
     {
-        print("damaged " + this.name);
+        hitPointSystem.AddModifier(modifier);
+    }
+
+    public void Learn(int value)
+    {
+        experienceSystem.AddModifier(new TimedHealthModifier(0, value, true, true));
+    }
+
+    public void OnLevelUp()
+    {
     }
 
     public void AddDamageFeedback(Image fillableImage, Text hitpointText = null)
@@ -94,6 +107,10 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
         {
             currentState.UpdateState(this);
         }
+
+        hitPointSystem.Update();
+        energySystem.Update();
+        experienceSystem.Update();
     }
 
     public AIDataContainer GetData(AIStateDataType _type)

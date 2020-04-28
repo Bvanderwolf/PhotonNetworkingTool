@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: DogAttackAction
   m_EditorClassIdentifier: 
   attackTimeInterval: 2
+  experienceGainPerAttack: 10

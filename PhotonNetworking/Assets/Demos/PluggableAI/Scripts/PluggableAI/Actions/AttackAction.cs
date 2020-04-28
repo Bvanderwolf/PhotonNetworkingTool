@@ -5,6 +5,9 @@ public class AttackAction : AIAction
     [SerializeField]
     protected float attackTimeInterval;
 
+    [SerializeField]
+    protected int experienceGainPerAttack;
+
     public float AttackTimeInterval
     {
         get
