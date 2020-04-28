@@ -9,6 +9,7 @@ public class AttackActionDog : AttackAction
         AttackDataContainer container = (AttackDataContainer)controller.GetData(AIStateDataType.Attack);
         if (container.CanAttack)
         {
+            container.DamageTarget.Damage(new TimedHealthModifier(0, 10, false, true));
             controller.Animator.SetTrigger("Attack");
             container.ResetAttackInterval(AttackTimeInterval);
         }
@@ -20,6 +21,12 @@ public class AttackActionDog : AttackAction
 
     public override void Begin(AIStateController controller)
     {
+        AttackDataContainer container = (AttackDataContainer)controller.GetData(AIStateDataType.Attack);
+        if (container.DamageTarget == null)
+        {
+            ChaseDataContainer chase = (ChaseDataContainer)controller.GetData(AIStateDataType.Chase);
+            container.SetDamageTarget(chase.ChaseTarget);
+        }
         controller.Animator.SetInteger("Walk", 0);
     }
 

@@ -37,9 +37,22 @@ public class WanderAction : AIAction
         controller.Agent.speed = wanderSpeed;
         controller.Agent.stoppingDistance = 0f;
         controller.Agent.angularSpeed = wanderTurnSpeed;
+
         WanderDataContainer container = (WanderDataContainer)controller.GetData(AIStateDataType.Wander);
         container.SetStartPosition(controller.transform.position);
         container.SetWanderTarget(this, controller);
+
+        ChaseDataContainer chase = (ChaseDataContainer)controller.GetData(AIStateDataType.Chase);
+        if (chase.ChaseTarget != null)
+        {
+            chase.SetChaseTarget(null);
+        }
+
+        AttackDataContainer attack = (AttackDataContainer)controller.GetData(AIStateDataType.Attack);
+        if (attack.DamageTarget != null)
+        {
+            attack.SetDamageTarget(null);
+        }
     }
 
     public override void Act(AIStateController controller)

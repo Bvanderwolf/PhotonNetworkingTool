@@ -3,6 +3,7 @@
 public class AttackDataContainer : AIDataContainer
 {
     public bool CanAttack { get; private set; }
+    public IDamageAble DamageTarget { get; private set; }
     private float currentAttackIntervalTime;
 
     public void UpdateAttackIntervalTime()
@@ -18,5 +19,10 @@ public class AttackDataContainer : AIDataContainer
     {
         CanAttack = false;
         currentAttackIntervalTime = attackTimeInterval;
+    }
+
+    public void SetDamageTarget(Transform chaseTarget)
+    {
+        DamageTarget = chaseTarget.GetComponent<IDamageAble>();
     }
 }

@@ -2,7 +2,7 @@
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class AIStateController : MonoBehaviour
+public class AIStateController : MonoBehaviour, IDamageAble
 {
     [SerializeField]
     private AIState currentState;
@@ -28,6 +28,11 @@ public class AIStateController : MonoBehaviour
     private void OnDestroy()
     {
         AIService.Instance.UnSubscribe(transform);
+    }
+
+    public void Damage(HealthModifier modifier)
+    {
+        print("damaged " + this.name);
     }
 
     private void Update()
