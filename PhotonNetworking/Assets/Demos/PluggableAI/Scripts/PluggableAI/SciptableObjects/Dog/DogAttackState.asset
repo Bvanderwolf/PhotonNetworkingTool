@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d95a03da5a364f14691ee5636ea9de09, type: 3}
-  m_Name: DogChaseState
+  m_Name: DogAttackState
   m_EditorClassIdentifier: 
   m_Actions:
-  - {fileID: 11400000, guid: f858ab6f88443ad4d89f1cdeb746859e, type: 2}
+  - {fileID: 11400000, guid: 3f3d750353676fa40ad7a85d2e448e26, type: 2}
   m_Transitions:
-  - decision: {fileID: 11400000, guid: 1de2017a57c4d694c8f59e2ee51ba4f9, type: 2}
-    trueState: {fileID: 11400000, guid: aa1cbc64bd8f1df46b5c95a1cafa4441, type: 2}
+  - decision: {fileID: 11400000, guid: 9d680e274a856cd48a090611b82391a2, type: 2}
+    trueState: {fileID: 11400000, guid: cfdbb013ca584a74c9fbd01714e81c26, type: 2}

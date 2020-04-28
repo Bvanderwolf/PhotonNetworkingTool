@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bea786248677084dafac692bbbb4bed, type: 3}
   m_Name: DogChaseDecision
   m_EditorClassIdentifier: 
-  distanceToChaseAt: 20
+  distanceToChaseAt: 18

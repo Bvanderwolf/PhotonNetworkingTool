@@ -3,7 +3,8 @@
 public enum AIStateDataType
 {
     Wander,
-    Chase
+    Chase,
+    Attack
 }
 
 public class AIStateData
@@ -15,7 +16,8 @@ public class AIStateData
         dataContainerDict = new Dictionary<AIStateDataType, AIDataContainer>
         {
             { AIStateDataType.Wander, new WanderDataContainer() },
-            { AIStateDataType.Chase, new ChaseDataContainer() }
+            { AIStateDataType.Chase, new ChaseDataContainer() },
+            { AIStateDataType.Attack, new AttackDataContainer() }
         };
     }
 

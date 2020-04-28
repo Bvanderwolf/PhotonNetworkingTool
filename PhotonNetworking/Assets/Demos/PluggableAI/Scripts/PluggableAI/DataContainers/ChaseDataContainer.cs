@@ -2,7 +2,7 @@
 
 public class ChaseDataContainer : AIDataContainer
 {
-    private Transform chaseTarget;
+    public Transform ChaseTarget { get; private set; }
     private float currentPathUpdateIntervalTime = 0;
 
     public void UpdateIntervalTime(ChaseAction action, AIStateController controller)
@@ -17,11 +17,11 @@ public class ChaseDataContainer : AIDataContainer
 
     public void SetChaseTarget(Transform target)
     {
-        chaseTarget = target;
+        ChaseTarget = target;
     }
 
     private void UpdatePath(AIStateController controller)
     {
-        controller.Agent.destination = chaseTarget.position;
+        controller.Agent.destination = ChaseTarget.position;
     }
 }
