@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: CatWanderAction
   m_EditorClassIdentifier: 
   wanderSpeed: 1
+  wanderTurnSpeed: 120
   idleTime: 2
   wanderDistance: 6

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pathUpdateIntervalTime: 0.5
   chaseSpeed: 3.75
-  chaseTurnAngle: 160
+  chaseTurnSpeed: 160

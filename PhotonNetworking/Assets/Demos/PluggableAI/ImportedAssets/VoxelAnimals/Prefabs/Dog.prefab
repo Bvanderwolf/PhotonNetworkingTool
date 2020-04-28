@@ -342,6 +342,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: {fileID: 11400000, guid: 066b961bccf475942a041cdf81e2f6a2, type: 2}
+  identifyableIcon: {fileID: 21300000, guid: 115b4bf23c474d14c9dda2fc7718fac0, type: 3}
+  IdentifyElementHeightOffset: {x: 1, y: 2.5, z: 0}
+  hitPointSystem:
+    healthBar: {fileID: 0}
+    healthText: {fileID: 0}
+    showText: 1
+    max: 100
+    minimalMax: 10
+  energySystem:
+    healthBar: {fileID: 0}
+    healthText: {fileID: 0}
+    showText: 1
+    max: 100
+    minimalMax: 10
+  experienceSystem:
+    healthBar: {fileID: 0}
+    healthText: {fileID: 0}
+    showText: 1
+    max: 100
+    minimalMax: 10
 --- !u!1 &1451966804129338
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-[System.Serializable]
+[Serializable]
 public class HealthSystem
 {
     [SerializeField, Tooltip("Fillable image for the system to influence")]
@@ -93,7 +93,10 @@ public class HealthSystem
         }
 
         //show feedback of data on healthbar and text if showable
-        healthBar.fillAmount = current / max;
+        if (healthBar != null)
+        {
+            healthBar.fillAmount = current / max;
+        }
         if (showText && healthText != null)
         {
             healthText.text = $"{Current}/{max}";
@@ -229,5 +232,23 @@ public class HealthSystem
     public void RemovePrioritySystem(HealthSystem system)
     {
         highPrioritySystems.Remove(system);
+    }
+
+    /// <summary>Sets health bar reference if given image is of type filled</summary>
+    public void AttachHealthBar(Image healthBar)
+    {
+        if (healthBar != null && healthBar.type == Image.Type.Filled)
+        {
+            this.healthBar = healthBar;
+        }
+    }
+
+    /// <summary>Sets health text reference</summary>
+    public void AttachHealthText(Text healthText)
+    {
+        if (healthText != null)
+        {
+            this.healthText = healthText;
+        }
     }
 }

@@ -320,6 +320,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: {fileID: 11400000, guid: 9f11f2924e06f494983618b5a8cf5089, type: 2}
+  identifyableIcon: {fileID: 21300000, guid: 36eca3e66146e5a418e7ebc32f714914, type: 3}
+  IdentifyElementHeightOffset: {x: 1, y: 2.5, z: 0}
+  hitPointSystem:
+    healthBar: {fileID: 0}
+    healthText: {fileID: 0}
+    showText: 1
+    max: 100
+    minimalMax: 10
+  energySystem:
+    healthBar: {fileID: 0}
+    healthText: {fileID: 0}
+    showText: 1
+    max: 100
+    minimalMax: 10
+  experienceSystem:
+    healthBar: {fileID: 0}
+    healthText: {fileID: 0}
+    showText: 1
+    max: 100
+    minimalMax: 10
 --- !u!195 &1179820493
 NavMeshAgent:
   m_ObjectHideFlags: 0

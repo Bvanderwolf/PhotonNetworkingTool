@@ -1,16 +1,51 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class AIStateController : MonoBehaviour, IDamageAble
+public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILearnable, IIdentifyable
 {
+    [Header("AI Settings")]
     [SerializeField]
     private AIState currentState;
+
+    [Header("Identification Settings")]
+    [SerializeField]
+    private Sprite identifyableIcon;
+
+    [SerializeField]
+    private Vector3 IdentifyElementHeightOffset;
+
+    [Header("Health Systems Settings")]
+    [SerializeField]
+    private HealthSystem hitPointSystem;
+
+    [SerializeField]
+    private HealthSystem energySystem;
+
+    [SerializeField]
+    private HealthSystem experienceSystem;
 
     public NavMeshAgent Agent { get; private set; }
     public Animator Animator { get; private set; }
 
     private AIStateData data;
+
+    public Sprite IdentifyableIcon
+    {
+        get
+        {
+            return identifyableIcon;
+        }
+    }
+
+    public Vector3 ElementHeightOffset
+    {
+        get
+        {
+            return IdentifyElementHeightOffset;
+        }
+    }
 
     private void Awake()
     {
@@ -33,6 +68,24 @@ public class AIStateController : MonoBehaviour, IDamageAble
     public void Damage(HealthModifier modifier)
     {
         print("damaged " + this.name);
+    }
+
+    public void AddDamageFeedback(Image fillableImage, Text hitpointText = null)
+    {
+        hitPointSystem.AttachHealthBar(fillableImage);
+        hitPointSystem.AttachHealthText(hitpointText);
+    }
+
+    public void AddEnergyFeedback(Image fillableImage, Text energyText = null)
+    {
+        energySystem.AttachHealthBar(fillableImage);
+        energySystem.AttachHealthText(energyText);
+    }
+
+    public void AddExperienceFeedback(Image fillableImage, Text experienceText = null)
+    {
+        experienceSystem.AttachHealthBar(fillableImage);
+        experienceSystem.AttachHealthText(experienceText);
     }
 
     private void Update()
