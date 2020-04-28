@@ -6,6 +6,16 @@ public class AttackActionDog : AttackAction
 {
     public override void Act(AIStateController controller)
     {
+        AttackDataContainer container = (AttackDataContainer)controller.GetData(AIStateDataType.Attack);
+        if (container.CanAttack)
+        {
+            controller.Animator.SetTrigger("Attack");
+            container.ResetAttackInterval(AttackTimeInterval);
+        }
+        else
+        {
+            container.UpdateAttackIntervalTime();
+        }
     }
 
     public override void Begin(AIStateController controller)

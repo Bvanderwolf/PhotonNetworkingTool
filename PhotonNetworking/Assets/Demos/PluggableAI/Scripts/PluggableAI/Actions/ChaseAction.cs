@@ -5,6 +5,14 @@ public class ChaseAction : AIAction
     [SerializeField]
     protected float pathUpdateIntervalTime;
 
+    [SerializeField]
+    protected float chaseSpeed;
+
+    [SerializeField]
+    protected float chaseTurnSpeed;
+
+    protected const float walkAnimationSpeedMultiplier = 3.0f;
+
     public float PathUpdateIntervalTime
     {
         get

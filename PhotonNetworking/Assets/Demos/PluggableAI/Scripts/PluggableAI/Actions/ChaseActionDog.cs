@@ -3,11 +3,6 @@
 [CreateAssetMenu(menuName = "PluggableAI/Actions/ChaseActionDog")]
 public class ChaseActionDog : ChaseAction
 {
-    [SerializeField]
-    private float chaseSpeed;
-
-    private const float walkAnimationSpeedMultiplier = 3.0f;
-
     public override void Act(AIStateController controller)
     {
         ChaseDataContainer chase = (ChaseDataContainer)controller.GetData(AIStateDataType.Chase);
@@ -18,6 +13,7 @@ public class ChaseActionDog : ChaseAction
     {
         ChaseDataContainer chase = (ChaseDataContainer)controller.GetData(AIStateDataType.Chase);
         controller.Agent.speed = chaseSpeed;
+        controller.Agent.angularSpeed = chaseTurnSpeed;
         if (controller.Agent.stoppingDistance == 0f)
         {
             float stoppingDistance = GetStoppingDistanceBasedOnSizes(chase.ChaseTarget, controller.transform);

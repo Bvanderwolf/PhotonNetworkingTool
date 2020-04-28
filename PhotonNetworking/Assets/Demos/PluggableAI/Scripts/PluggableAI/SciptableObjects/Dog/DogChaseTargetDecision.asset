@@ -12,4 +12,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b43cc48dce46340af0020c223b1005, type: 3}
   m_Name: DogChaseTargetDecision
   m_EditorClassIdentifier: 
-  targetDistanceToChase: 7
