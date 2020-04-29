@@ -29,7 +29,7 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
     public NavMeshAgent Agent { get; private set; }
     public Animator Animator { get; private set; }
 
-    private AIStateData data;
+    public AIStateData Data;
 
     public Sprite IdentifyableIcon
     {
@@ -49,7 +49,7 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
 
     private void Awake()
     {
-        data = new AIStateData(this);
+        Data = new AIStateData();
         Agent = GetComponent<NavMeshAgent>();
         Animator = GetComponent<Animator>();
 
@@ -111,11 +111,6 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
         hitPointSystem.Update();
         energySystem.Update();
         experienceSystem.Update();
-    }
-
-    public AIDataContainer GetData(AIStateDataType _type)
-    {
-        return data.GetData(_type);
     }
 
     public void Transition(AIState nextState)

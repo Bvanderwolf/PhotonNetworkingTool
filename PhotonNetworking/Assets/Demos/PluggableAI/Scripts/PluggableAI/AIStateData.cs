@@ -1,28 +1,6 @@
-﻿using System.Collections.Generic;
-
-public enum AIStateDataType
+﻿public class AIStateData
 {
-    Wander,
-    Chase,
-    Attack
-}
-
-public class AIStateData
-{
-    private Dictionary<AIStateDataType, AIDataContainer> dataContainerDict;
-
-    public AIStateData(AIStateController controller)
-    {
-        dataContainerDict = new Dictionary<AIStateDataType, AIDataContainer>
-        {
-            { AIStateDataType.Wander, new WanderDataContainer() },
-            { AIStateDataType.Chase, new ChaseDataContainer() },
-            { AIStateDataType.Attack, new AttackDataContainer() }
-        };
-    }
-
-    public AIDataContainer GetData(AIStateDataType dataType)
-    {
-        return dataContainerDict[dataType];
-    }
+    public readonly WanderDataContainer Wander = new WanderDataContainer();
+    public readonly ChaseDataContainer Chase = new ChaseDataContainer();
+    public readonly AttackDataContainer Attack = new AttackDataContainer();
 }

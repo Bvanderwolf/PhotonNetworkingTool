@@ -21,8 +21,7 @@ public class ChaseDecision : AIDecision
 
         if (target != null)
         {
-            ChaseDataContainer container = (ChaseDataContainer)controller.GetData(AIStateDataType.Chase);
-            container.SetChaseTarget(target);
+            controller.Data.Chase.SetChaseTarget(target);
             return true;
         }
         else

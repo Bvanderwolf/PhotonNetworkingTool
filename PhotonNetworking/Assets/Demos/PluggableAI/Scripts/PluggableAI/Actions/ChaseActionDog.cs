@@ -5,18 +5,16 @@ public class ChaseActionDog : ChaseAction
 {
     public override void Act(AIStateController controller)
     {
-        ChaseDataContainer chase = (ChaseDataContainer)controller.GetData(AIStateDataType.Chase);
-        chase.UpdateIntervalTime(this, controller);
+        controller.Data.Chase.UpdateIntervalTime(this, controller);
     }
 
     public override void Begin(AIStateController controller)
     {
-        ChaseDataContainer chase = (ChaseDataContainer)controller.GetData(AIStateDataType.Chase);
         controller.Agent.speed = chaseSpeed;
         controller.Agent.angularSpeed = chaseTurnSpeed;
         if (controller.Agent.stoppingDistance == 0f)
         {
-            float stoppingDistance = GetStoppingDistanceBasedOnSizes(chase.ChaseTarget, controller.transform);
+            float stoppingDistance = GetStoppingDistanceBasedOnSizes(controller.Data.Chase.ChaseTarget, controller.transform);
             controller.Agent.stoppingDistance = stoppingDistance;
         }
         controller.Animator.SetFloat("WalkSpeed", walkAnimationSpeedMultiplier);
