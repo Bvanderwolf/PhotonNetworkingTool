@@ -116,10 +116,16 @@ public class HealthSystem
         }
     }
 
-    /// <summary>Sets current to max</summary>
+    /// <summary>Sets current to max without callbacks</summary>
     public void SetCurrentToMax()
     {
         current = max;
+    }
+
+    /// <summary>Sets current to zero without callbacks</summary>
+    public void SetCurrentToZero()
+    {
+        current = 0;
     }
 
     /// <summary>Adds modifier to system modifiers if it is valid and fires start events if condition is right</summary>
