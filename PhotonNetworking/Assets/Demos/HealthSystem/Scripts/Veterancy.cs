@@ -4,11 +4,18 @@ using UnityEngine;
 [System.Serializable]
 public class Veterancy
 {
+    public enum ActionUpgradeType
+    {
+        SpeedIncrease,
+        EfficiencyIncrease
+    }
+
     [System.Serializable]
     private struct VeterancyAction
     {
         public int VeterancyLevel;
         public AIAction Action;
+        public ActionUpgradeType upgradeType;
     }
 
     [SerializeField]
