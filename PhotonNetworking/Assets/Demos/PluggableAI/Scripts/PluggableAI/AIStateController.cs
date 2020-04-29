@@ -26,6 +26,10 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
     [SerializeField]
     private HealthSystem experienceSystem;
 
+    [Header("Veterancy System Settings")]
+    [SerializeField]
+    private VeterancySystem veterancySystem;
+
     public NavMeshAgent Agent { get; private set; }
     public Animator Animator { get; private set; }
 

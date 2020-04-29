@@ -3395,8 +3395,14 @@ MonoBehaviour:
         showText: 0
         max: 0
         minimalMax: 0
-      multiplierOnVeterancyUp: 0
-      actions: []
+      multiplierOnVeterancyUp: 1.2
+      actions:
+      - VeterancyLevel: 2
+        Action: {fileID: 0}
+        upgradeType: 0
+      - VeterancyLevel: 4
+        Action: {fileID: 0}
+        upgradeType: 1
     fightingVeterancy:
       system:
         healthBar: {fileID: 0}

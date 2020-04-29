@@ -45,8 +45,15 @@ public class VeterancySystem
         }
     }
 
-    public Veterancy GetVeterancy(VeterancyType veterancyType)
+    /// <summary>Increases given veterancy by given value</summary>
+    public void IncreaseVeterancy(VeterancyType veterancyType, int value)
     {
-        return Veterancies[veterancyType];
+        Veterancies[veterancyType].System.AddModifier(new TimedHealthModifier(0, value, true, true));
+    }
+
+    /// <summary>Returns a list of available actions for given veterancy</summary>
+    public List<AIAction> GetActionsOfVeterancy(VeterancyType veterancyType)
+    {
+        return Veterancies[veterancyType].GetAvailableActions();
     }
 }
