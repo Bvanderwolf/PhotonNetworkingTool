@@ -8,7 +8,7 @@ public class AttackActionDog : AttackAction
         AttackDataContainer container = controller.Data.Attack;
         if (container.CanAttack)
         {
-            container.DamageTarget.Damage(new TimedHealthModifier(0, 10, false, true));
+            container.DamageTarget.Damage(new TimedHealthModifier("DogDamage", 0, 10, false, true, true));
             controller.Learn(experienceGainPerAttack);
             controller.Animator.SetTrigger("Attack");
             container.ResetAttackInterval(AttackTimeInterval);

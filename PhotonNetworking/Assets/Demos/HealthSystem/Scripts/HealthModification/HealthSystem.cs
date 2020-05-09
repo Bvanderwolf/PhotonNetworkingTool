@@ -26,7 +26,8 @@ public class HealthSystem
     private const int minimalMinimalMax = 10;
 
     private SortedSet<HealthSystem> highPrioritySystems = new SortedSet<HealthSystem>();
-    private List<HealthModifier> modifiers = new List<HealthModifier>();
+    private List<HealthModifier> activeModifiers = new List<HealthModifier>();
+    private List<HealthModifier> queuedModifiers = new List<HealthModifier>();
 
     private float current;
 
@@ -58,7 +59,7 @@ public class HealthSystem
     {
         get
         {
-            return modifiers.Count != 0;
+            return activeModifiers.Count != 0;
         }
     }
 
@@ -74,20 +75,48 @@ public class HealthSystem
         bool currentIsZero = current == 0f;
 
         //let each modifier modify this system and remove it if it is finished giving callbacks if the condition is right
-        for (int i = modifiers.Count - 1; i >= 0; i--)
+        for (int i = activeModifiers.Count - 1; i >= 0; i--)
         {
-            HealthModifier modifier = modifiers[i];
+            HealthModifier modifier = activeModifiers[i];
             modifier.Modify(this);
-            if (modifier.Finished)
+
+            bool finished = modifier.Finished;
+            if (finished)
             {
-                modifiers.RemoveAt(i);
-                if (modifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && modifier.Regenerate && modifier.IsOverTime)
+                if (queuedModifiers.Count != 0 && queuedModifiers.Any(m => m.Name == modifier.Name))
                 {
+                    //if there are queued modifiers an one has the same name as this one, replace this one with the queued one
+                    for (int j = queuedModifiers.Count - 1; j >= 0; j--)
+                    {
+                        if (queuedModifiers[j].Name == modifier.Name)
+                        {
+                            activeModifiers[i] = queuedModifiers[j];
+                            queuedModifiers.RemoveAt(j);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    //if this modifier cannot be replaced by a queued one, remove it
+                    activeModifiers.RemoveAt(i);
+                }
+
+                if (activeModifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && modifier.Regenerate && modifier.IsOverTime)
+                {
+                    //if there are no more regenerating over time modifiers and this one (which was removed) was, the regeneration has ended
                     OnRegenEnd?.Invoke();
                 }
-                else if (modifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !modifier.Regenerate && modifier.IsOverTime)
+                else if (activeModifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !modifier.Regenerate && modifier.IsOverTime)
                 {
+                    //if there are no more decay over time modifiers and this one (which was removed) was, the decaying has ended
                     OnDecayEnd?.Invoke();
+                }
+
+                if (finished)
+                {
+                    //if the modifier is finished (and thus removed from the list) it can be cleaned up
+                    modifier = null;
                 }
             }
         }
@@ -111,7 +140,6 @@ public class HealthSystem
         //if current was not equal to zero before modification but is now equal after modification, on reached zero is called
         if (!currentIsZero && current == 0f)
         {
-            Debug.Log("test");
             OnReachedZero?.Invoke();
         }
     }
@@ -145,11 +173,11 @@ public class HealthSystem
                 return;
             }
 
-            if (modifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && timed.Regenerate && timed.IsOverTime)
+            if (activeModifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && timed.Regenerate && timed.IsOverTime)
             {
                 OnRegenStart?.Invoke();
             }
-            else if (modifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !timed.Regenerate && timed.IsOverTime)
+            else if (activeModifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !timed.Regenerate && timed.IsOverTime)
             {
                 OnDecayStart?.Invoke();
             }
@@ -168,22 +196,30 @@ public class HealthSystem
                 return;
             }
 
-            if (modifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && conditional.Regenerate)
+            if (activeModifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && conditional.Regenerate)
             {
                 OnRegenStart?.Invoke();
             }
-            else if (modifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !conditional.Regenerate)
+            else if (activeModifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !conditional.Regenerate)
             {
                 OnDecayStart?.Invoke();
             }
         }
-        modifiers.Add(modifier);
+
+        if (!modifier.CanStack && activeModifiers.Any(m => m.Name == modifier.Name))
+        {
+            queuedModifiers.Add(modifier);
+        }
+        else
+        {
+            activeModifiers.Add(modifier);
+        }
     }
 
     /// <summary>Lets a modifier that is in the list of modifiers modify current</summary>
     public void ModifyCurrent(HealthModifier modifier, int value)
     {
-        if (modifiers.Contains(modifier))
+        if (activeModifiers.Contains(modifier))
         {
             if (value > 0 && current != max)
             {
@@ -207,7 +243,7 @@ public class HealthSystem
     /// <summary>Lets a modifier that is in the list of modifiers modify max</summary>
     public void ModifyMax(HealthModifier modifier, int value)
     {
-        if (modifiers.Contains(modifier))
+        if (activeModifiers.Contains(modifier))
         {
             if (value > 0)
             {

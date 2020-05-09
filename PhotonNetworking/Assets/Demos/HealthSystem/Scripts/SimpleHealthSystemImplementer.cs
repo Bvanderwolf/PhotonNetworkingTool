@@ -18,6 +18,12 @@ public class SimpleHealthSystemImplementer : MonoBehaviour
     [SerializeField]
     private Toggle currentToggle;
 
+    [SerializeField]
+    private TimedHealthModifier modifier;
+
+    [SerializeField]
+    private ConditionalHealthModifier conditional;
+
     private void Awake()
     {
         this.healthSystem.SetCurrentToMax();
@@ -35,6 +41,7 @@ public class SimpleHealthSystemImplementer : MonoBehaviour
 
         int value = int.Parse(healthInput.text);
         float time = float.Parse(timeInput.text);
-        healthSystem.AddModifier(new TimedHealthModifier(time, value, regenToggle.isOn, currentToggle.isOn));
+
+        healthSystem.AddModifier(modifier.Clone);
     }
 }

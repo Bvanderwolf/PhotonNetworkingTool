@@ -48,7 +48,7 @@ public class VeterancySystem
     /// <summary>Increases given veterancy by given value</summary>
     public void IncreaseVeterancy(VeterancyType veterancyType, int value)
     {
-        Veterancies[veterancyType].System.AddModifier(new TimedHealthModifier(0, value, true, true));
+        Veterancies[veterancyType].System.AddModifier(new TimedHealthModifier("", 0, value, true, true, true));
     }
 
     /// <summary>Returns a list of available actions for given veterancy</summary>

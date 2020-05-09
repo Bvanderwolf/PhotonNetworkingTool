@@ -80,7 +80,7 @@ public class AIStateController : MonoBehaviour, IDamageAble, IExhaustable, ILear
 
     public void Learn(int value)
     {
-        experienceSystem.AddModifier(new TimedHealthModifier(0, value, true, true));
+        experienceSystem.AddModifier(new TimedHealthModifier("", 0, value, true, true, true));
     }
 
     public void OnLevelUp()
