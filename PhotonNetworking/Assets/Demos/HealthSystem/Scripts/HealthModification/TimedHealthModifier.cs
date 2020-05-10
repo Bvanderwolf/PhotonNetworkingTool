@@ -44,7 +44,15 @@ public class TimedHealthModifier : HealthModifier
         get { return new TimedHealthModifier(name, time, value, regenerate, modifiesCurrent, canStack); }
     }
 
-    /// <summary>creates health modifer given time(sec), value, whether it regenerates or decays and whether it modifies current or max health</summary>
+    /// <summary>
+    /// Creates new instance of a timed health modifier
+    /// </summary>
+    /// <param name="name">used for comparing modifiers</param>
+    /// <param name="time">Time it takes for this modifier to finish modifying the health system</param>
+    /// <param name="value">The ammount of value it will modify over given amount of time</param>
+    /// <param name="regenerate">Will this modifier regenerate health or decay</param>
+    /// <param name="modifiesCurrent">Will this modifier modify current value or max value?</param>
+    /// <param name="canStack">Can this modifier stack with modifiers with the same name?</param>
     public TimedHealthModifier(string name, float time, int value, bool regenerate, bool modifiesCurrent, bool canStack)
     {
         this.name = name;
@@ -86,5 +94,11 @@ public class TimedHealthModifier : HealthModifier
                 system.ModifyMax(this, Regenerate ? difference : -difference);
             }
         }
+    }
+
+    /// <summary>Returns identifaction string for this timed health modifier instance</summary>
+    public override string ToString()
+    {
+        return $"TimedHealthModifier[name: {name}, time: {time}, valuePerSecond: {value}, regenerate: {regenerate}, modifiesCurrent: {modifiesCurrent}, canStack: {canStack}]";
     }
 }

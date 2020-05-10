@@ -19,14 +19,26 @@ public class SimpleHealthSystemImplementer : MonoBehaviour
     private Toggle currentToggle;
 
     [SerializeField]
+    private Toggle canStackToggle;
+
+    [SerializeField]
     private TimedHealthModifier modifier;
 
     [SerializeField]
     private ConditionalHealthModifier conditional;
 
+    [SerializeField]
+    private bool useTimed = true;
+
+    [SerializeField]
+    private bool useUIInputs = false;
+
     private void Awake()
     {
         this.healthSystem.SetCurrentToMax();
+        this.healthSystem.OnRegenStop += OnRegenStopped;
+
+        conditional.SetStopCondition(() => healthSystem.Current == 0);
     }
 
     private void Update()
@@ -42,6 +54,28 @@ public class SimpleHealthSystemImplementer : MonoBehaviour
         int value = int.Parse(healthInput.text);
         float time = float.Parse(timeInput.text);
 
-        healthSystem.AddModifier(modifier.Clone);
+        if (useUIInputs)
+        {
+            healthSystem.AddModifier(new TimedHealthModifier("modifier", time, value, regenToggle.isOn, currentToggle.isOn, canStackToggle.isOn));
+        }
+        else
+        {
+            if (useTimed)
+            {
+                healthSystem.AddModifier(modifier.Clone);
+            }
+            else
+            {
+                healthSystem.AddModifier(conditional.Clone);
+            }
+        }
+    }
+
+    public void OnRegenStopped()
+    {
+        if (healthSystem.Current != 0)
+        {
+            healthSystem.AddModifier(conditional.Clone);
+        }
     }
 }

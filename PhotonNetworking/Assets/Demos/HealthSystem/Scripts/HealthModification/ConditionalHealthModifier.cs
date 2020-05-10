@@ -56,8 +56,15 @@ public class ConditionalHealthModifier : HealthModifier
         get { return new ConditionalHealthModifier(name, valuePerSecond, regenerate, modifiesCurrent, canStack, stopCondition); }
     }
 
-    /// <summary>Creates a health modifier than, until given condition is met, regenerates or decays current or max health
-    /// with given value per second</summary>
+    /// <summary>
+    /// Creates a new instance of a conditinal health modifier
+    /// </summary>
+    /// <param name="name">used for comparing modifiers</param>
+    /// <param name="valuePerSecond">The amount of value this modifier will modify each second while active</param>
+    /// <param name="regenerate">Will this modifier regenerate health or decay</param>
+    /// <param name="modifiesCurrent">Will this modifier modify current value or max value?</param>
+    /// <param name="canStack">Can this modifier stack with modifiers with the same name?</param>
+    /// <param name="stopCondition">The condition on which this health modifier needs to stop modifying</param>
     public ConditionalHealthModifier(string name, int valuePerSecond, bool regenerate, bool modifiesCurrent, bool canStack, Func<bool> stopCondition)
     {
         this.name = name;
@@ -91,5 +98,10 @@ public class ConditionalHealthModifier : HealthModifier
                 system.ModifyMax(this, Regenerate ? valuePerSecond : -valuePerSecond);
             }
         }
+    }
+
+    public override string ToString()
+    {
+        return $"ConditionalHealthModifier[name: {name}, valuePerSecond: {valuePerSecond}, regenerate: {regenerate}, modifiesCurrent: {modifiesCurrent}, canStack: {canStack}]";
     }
 }

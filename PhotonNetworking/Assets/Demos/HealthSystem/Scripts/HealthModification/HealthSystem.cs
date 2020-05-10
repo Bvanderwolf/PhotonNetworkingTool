@@ -31,9 +31,9 @@ public class HealthSystem
 
     private float current;
 
-    public event Action OnRegenStart, OnRegenEnd;
+    public event Action OnRegenStart, OnRegenStop;
 
-    public event Action OnDecayStart, OnDecayEnd;
+    public event Action OnDecayStart, OnDecayStop;
 
     public event Action OnReachedMax, OnReachedZero;
 
@@ -105,12 +105,12 @@ public class HealthSystem
                 if (activeModifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && modifier.Regenerate && modifier.IsOverTime)
                 {
                     //if there are no more regenerating over time modifiers and this one (which was removed) was, the regeneration has ended
-                    OnRegenEnd?.Invoke();
+                    OnRegenStop?.Invoke();
                 }
                 else if (activeModifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !modifier.Regenerate && modifier.IsOverTime)
                 {
                     //if there are no more decay over time modifiers and this one (which was removed) was, the decaying has ended
-                    OnDecayEnd?.Invoke();
+                    OnDecayStop?.Invoke();
                 }
 
                 if (finished)
