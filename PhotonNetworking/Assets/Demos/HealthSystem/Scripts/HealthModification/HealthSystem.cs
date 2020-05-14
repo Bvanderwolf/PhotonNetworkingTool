@@ -54,6 +54,14 @@ public class HealthSystem
         }
     }
 
+    public bool IsFull
+    {
+        get
+        {
+            return Current == max;
+        }
+    }
+
     /// <summary>Returns whether this system is being modified by health modifiers</summary>
     public bool BeingModified
     {
@@ -102,13 +110,15 @@ public class HealthSystem
                     activeModifiers.RemoveAt(i);
                 }
 
-                if (activeModifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && modifier.Regenerate && modifier.IsOverTime)
+                if (activeModifiers.Count(m => m.Regenerate) == 0 && modifier.Regenerate)
                 {
+                    Debug.Log("stopped regen");
                     //if there are no more regenerating over time modifiers and this one (which was removed) was, the regeneration has ended
                     OnRegenStop?.Invoke();
                 }
-                else if (activeModifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !modifier.Regenerate && modifier.IsOverTime)
+                else if (activeModifiers.Count(m => !m.Regenerate) == 0 && !modifier.Regenerate)
                 {
+                    Debug.Log("stopped decay");
                     //if there are no more decay over time modifiers and this one (which was removed) was, the decaying has ended
                     OnDecayStop?.Invoke();
                 }
@@ -134,12 +144,14 @@ public class HealthSystem
         //if current was not equal to max before modification but is now equal after modification, on reached max is called
         if (!currentIsMax && current == max)
         {
+            Debug.Log("reached max");
             OnReachedMax?.Invoke();
         }
 
         //if current was not equal to zero before modification but is now equal after modification, on reached zero is called
         if (!currentIsZero && current == 0f)
         {
+            Debug.Log("reached zero");
             OnReachedZero?.Invoke();
         }
     }
@@ -173,12 +185,14 @@ public class HealthSystem
                 return;
             }
 
-            if (activeModifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && timed.Regenerate && timed.IsOverTime)
+            if (activeModifiers.Count(m => m.Regenerate) == 0 && timed.Regenerate)
             {
+                Debug.Log("started regen");
                 OnRegenStart?.Invoke();
             }
-            else if (activeModifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !timed.Regenerate && timed.IsOverTime)
+            else if (activeModifiers.Count(m => !m.Regenerate) == 0 && !timed.Regenerate)
             {
+                Debug.Log("stared decay");
                 OnDecayStart?.Invoke();
             }
         }
@@ -196,12 +210,14 @@ public class HealthSystem
                 return;
             }
 
-            if (activeModifiers.Count(m => m.Regenerate && m.IsOverTime) == 0 && conditional.Regenerate)
+            if (activeModifiers.Count(m => m.Regenerate) == 0 && conditional.Regenerate)
             {
+                Debug.Log("started regen");
                 OnRegenStart?.Invoke();
             }
-            else if (activeModifiers.Count(m => !m.Regenerate && m.IsOverTime) == 0 && !conditional.Regenerate)
+            else if (activeModifiers.Count(m => !m.Regenerate) == 0 && !conditional.Regenerate)
             {
+                Debug.Log("started decay");
                 OnDecayStart?.Invoke();
             }
         }

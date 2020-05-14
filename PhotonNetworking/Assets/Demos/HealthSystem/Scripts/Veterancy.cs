@@ -61,6 +61,6 @@ public class Veterancy
     {
         VeterancyLevel++;
         system.SetCurrentToZero();
-        system.AddModifier(new TimedHealthModifier("LevelUp", 0f, Mathf.RoundToInt(system.Max * multiplierOnVeterancyUp), true, false, true));
+        system.AddModifier(new TimedHealthModifier("LevelUp", 0f, Mathf.RoundToInt(system.Max * multiplierOnVeterancyUp), true, false, true, true));
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable]
 public abstract class HealthModifier
 {
     [Header("Settings")]
@@ -17,8 +16,10 @@ public abstract class HealthModifier
     [SerializeField, Tooltip("Will this modifier modify current value or max value?")]
     protected bool modifiesCurrent = false;
 
+    [SerializeField, Tooltip("Does this modifier, when max is modified, also modify current?")]
+    protected bool modifiesCurrentWithMax = true;
+
     public abstract bool Finished { get; }
-    public abstract bool IsOverTime { get; }
     public abstract HealthModifier Clone { get; }
 
     public string Name

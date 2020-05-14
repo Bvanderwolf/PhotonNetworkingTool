@@ -36,12 +36,11 @@ public class SimpleHealthSystemImplementer : MonoBehaviour
     private void Awake()
     {
         this.healthSystem.SetCurrentToMax();
-        this.healthSystem.OnRegenStop += OnRegenStopped;
 
         conditional.SetStopCondition(() => healthSystem.Current == 0);
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         this.healthSystem.Update();
     }
@@ -56,7 +55,7 @@ public class SimpleHealthSystemImplementer : MonoBehaviour
 
         if (useUIInputs)
         {
-            healthSystem.AddModifier(new TimedHealthModifier("modifier", time, value, regenToggle.isOn, currentToggle.isOn, canStackToggle.isOn));
+            healthSystem.AddModifier(new TimedHealthModifier("modifier", time, value, regenToggle.isOn, currentToggle.isOn, true, canStackToggle.isOn));
         }
         else
         {
@@ -68,14 +67,6 @@ public class SimpleHealthSystemImplementer : MonoBehaviour
             {
                 healthSystem.AddModifier(conditional.Clone);
             }
-        }
-    }
-
-    public void OnRegenStopped()
-    {
-        if (healthSystem.Current != 0)
-        {
-            healthSystem.AddModifier(conditional.Clone);
         }
     }
 }

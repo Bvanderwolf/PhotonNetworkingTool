@@ -65,15 +65,15 @@ public class ComplexHealthSystemImplementer : MonoBehaviour
         switch (choice)
         {
             case SystemChoice.Hitpoints:
-                hitPointSystem.AddModifier(new TimedHealthModifier("", time, value, regenToggle.isOn, currentToggle.isOn, true));
+                hitPointSystem.AddModifier(new TimedHealthModifier("", time, value, regenToggle.isOn, currentToggle.isOn, true, true));
                 break;
 
             case SystemChoice.Energy:
-                energySystem.AddModifier(new TimedHealthModifier("", time, value, regenToggle.isOn, currentToggle.isOn, true));
+                energySystem.AddModifier(new TimedHealthModifier("", time, value, regenToggle.isOn, currentToggle.isOn, true, true));
                 break;
 
             case SystemChoice.Thirst:
-                thirstSystem.AddModifier(new TimedHealthModifier("", time, value, regenToggle.isOn, currentToggle.isOn, true));
+                thirstSystem.AddModifier(new TimedHealthModifier("", time, value, regenToggle.isOn, currentToggle.isOn, true, true));
                 break;
         }
     }
@@ -88,7 +88,7 @@ public class ComplexHealthSystemImplementer : MonoBehaviour
     {
         if (value)
         {
-            thirstSystem.AddModifier(new ConditionalHealthModifier("", 2, false, true, true, () => !hotWeatherToggle.isOn));
+            thirstSystem.AddModifier(new ConditionalHealthModifier("", 2, false, true, true, true, () => !hotWeatherToggle.isOn));
         }
     }
 }

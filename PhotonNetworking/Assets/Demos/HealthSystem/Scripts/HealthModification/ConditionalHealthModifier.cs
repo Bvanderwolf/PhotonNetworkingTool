@@ -20,12 +20,6 @@ public class ConditionalHealthModifier : HealthModifier
         get { return stopCondition(); }
     }
 
-    /// <summary>A conditional health modifier is always over time</summary>
-    public override bool IsOverTime
-    {
-        get { return true; }
-    }
-
     /// <summary>Returns whether value per second is valid</summary>
     public bool HasValidValuePerSecond
     {
@@ -53,7 +47,7 @@ public class ConditionalHealthModifier : HealthModifier
     /// <summary>Returns a new instance of this modifier. Use this if you have stored a modifier and want to re-use it</summary>
     public override HealthModifier Clone
     {
-        get { return new ConditionalHealthModifier(name, valuePerSecond, regenerate, modifiesCurrent, canStack, stopCondition); }
+        get { return new ConditionalHealthModifier(name, valuePerSecond, regenerate, modifiesCurrent, modifiesCurrentWithMax, canStack, stopCondition); }
     }
 
     /// <summary>
@@ -65,12 +59,13 @@ public class ConditionalHealthModifier : HealthModifier
     /// <param name="modifiesCurrent">Will this modifier modify current value or max value?</param>
     /// <param name="canStack">Can this modifier stack with modifiers with the same name?</param>
     /// <param name="stopCondition">The condition on which this health modifier needs to stop modifying</param>
-    public ConditionalHealthModifier(string name, int valuePerSecond, bool regenerate, bool modifiesCurrent, bool canStack, Func<bool> stopCondition)
+    public ConditionalHealthModifier(string name, int valuePerSecond, bool regenerate, bool modifiesCurrent, bool modifiesCurrentWithMax, bool canStack, Func<bool> stopCondition)
     {
         this.name = name;
         this.valuePerSecond = valuePerSecond;
         this.regenerate = regenerate;
         this.modifiesCurrent = modifiesCurrent;
+        this.modifiesCurrentWithMax = modifiesCurrentWithMax;
         this.canStack = canStack;
         this.stopCondition = stopCondition;
     }
@@ -91,11 +86,15 @@ public class ConditionalHealthModifier : HealthModifier
             lastModifiedSecond++;
             if (modifiesCurrent)
             {
-                system.ModifyCurrent(this, Regenerate ? valuePerSecond : -valuePerSecond);
+                system.ModifyCurrent(this, regenerate ? valuePerSecond : -valuePerSecond);
             }
             else
             {
-                system.ModifyMax(this, Regenerate ? valuePerSecond : -valuePerSecond);
+                system.ModifyMax(this, regenerate ? valuePerSecond : -valuePerSecond);
+                if (modifiesCurrentWithMax && !system.IsFull)
+                {
+                    system.ModifyCurrent(this, regenerate ? valuePerSecond : -valuePerSecond);
+                }
             }
         }
     }

@@ -20,12 +20,6 @@ public class TimedHealthModifier : HealthModifier
         get { return timePassed >= time; }
     }
 
-    /// <summary>Returns whether the health modifier modifies the system over a period and not instant</summary>
-    public override bool IsOverTime
-    {
-        get { return time > 0f; }
-    }
-
     /// <summary>Returns whether this modifier has a valid time</summary>
     public bool HasValidTime
     {
@@ -41,7 +35,7 @@ public class TimedHealthModifier : HealthModifier
     /// <summary>Returns a new instance of this modifier. Use this if you have stored a modifier and want to re-use it</summary>
     public override HealthModifier Clone
     {
-        get { return new TimedHealthModifier(name, time, value, regenerate, modifiesCurrent, canStack); }
+        get { return new TimedHealthModifier(name, time, value, regenerate, modifiesCurrent, modifiesCurrentWithMax, canStack); }
     }
 
     /// <summary>
@@ -53,13 +47,14 @@ public class TimedHealthModifier : HealthModifier
     /// <param name="regenerate">Will this modifier regenerate health or decay</param>
     /// <param name="modifiesCurrent">Will this modifier modify current value or max value?</param>
     /// <param name="canStack">Can this modifier stack with modifiers with the same name?</param>
-    public TimedHealthModifier(string name, float time, int value, bool regenerate, bool modifiesCurrent, bool canStack)
+    public TimedHealthModifier(string name, float time, int value, bool regenerate, bool modifiesCurrent, bool modifiesCurrentWithMax, bool canStack)
     {
         this.name = name;
         this.time = time;
         this.value = value;
         this.regenerate = regenerate;
         this.modifiesCurrent = modifiesCurrent;
+        this.modifiesCurrentWithMax = modifiesCurrentWithMax;
         this.canStack = canStack;
     }
 
@@ -70,11 +65,11 @@ public class TimedHealthModifier : HealthModifier
         {
             if (modifiesCurrent)
             {
-                system.ModifyCurrent(this, Regenerate ? value : -value);
+                system.ModifyCurrent(this, regenerate ? value : -value);
             }
             else
             {
-                system.ModifyMax(this, Regenerate ? value : -value);
+                system.ModifyMax(this, regenerate ? value : -value);
             }
             return;
         }
@@ -87,11 +82,15 @@ public class TimedHealthModifier : HealthModifier
             valueModified += difference;
             if (modifiesCurrent)
             {
-                system.ModifyCurrent(this, Regenerate ? difference : -difference);
+                system.ModifyCurrent(this, regenerate ? difference : -difference);
             }
             else
             {
-                system.ModifyMax(this, Regenerate ? difference : -difference);
+                system.ModifyMax(this, regenerate ? difference : -difference);
+                if (modifiesCurrentWithMax && !system.IsFull)
+                {
+                    system.ModifyCurrent(this, regenerate ? difference : -difference);
+                }
             }
         }
     }
